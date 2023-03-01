@@ -37,6 +37,7 @@ export const Contact = () => {
         className="flex flex-col max-w-[600px] w-full
         "
         target="_blank"
+        
       >
         <div className="pb-8 text-center">
           <p className="text-4xl font-bold inline border-b-4 border-pink-600 text-gray-300">
