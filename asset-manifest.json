@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.63abba4d.css",
-    "main.js": "/static/js/main.931d5465.js",
+    "main.js": "/static/js/main.229cc8b7.js",
     "static/js/787.128fc6e9.chunk.js": "/static/js/787.128fc6e9.chunk.js",
     "static/media/Wearly.png": "/static/media/Wearly.57db7d0c1a45455f7623.png",
     "static/media/Abhishek_Chatterjee_Resume.pdf": "/static/media/Abhishek_Chatterjee_Resume.98c544723a99dbd71ba2.pdf",
@@ -12,11 +12,11 @@
     "static/media/Logo.png": "/static/media/Logo.fbd88cd295c2f90cb9d5.png",
     "index.html": "/index.html",
     "main.63abba4d.css.map": "/static/css/main.63abba4d.css.map",
-    "main.931d5465.js.map": "/static/js/main.931d5465.js.map",
+    "main.229cc8b7.js.map": "/static/js/main.229cc8b7.js.map",
     "787.128fc6e9.chunk.js.map": "/static/js/787.128fc6e9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.63abba4d.css",
-    "static/js/main.931d5465.js"
+    "static/js/main.229cc8b7.js"
   ]
 }
