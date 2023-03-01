@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.e1ce5d19.css",
-    "main.js": "/static/js/main.d7e20d9e.js",
+    "main.css": "/static/css/main.247cac09.css",
+    "main.js": "/static/js/main.1943e184.js",
     "static/js/787.128fc6e9.chunk.js": "/static/js/787.128fc6e9.chunk.js",
     "static/media/Abhishek_Chatterjee_Resume.pdf": "/static/media/Abhishek_Chatterjee_Resume.98c544723a99dbd71ba2.pdf",
     "static/media/profile-pic.png": "/static/media/profile-pic.c20fffd2d9c49021e65e.png",
@@ -9,12 +9,12 @@
     "static/media/express.png": "/static/media/express.c1af1dd1c23d9e6dc11d.png",
     "static/media/Logo.png": "/static/media/Logo.fbd88cd295c2f90cb9d5.png",
     "index.html": "/index.html",
-    "main.e1ce5d19.css.map": "/static/css/main.e1ce5d19.css.map",
-    "main.d7e20d9e.js.map": "/static/js/main.d7e20d9e.js.map",
+    "main.247cac09.css.map": "/static/css/main.247cac09.css.map",
+    "main.1943e184.js.map": "/static/js/main.1943e184.js.map",
     "787.128fc6e9.chunk.js.map": "/static/js/787.128fc6e9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e1ce5d19.css",
-    "static/js/main.d7e20d9e.js"
+    "static/css/main.247cac09.css",
+    "static/js/main.1943e184.js"
   ]
 }
