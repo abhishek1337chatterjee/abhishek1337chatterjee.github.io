@@ -51,11 +51,11 @@ export const Navbar = () => {
         </Link>
           
         </li>
+        <Link to="github" smooth={true} offset={-100} duration={500}>
+        <p className="text-2xl"> GitHub </p>{" "}
+        </Link>
         <li>
-          <p className="text-2xl"> Github Stats </p>
-        </li>
-        <li>
-          <Link to="contact" smooth={true} offset={-100} duration={500}>
+          <Link to="contact" smooth={true} offset={-120} duration={500}>
           <p className="text-2xl"> Contact Me </p>{" "}
           </Link>
           
@@ -122,11 +122,13 @@ export const Navbar = () => {
         </li>
         <li className="py-3">
           {" "}
-          <p className="text-4xl"> Github Stats </p>
+          <Link onClick={handleClickHam} to="github" smooth={true} offset={-100} duration={500}>
+        <p className="text-4xl"> GitHub</p>{" "}
+        </Link>
         </li>
         <li className="py-6">
           {" "}
-          <Link onClick={handleClickHam} to="contact" smooth={true} offset={-100} duration={500}>
+          <Link onClick={handleClickHam} to="contact" smooth={true} offset={-110} duration={500}>
           <p className="text-4xl"> Contact Me </p>{" "}
           </Link>
         </li>

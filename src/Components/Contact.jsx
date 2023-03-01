@@ -39,7 +39,7 @@ export const Contact = () => {
         target="_blank"
         
       >
-        <div className="pb-8 text-center">
+        <div className="mt-20 pb-8 text-center">
           <p className="text-4xl font-bold inline border-b-4 border-pink-600 text-gray-300">
             Contact
           </p>
