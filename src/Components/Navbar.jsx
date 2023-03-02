@@ -52,7 +52,7 @@ export const Navbar = () => {
           
         </li>
         <Link to="github" smooth={true} offset={-100} duration={500}>
-        <p className="text-2xl"> GitHub </p>{" "}
+        <p className="text-2xl cursor-pointer"> GitHub </p>{" "}
         </Link>
         <li>
           <Link to="contact" smooth={true} offset={-120} duration={500}>
@@ -120,7 +120,7 @@ export const Navbar = () => {
         <p className="text-4xl"> Projects</p>{" "}
         </Link>
         </li>
-        <li className="py-3">
+        <li className="py-3 cursor-pointer">
           {" "}
           <Link onClick={handleClickHam} to="github" smooth={true} offset={-100} duration={500}>
         <p className="text-4xl"> GitHub</p>{" "}
