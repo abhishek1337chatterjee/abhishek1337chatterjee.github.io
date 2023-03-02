@@ -15,7 +15,7 @@ export const About = () => {
           </div>
         </div>
         <div className="max-w-[1000px] w-full px-6">
-          <p className=" text-2xl text-justify">
+          <p className=" text-justify text-xl lg:text-4xl">
             I am a highly determined, passionate and an enthusiastic Full Stack
             Developer. I focus on writing clean, elegant and effecient codes. I
             love combining the worlds of logic , accessible, and user-friendly

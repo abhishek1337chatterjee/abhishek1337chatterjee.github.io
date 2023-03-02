@@ -1,6 +1,8 @@
 import React from "react";
-import Pear from "../Assets/Pear.png";
-import Wearly from "../Assets/Wearly.png";
+import Pear from "../Assets/Pear.gif";
+import Wearly from "../Assets/Wearly.gif";
+import Freshly from "../Assets/Freshly.gif";
+import Fire from "../Assets/Fire.gif";
 export const Work = () => {
   return (
     <div name="work" className="w-full md:h-screen text-gray-300">
@@ -41,12 +43,15 @@ export const Work = () => {
                 </div>
               </span>
               <div className=" pt-2 text-center">
-                <a href="/">
+                <a href="https://pear-website.netlify.app/" target="_blank">
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Demo
                   </button>
                 </a>
-                <a href="/">
+                <a
+                  href="https://github.com/himanku/Pear-website"
+                  target="_blank"
+                >
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Code
                   </button>
@@ -79,12 +84,15 @@ export const Work = () => {
                 </div>
               </span>
               <div className=" pt-2 text-center">
-                <a href="/">
+                <a href="https://wearly.vercel.app/" target="_blank">
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Demo
                   </button>
                 </a>
-                <a href="/">
+                <a
+                  href="https://github.com/santoshy1101/forlorn-cause-7661"
+                  target="_blank"
+                >
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Code
                   </button>
@@ -94,36 +102,42 @@ export const Work = () => {
           </div>
 
           <div
-            style={{ backgroundImage: `url(${Pear})` }}
+            style={{ backgroundImage: `url(${Freshly})` }}
             className="shadow-lg shadow-[#040c16] group container rounded-md flex justify-center px-4 mx-auto content-div"
           >
             {/* Hover Effects */}
             <div className="opacity-0 group-hover:opacity-100">
               <span>
                 <p className="text-2xl font-bold pb-2 text-white tracking-wider">
-                  Pear Website
+                  Freshly Website
                 </p>
                 <p className="sm: text-[13.5px] md:text-sm lg:text-lg text-gray-400 pt-2">
-                  Pear is built with the reference website "apple.com". It is an
-                  ecommerce website for electronic products with an eye-catching
-                  UI where the users can buy various electronic items, with
-                  customizable design selections.
+                  Freshly delivers gourmet ready-made meals, prepared and
+                  delivered at the door. It is dedicated to making healthy
+                  eating and achieving health and fitness goals easier than
+                  ever.
                 </p>
 
                 <div className="flex flex-row sm:mt-1 md:mt-2">
                   <p className="md:text-xl text-orange-400">Teck Stack:-</p>
                   <p className="md:text-lg text-black-500 ml-3">
-                    React.js | Firebase | Redux | Chakra UI
+                    HTML | CSS | JavaScript
                   </p>
                 </div>
               </span>
               <div className=" pt-2 text-center">
-                <a href="/">
+                <a
+                  href="https://fluffy-croquembouche-14d5f2.netlify.app/"
+                  target="_blank"
+                >
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Demo
                   </button>
                 </a>
-                <a href="/">
+                <a
+                  href="https://github.com/abhishek1337chatterjee/freshly.com"
+                  target="_blank"
+                >
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Code
                   </button>
@@ -133,35 +147,36 @@ export const Work = () => {
           </div>
 
           <div
-            style={{ backgroundImage: `url(${Wearly})` }}
+            style={{ backgroundImage: `url(${Fire})` }}
             className="shadow-lg shadow-[#040c16] group container rounded-md flex justify-center px-4 mx-auto content-div"
           >
             {/* Hover Effects */}
             <div className="opacity-0 group-hover:opacity-100">
               <span>
                 <p className="text-2xl font-bold pb-2 text-white tracking-wider">
-                  Wearly Website
+                  Fire Website
                 </p>
                 <p className="sm: text-[13.5px] md:text-sm lg:text-lg text-gray-400 pt-2">
-                  Wearly plc is a British online fashion and cosmetic retailer.
-                  The company was founded in 2000 in London, primarily aimed at
-                  young adults.
+                  The fire calculator is a calculator that will return the
+                  yearly expenses (as of Today) , year expenses (as of
+                  Retirement) and the fire number is the amount that you need to
+                  become financially independent.
                 </p>
 
                 <div className="flex flex-row sm:mt-1 md:mt-2">
                   <p className="md:text-xl text-orange-400">Teck Stack:-</p>
                   <p className="md:text-lg text-black-500 ml-3">
-                    React.js | Node.js | Express.js | MongoDB
+                    React.js | React-Redux | Vite | CSS
                   </p>
                 </div>
               </span>
               <div className=" pt-2 text-center">
-                <a href="/">
+                <a href="https://fire-calculator-zeta.vercel.app/" target="_blank">
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Demo
                   </button>
                 </a>
-                <a href="/">
+                <a href="https://github.com/abhishek1337chatterjee/Fire-Calculator" target="_blank">
                   <button className="text-center rounded-lg px-2 py-1 m-2 bg-white text-gray-700 font-bold text-lg">
                     Code
                   </button>

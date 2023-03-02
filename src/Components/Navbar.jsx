@@ -128,7 +128,7 @@ export const Navbar = () => {
         </li>
         <li className="py-6">
           {" "}
-          <Link onClick={handleClickHam} to="contact" smooth={true} offset={-110} duration={500}>
+          <Link onClick={handleClickHam} to="contact" smooth={true} offset={-100} duration={500}>
           <p className="text-4xl"> Contact Me </p>{" "}
           </Link>
         </li>
