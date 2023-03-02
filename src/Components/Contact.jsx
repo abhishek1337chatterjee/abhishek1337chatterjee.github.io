@@ -150,6 +150,7 @@ export const Contact = () => {
           }
           placeholder="Name"
           name="name"
+          required
         />
         <input
           className="my-4 p-2 bg-[#ccd6f6]"
@@ -160,6 +161,7 @@ export const Contact = () => {
           }
           placeholder="Email"
           name="name"
+          required
         />
         <textarea
           className="bg-[#ccd6f6] p-2"
@@ -169,6 +171,7 @@ export const Contact = () => {
           onChange={(e) =>
             setValues((prev) => ({ ...prev, message: e.target.value }))
           }
+          required
           placeholder="Message"
         ></textarea>
         <button className="text-white border-2 hover:bg-pink-600 hover:border-pink-600 px-4 py-3 my-8 mx-auto flex items-center">
