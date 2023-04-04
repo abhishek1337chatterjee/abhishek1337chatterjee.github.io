@@ -121,6 +121,7 @@ export const Navbar = () => {
         </Link>
         </li>
         <li className="py-3 cursor-pointer">
+          
           {" "}
           <Link onClick={handleClickHam} to="github" smooth={true} offset={-100} duration={500}>
         <p className="text-4xl"> GitHub</p>{" "}
