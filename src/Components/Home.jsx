@@ -1,5 +1,5 @@
 import React from "react";
-import { HiOutlineArrowNarrowRight, HiOutlineMail } from "react-icons/hi";
+import { HiOutlineArrowNarrowRight} from "react-icons/hi";
 import ProfilePic from "../Assets/profile-pic.png";
 import { Typewriter } from "react-simple-typewriter";
 import { FaDownload, FaGithub, FaLinkedin } from "react-icons/fa";
