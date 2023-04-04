@@ -13,12 +13,7 @@ export const Contact = () => {
   const [values, setValues] = useState(initialState);
   const [right, setRigt] = useState(false);
   const handleSubmit = () => {
-    if (values.email === "" || values.name === "" || values.message === "") {
-      setRigt(false);
-      alert("Please enter all fields");
-      window.location.reload();
-      return;
-    }
+    
     setRigt(true);
   };
   return (

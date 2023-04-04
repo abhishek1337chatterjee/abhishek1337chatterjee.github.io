@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Logo from "../Assets/Logo.png";
-import {Link} from "react-scroll"
+import { Link } from "react-scroll";
 import {
   FaBars,
   FaTimes,
@@ -11,7 +11,7 @@ import {
 import { HiOutlineMail } from "react-icons/hi";
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import { Button } from "@mui/material";
-import Resume from "../Assets/Abhishek_Chatterjee_Resume.pdf"
+import Resume from "../Assets/Abhishek_Chatterjee_Resume.pdf";
 export const Navbar = () => {
   const [nav, setNav] = useState(false);
   const handleClickHam = () => {
@@ -20,45 +20,39 @@ export const Navbar = () => {
   return (
     <div className="sticky top-0 w-full h-[85px] flex justify-between items-center px-4 bg-[#000] text-white z-50">
       <div>
-      <Link to="home" smooth={true} offset={-500} duration={500}>
-      <img src={Logo} alt="Logo Image" style={{ width: "102px" }} />
+        <Link to="home" smooth={true} offset={-500} duration={500}>
+          <img src={Logo} alt="Logo Image" style={{ width: "102px" }} />
         </Link>
-        
       </div>
       {/* menu */}
       <ul className="hidden md:flex">
-      <li>
-        <Link to="home" smooth={true} offset={-500} duration={500}>
-        <p className="text-2xl">Home</p>{" "}
-        </Link>
-          
+        <li>
+          <Link to="home" smooth={true} offset={-500} duration={500}>
+            <p className="text-2xl">Home</p>{" "}
+          </Link>
         </li>
         <li>
-        <Link to="about" smooth={true} offset={10} duration={500}>
-        <p className="text-2xl">About Me</p>{" "}
-        </Link>
-          
+          <Link to="about" smooth={true} offset={10} duration={500}>
+            <p className="text-2xl">About Me</p>{" "}
+          </Link>
         </li>
         <li>
-        <Link to="skills" smooth={true} offset={-100} duration={500}>
-        <p className="text-2xl">Skills</p>{" "}
-        </Link>
-          
+          <Link to="skills" smooth={true} offset={-100} duration={500}>
+            <p className="text-2xl">Skills</p>{" "}
+          </Link>
         </li>
         <li>
-        <Link to="work" smooth={true} offset={-20} duration={500}>
-        <p className="text-2xl"> Projects</p>{" "}
-        </Link>
-          
+          <Link to="work" smooth={true} offset={-20} duration={500}>
+            <p className="text-2xl"> Projects</p>{" "}
+          </Link>
         </li>
         <Link to="github" smooth={true} offset={-100} duration={500}>
-        <p className="text-2xl cursor-pointer"> GitHub </p>{" "}
+          <p className="text-2xl cursor-pointer"> GitHub </p>{" "}
         </Link>
         <li>
           <Link to="contact" smooth={true} offset={-120} duration={500}>
-          <p className="text-2xl"> Contact Me </p>{" "}
+            <p className="text-2xl"> Contact Me </p>{" "}
           </Link>
-          
         </li>
         <li>
           <Button
@@ -75,9 +69,18 @@ export const Navbar = () => {
                 color: "white",
               },
             }}
-            onClick={() => {window.open("https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link")}}
+            onClick={() => {
+              window.open(
+                "https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link"
+              );
+            }}
           >
-            <a href={Resume} download="fw20_1254-Abhishek-Chatterjee-Resume.pdf">Resume </a>
+            <a
+              href={Resume}
+              download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
+            >
+              Resume{" "}
+            </a>
           </Button>
         </li>
       </ul>
@@ -98,45 +101,79 @@ export const Navbar = () => {
       >
         <li className="py-6">
           {" "}
-          <Link onClick={handleClickHam} to="home" smooth={true} offset={-500} duration={500}>
-        <p className="text-4xl">Home</p>{" "}
-        </Link>
+          <Link
+            onClick={handleClickHam}
+            to="home"
+            smooth={true}
+            offset={-500}
+            duration={500}
+          >
+            <p className="text-4xl">Home</p>{" "}
+          </Link>
         </li>
         <li>
           {" "}
-          <Link onClick={handleClickHam} to="about" smooth={true} offset={10} duration={500}>
-        <p className="text-4xl">About Me</p>{" "}
-        </Link>
-        </li>
-        <li className="py-6">
-        <Link onClick={handleClickHam} to="skills" smooth={true} offset={-100} duration={500}>
-        <p className="text-4xl">Skills</p>{" "}
-        </Link>
-          
-        </li>
-        <li className="py-6">
-          {" "}
-          <Link onClick={handleClickHam} to="work" smooth={true} offset={-100} duration={500}>
-        <p className="text-4xl"> Projects</p>{" "}
-        </Link>
-        </li>
-        <li className="py-3 cursor-pointer">
-          
-          {" "}
-          <Link onClick={handleClickHam} to="github" smooth={true} offset={-100} duration={500}>
-        <p className="text-4xl"> GitHub</p>{" "}
-        </Link>
-        </li>
-        <li className="py-6">
-          {" "}
-          <Link onClick={handleClickHam} to="contact" smooth={true} offset={-100} duration={500}>
-          <p className="text-4xl"> Contact Me </p>{" "}
+          <Link
+            onClick={handleClickHam}
+            to="about"
+            smooth={true}
+            offset={10}
+            duration={500}
+          >
+            <p className="text-4xl">About Me</p>{" "}
           </Link>
         </li>
         <li className="py-6">
-        <Button
+          <Link
+            onClick={handleClickHam}
+            to="skills"
+            smooth={true}
+            offset={-100}
+            duration={500}
+          >
+            <p className="text-4xl">Skills</p>{" "}
+          </Link>
+        </li>
+        <li className="py-6">
+          {" "}
+          <Link
+            onClick={handleClickHam}
+            to="work"
+            smooth={true}
+            offset={-100}
+            duration={500}
+          >
+            <p className="text-4xl"> Projects</p>{" "}
+          </Link>
+        </li>
+        <li className="py-3 cursor-pointer">
+          {" "}
+          <Link
+            onClick={handleClickHam}
+            to="github"
+            smooth={true}
+            offset={-100}
+            duration={500}
+          >
+            <p className="text-4xl"> GitHub</p>{" "}
+          </Link>
+        </li>
+        <li className="py-6">
+          {" "}
+          <Link
+            onClick={handleClickHam}
+            to="contact"
+            smooth={true}
+            offset={-100}
+            duration={500}
+          >
+            <p className="text-4xl"> Contact Me </p>{" "}
+          </Link>
+        </li>
+        <li className="py-6">
+          <Button
             variant="contained"
-            startIcon={<FaDownload size={20}/>}
+            startIcon={<FaDownload size={20} />}
             sx={{
               color: "white",
               backgroundColor: "orange",
@@ -149,11 +186,20 @@ export const Navbar = () => {
                 color: "white",
               },
               width: "80px",
-              padding: "10px 40px 10px 40px"
+              padding: "10px 40px 10px 40px",
             }}
-            onClick={() => {window.open("https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link")}}
+            onClick={() => {
+              window.open(
+                "https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link"
+              );
+            }}
           >
-            <a href={Resume} download="fw20_1254-Abhishek-Chatterjee-Resume.pdf">Resume </a>
+            <a
+              href={Resume}
+              download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
+            >
+              Resume{" "}
+            </a>
           </Button>
         </li>
       </ul>
@@ -164,7 +210,8 @@ export const Navbar = () => {
           <li className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-500 bg-blue-700">
             <a
               className="flex justify-between items-center w-full text-gray-300"
-              href="https://www.linkedin.com/in/abhishekchatterjee-saheb1337/" target="_blank"
+              href="https://www.linkedin.com/in/abhishekchatterjee-saheb1337/"
+              target="_blank"
             >
               LinkedIn <FaLinkedin size={30} />
             </a>
@@ -174,7 +221,8 @@ export const Navbar = () => {
           <li className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-500 bg-[#333333]">
             <a
               className="flex justify-between items-center w-full text-gray-300"
-              href="https://github.com/abhishek1337chatterjee" target="_blank"
+              href="https://github.com/abhishek1337chatterjee"
+              target="_blank"
             >
               Github
               <FaGithub size={30} />
@@ -192,10 +240,18 @@ export const Navbar = () => {
           </li>
         </ul>
         <ul>
-          <li onClick={() => {window.open("https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link")}} className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-500 bg-[#565f69]">
+          <li
+            onClick={() => {
+              window.open(
+                "https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link"
+              );
+            }}
+            className="w-[160px] h-[60px] flex justify-between items-center ml-[-100px] hover:ml-[-10px] duration-500 bg-[#565f69]"
+          >
             <a
               className="flex justify-between items-center w-full text-gray-300"
-              href={Resume} download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
+              href={Resume}
+              download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
             >
               Resume <BsFillPersonLinesFill size={30} />
             </a>
