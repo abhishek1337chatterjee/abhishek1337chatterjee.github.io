@@ -22,6 +22,36 @@ export const Work = () => {
         <div className="flex flex-col gap-20">
           <div className=" max-[850px]:flex-col w-full">
             <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8">
+            <h1 className="text-3xl font-bold text-white pb-2">
+                Pear.com
+                <hr />
+              </h1>
+              <p>Pear is built with the reference website apple.com.</p>
+              <h1 className="text-2xl font-bold text-white py-2">
+                Tech Stack :
+              </h1>
+              <p>
+                React || Redux || Axios || React-Router-Dom || FireBase-Auth ||
+                Chakra-UI || Vitejs
+              </p>
+              <h1 className="text-2xl font-bold text-white py-2">
+                Features :
+              </h1>
+              <p>
+                Login/Signup || Google Authentication || Admin Section || Cart
+                || Place Order
+              </p>
+              <h1 className="text-2xl font-bold text-white py-2 animate-none md:animate-pulse z-0">
+                Area of responsibility :
+              </h1>
+              <p className="text-blue-500 font-bold">
+                Mac and Watch Page || Single Product Page || Cart Page ||
+                Checkout Page
+              </p>
+              <p className=" font-bold">
+                A collaborative project built by a team of 5 Full stack web
+                developers executed in 5 days.
+              </p>
               
             </div>
           </div>
