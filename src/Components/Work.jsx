@@ -4,6 +4,7 @@ import Wearly from "../Assets/Wearly.gif";
 import Freshly from "../Assets/Freshly.gif";
 import Fire from "../Assets/Fire.gif";
 import {VscGithub} from "react-icons/vsc"
+import {FiExternalLink} from "react-icons/fi"
 export const Work = () => {
   return (
     <div name="work" className="w-full md:h-screen text-gray-300">
