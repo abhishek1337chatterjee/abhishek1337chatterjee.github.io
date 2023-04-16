@@ -19,8 +19,9 @@ export const Work = () => {
           <p className="pt-4 pb-4">//Checkout some of my recent works</p>
         </div>
 
-        <div className="flex flex-col gap-20"></div>
-        
+        <div className="flex flex-col gap-20">
+          <div className=" max-[850px]:flex-col w-full"></div>
+        </div>
       </div>
     </div>
   );
