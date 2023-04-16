@@ -36,11 +36,11 @@ export const Contact = () => {
         target="_blank"
         
       >
-        <div className="mt-20 pb-8 text-center">
+        <div className="mt-20 mb-8 text-center">
           <p className="text-4xl font-bold inline border-b-4 border-pink-600 text-gray-300">
             Contact
           </p>
-          <p className="text-gray-300 py-4 text-xl">
+          <p className="text-gray-300 py-4 text-2xl lg:text-4xl md:text-4xl">
             {" "}
             Sumbit the form below or {" "}
             <span className=" text-2xl text-pink-300 underline">
@@ -49,21 +49,22 @@ export const Contact = () => {
             {" "}
             
              me at{" "}
-             <span className="flex ml-40 mt-2">
-              <SiGmail size="40" className="text-pink-300 hover: animate-ping gap-5"></SiGmail>
-              <p className=" text-2xl text-pink-300">abhishek1337chatterjee.gmail.com</p>
-             </span>
+             <p className="flex ml-20  lg:flex mt-2">
+              <SiGmail size="20" className="text-pink-300 lg:hover: animate-ping gap-5"></SiGmail>
+              <span className="ml-3">
+                <p className=" text-[17px] text-pink-300 lg:text-2xl">abhishek1337chatterjee.gmail.com</p> </span>
+             </p>
           </p>
           
-          <p className="text-gray-300 py-4 text-xl">
+          <p className="text-gray-300 py-4 text-2xl lg:text-4xl">
             {" "}
             Connect me via {" "}
             <span className=" text-2xl text-pink-300 underline">
                whatsapp or call
             </span>
-             <span className="flex ml-40 mt-2">
-              <GiSmartphone size="40" className="text-pink-300 hover: animate-ping gap-5"></GiSmartphone>
-              <p className=" text-2xl text-pink-300">+91 8420739602</p>
+             <span className="flex ml-[120px]  lg: mt-2">
+              <GiSmartphone size="20" className="text-pink-300 hover: animate-ping md:ml-[100px]"></GiSmartphone>
+              <p className=" text-[17px] md:text-2xl text-pink-300 lg:text-2xl">+91 8420739602</p>
              </span>
           </p>
           
