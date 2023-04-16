@@ -7,12 +7,11 @@ import {VscGithub} from 'react-icons/vsc';
 import {FiExternalLink} from 'react-icons/fi';
 export const Work = () => {
   return (
-    <div 
-      name="projects"
-      className="bg-gradient-to-b to-[#0e0c49] via-[#171274] from-[#3d3a81] w-screen text-white md:h-auto "
+    <div name="work"
+      className="w-screen text-white md:h-auto "
     >
       <div className="max-w-screen-xl p-4 mx-auto flex flex-col justify-center w-full h-full">
-        <div className="py-8">
+        <div className="md: text-center">
           <p className="text-4xl font-bold  inline border-b-4 border-white text-white ">
             Project
           </p>
