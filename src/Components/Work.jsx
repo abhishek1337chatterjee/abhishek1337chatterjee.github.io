@@ -52,7 +52,26 @@ export const Work = () => {
                 A collaborative project built by a team of 5 Full stack web
                 developers executed in 5 days.
               </p>
-              
+              <div className="flex gap-10 max-[500px]:flex-col max-[500px]:gap-1">
+                <a
+                  href="https://github.com/sujjwal21/Pear-website"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <button className=" group duration-200 hover:scale-105 text-white w-fit px-6 py-3 my-2 flex items-center rounded-md bg-gradient-to-r from-[#0e0c49]  to-[#0e0a7a] cursor-pointer gap-3 ">
+                    GitHub <VscGithub size={"25px"} />
+                  </button>
+                </a>
+                <a
+                  href="https://pear-website.netlify.app"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <button className=" group duration-200 hover:scale-105 text-white w-fit px-6 py-3 my-2 flex items-center rounded-md bg-gradient-to-r from-[#0e0c49]  to-[#0e0a7a] cursor-pointer gap-3">
+                    Deployed <FiExternalLink size={"22px"}/>
+                  </button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
