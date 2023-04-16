@@ -20,7 +20,11 @@ export const Work = () => {
         </div>
 
         <div className="flex flex-col gap-20">
-          <div className=" max-[850px]:flex-col w-full"></div>
+          <div className=" max-[850px]:flex-col w-full">
+            <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8">
+              
+            </div>
+          </div>
         </div>
       </div>
     </div>
