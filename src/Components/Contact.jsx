@@ -1,6 +1,8 @@
 import { Button } from "@mui/material";
 import React, { useState } from "react";
 import Resume from "../Assets/Abhishek-Chatterjee-Resume.pdf";
+import {SiGmail} from "react-icons/si"
+import { GiSmartphone } from "react-icons/gi";
 import { FaDownload, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const initialState = {
@@ -38,19 +40,41 @@ export const Contact = () => {
           <p className="text-4xl font-bold inline border-b-4 border-pink-600 text-gray-300">
             Contact
           </p>
-          <p className="text-gray-300 py-4">
+          <p className="text-gray-300 py-4 text-xl">
             {" "}
-            Sumbit the form below or Email me at{" "}
-            <span className="text-pink-300">
-              {" "}
-              abhishek1337chatterjee@gmail.com{" "}
-            </span>{" "}
+            Sumbit the form below or {" "}
+            <span className=" text-2xl text-pink-300 underline">
+               Email
+            </span>
+            {" "}
+            
+             me at{" "}
+             <span className="flex ml-40 mt-2">
+              <SiGmail size="40" className="text-pink-300 hover: animate-ping gap-5"></SiGmail>
+              <p className=" text-2xl text-pink-300">abhishek1337chatterjee.gmail.com</p>
+             </span>
           </p>
-          <p className="text-gray-300 py-4">
+          
+          <p className="text-gray-300 py-4 text-xl">
+            {" "}
+            Connect me via {" "}
+            <span className=" text-2xl text-pink-300 underline">
+               whatsapp or call
+            </span>
+             <span className="flex ml-40 mt-2">
+              <GiSmartphone size="40" className="text-pink-300 hover: animate-ping gap-5"></GiSmartphone>
+              <p className=" text-2xl text-pink-300">+91 8420739602</p>
+             </span>
+          </p>
+          
+          {/* <p className="text-gray-300 py-4">
             {" "}
             Connect me via whatsapp or call :{" "}
             <span className="text-pink-300"> +918420739602 </span>{" "}
-          </p>
+          </p> */}
+
+
+
         </div>
         <div className="pb-8 m-auto flex flex-row lg:hidden z-0">
           <Button
