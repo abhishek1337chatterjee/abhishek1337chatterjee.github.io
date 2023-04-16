@@ -5,7 +5,7 @@ import { Typewriter } from "react-simple-typewriter";
 import { FaDownload, FaGithub, FaLinkedin } from "react-icons/fa";
 import { Button } from "@mui/material";
 import { Link } from "react-scroll";
-import Resume from "../Assets/Abhishek_Chatterjee_Resume.pdf";
+import Resume from "../Assets/Abhishek-Chatterjee-Resume.pdf";
 export const Home = () => {
   return (
     <div name="home" className="w-full h-screen">

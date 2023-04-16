@@ -11,7 +11,7 @@ import {
 import { HiOutlineMail } from "react-icons/hi";
 import { BsFillPersonLinesFill } from "react-icons/bs";
 import { Button } from "@mui/material";
-import Resume from "../Assets/Abhishek_Chatterjee_Resume.pdf";
+import Resume from "../Assets/Abhishek-Chatterjee-Resume.pdf";
 export const Navbar = () => {
   const [nav, setNav] = useState(false);
   const handleClickHam = () => {
@@ -77,7 +77,7 @@ export const Navbar = () => {
           >
             <a
               href={Resume}
-              download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
+              download="Abhishek-Chatterjee-Resume.pdf"
             >
               Resume{" "}
             </a>
@@ -196,7 +196,7 @@ export const Navbar = () => {
           >
             <a
               href={Resume}
-              download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
+              download="Abhishek-Chatterjee-Resume.pdf"
             >
               Resume{" "}
             </a>
@@ -251,7 +251,7 @@ export const Navbar = () => {
             <a
               className="flex justify-between items-center w-full text-gray-300"
               href={Resume}
-              download="fw20_1254-Abhishek-Chatterjee-Resume.pdf"
+              download="Abhishek-Chatterjee-Resume.pdf"
             >
               Resume <BsFillPersonLinesFill size={30} />
             </a>

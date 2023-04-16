@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import React, { useState } from "react";
-import Resume from "../Assets/Abhishek_Chatterjee_Resume.pdf";
+import Resume from "../Assets/Abhishek-Chatterjee-Resume.pdf";
 import { FaDownload, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const initialState = {
