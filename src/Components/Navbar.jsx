@@ -42,7 +42,7 @@ export const Navbar = () => {
           </Link>
         </li>
         <li>
-          <Link to="work" smooth={true} offset={-20} duration={500}>
+          <Link to="work" smooth={true} offset={-90} duration={500}>
             <p className="text-2xl"> Projects</p>{" "}
           </Link>
         </li>
