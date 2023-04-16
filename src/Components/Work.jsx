@@ -12,10 +12,10 @@ export const Work = () => {
     >
       <div className="max-w-screen-xl p-4 mx-auto flex flex-col justify-center w-full h-full">
         <div className="md: text-center">
-          <p className="text-4xl font-bold  inline border-b-4 border-white text-white ">
-            Project
+          <p className="text-4xl font-bold inline border-b-4 border-pink-600  ">
+            MY PROJECTS 
           </p>
-          <p className="py-6">Check out some of my work right here</p>
+          <p className="py-6">//Checkout some of my recent works</p>
         </div>
         {/* grid sm:grid-cols-2 md:grid-cols-3 gap-8 shadow-md shadow-gray-500  */}
         <div className="flex flex-col gap-20">

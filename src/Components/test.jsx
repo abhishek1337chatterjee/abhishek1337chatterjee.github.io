@@ -14,7 +14,7 @@ export const Work = () => {
           >
             MY PROJECTS
           </p>
-          <p className="pt-4 pb-4">//Checkout some of my recent works</p>
+          <p className="pt-4 pb-4"></p>
         </div>
 
         <div className="grid  md:grid-cols-2 gap-4">
