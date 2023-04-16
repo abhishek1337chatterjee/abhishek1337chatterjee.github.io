@@ -10,9 +10,9 @@ export const Work = () => {
     <div name="work"
       className="w-screen text-white md:h-auto "
     >
-      <div className="max-w-screen-xl p-4 mx-auto flex flex-col justify-center w-full h-full">
+      <div className=" max-w-[1000px] p-4 mx-auto flex flex-col justify-center w-full h-full">
         <div className="md: text-center">
-          <p className="text-4xl font-bold inline border-b-4 border-pink-600  ">
+          <p className="text-4xl font-bold inline border-b-4 border-pink-600">
             MY PROJECTS 
           </p>
           <p className="py-6">//Checkout some of my recent works</p>
@@ -20,14 +20,15 @@ export const Work = () => {
         {/* grid sm:grid-cols-2 md:grid-cols-3 gap-8 shadow-md shadow-gray-500  */}
         <div className="flex flex-col gap-20">
           {/* ====================================================== */}
-          <div className=" flex max-[850px]:flex-col w-full">
-          <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8"
-            data-aos="fade-up" data-aos-duration="2500" >
+          <div className=" flex max-[850px]:flex-col w-full ">
+          <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8 ">
               <h1 className="text-3xl font-bold text-white pb-2">
-                Trendy Mart
+                Wearly Website
                 <hr />
               </h1>
-              <p> Trendy Mart is built with the reference website Bloomingdale's.</p>
+              <p> Wearly plc is a British online fashion and cosmetic retailer.
+                  The company was founded in 2000 in London, primarily aimed at
+                  young adult</p>
               <h1 className="text-2xl font-bold text-white py-2">
                 Tech Stack :
               </h1>
@@ -45,8 +46,8 @@ export const Work = () => {
               <h1 className="text-2xl font-bold py-2 animate-none md:animate-pulse z-0">
                 Area of responsibility :
               </h1>
-              <p className=" text-blue-500 font-bold" >
-                Product Page || Navbar Search Bar Functionality || Filter Functionality
+              <p className=" text-pink-500 font-bold" >
+                 Backend for login, signup and products with search filter and sorting 
               </p>
               <p className=" font-bold">
                 A collaborative project built by a team of 5 Full stack web
@@ -55,7 +56,7 @@ export const Work = () => {
 
               <div className="flex gap-10 max-[500px]:flex-col max-[500px]:gap-1">
                 <a
-                  href="https://github.com/sujjwal21/Trendy-Mart?organization=sujjwal21&organization=sujjwal21"
+                  href="https://github.com/abhishek1337chatterjee/Wearly-Website"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -64,7 +65,7 @@ export const Work = () => {
                   </button>
                 </a>
                 <a
-                  href="https://trendy-mart.vercel.app"
+                  href="https://wearly.vercel.app/"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -74,10 +75,9 @@ export const Work = () => {
                 </a>
               </div>
             </div>
-            <div className=" w-3/5 max-[850px]:w-[95%] h-auto pt-5" 
-            data-aos="fade-right" data-aos-duration="2500" >
+            <div className=" w-3/5 max-[850px]:w-[95%] h-auto mt-10  " >
               <img
-                src={Pear}
+                src={Wearly}
                 alt="Trendy_Mart"
                 width={"100%"}
                 height="100vh"
@@ -89,7 +89,7 @@ export const Work = () => {
 
           {/* ================================================================================ */}
           <div className=" flex max-[850px]:flex-col w-full">
-            <div className=" w-3/5 max-[850px]:w-[95%] h-auto pt-5" 
+            <div className=" w-3/5 max-[850px]:w-[95%] h-auto mt-12" 
             data-aos="fade-right" data-aos-duration="2500" >
               <img
                 src={Pear}
@@ -99,10 +99,9 @@ export const Work = () => {
                 
               />
             </div>
-            <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8"
-            data-aos="fade-up" data-aos-duration="2500" >
+            <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8">
               <h1 className="text-3xl font-bold text-white pb-2">
-                Pear.com
+                Pear Website
                 <hr />
               </h1>
               <p>Pear is built with the reference website apple.com.</p>
@@ -123,9 +122,8 @@ export const Work = () => {
               <h1 className="text-2xl font-bold text-white py-2 animate-none md:animate-pulse z-0">
                 Area of responsibility :
               </h1>
-              <p className="text-blue-500 font-bold">
-                Mac and Watch Page || Single Product Page || Cart Page ||
-                Checkout Page
+              <p className="text-pink-500 font-bold">
+                Login and SignUp Page using Firebase || Protecting the Routes || Showing the user after login in the homepage
               </p>
               <p className=" font-bold">
                 A collaborative project built by a team of 5 Full stack web
@@ -134,7 +132,7 @@ export const Work = () => {
 
               <div className="flex gap-10 max-[500px]:flex-col max-[500px]:gap-1">
                 <a
-                  href="https://github.com/sujjwal21/Pear-website"
+                  href="https://github.com/abhishek1337chatterjee/Pear-website"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -156,42 +154,45 @@ export const Work = () => {
           </div>
           {/* =================================================== */}
           <div className=" flex max-[850px]:flex-col-reverse w-full">
-            <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8"
-            data-aos="fade-right" data-aos-duration="2500" >
+            <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8">
               <h1 className="text-3xl font-bold text-white pb-2">
-                Body_care
+                Freshly Website
                 <hr />
               </h1>
-              <p>Body_care is built with the reference website SkinStore. In this I use chakra templates to make pages responsive and 
-                make my own backend to get data, I deploy my backend on Render and use that API to make search functionality in my website. 
-                And this is an individual project for all parts of the website performed by me.
+              <p>
+              Freshly delivers gourmet ready-made meals, prepared and
+                  delivered at the door. It is dedicated to making healthy
+                  eating and achieving health and fitness goals easier than
+                  ever.
               </p>
               <h1 className="text-2xl font-bold text-white py-2">
                 Tech Stack :
               </h1>
               <p>
-                React || Axios || React-Router-Dom || 
-                Chakra-UI || Render
-                {/* <div className='flex justify-center items-center gap-x-2 mt-5' data-aos="zoom-out">
-            <div><SiJavascript size="32px" color="yellow" className="hover:animate-bounce hover:cursor-pointer"/></div>||
-            <div><SiHtml5 size="32px" color="#e34c26" className="hover:animate-bounce hover:cursor-pointer"/></div>||
-            <div><SiCss3 size="32px" color="#264de4" className="hover:animate-bounce hover:cursor-pointer"/></div>||
-            </div> */}
+                HTML || CSS || JavaScript 
+               
               </p>
+              
               <h1 className="text-2xl font-bold text-white py-2">
                 Features :
               </h1>
               <p>
-                Login/Signup || Search Functionality || Wishlist || DarkMode
-                ||  Carousel
+                Login/Signup using local storage || Filtering Sorting || Adding items to chart
+              </p>
+              <h1 className="text-2xl font-bold py-2 animate-none md:animate-pulse z-0">
+                Area of responsibility :
+              </h1>
+              <p className=" text-pink-500 font-bold" >
+                 The complete landing page || After login user details shown in landing page
               </p>
               <p className=" font-bold">
-              An individual project was built with in 5 days.
+              A collaborative project built by a team of 5 Full stack web
+                developers executed in 5 days.
               </p>
 
               <div className="flex gap-10 max-[500px]:flex-col max-[500px]:gap-1">
                 <a
-                  href="https://github.com/sujjwal21/serene-jail-301"
+                  href="https://github.com/abhishek1337chatterjee/freshly.com"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -200,7 +201,7 @@ export const Work = () => {
                   </button>
                 </a>
                 <a
-                  href="https://body-care-sujjwal21.vercel.app"
+                  href="https://fluffy-croquembouche-14d5f2.netlify.app/"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -210,10 +211,10 @@ export const Work = () => {
                 </a>
               </div>
             </div>
-            <div className=" w-3/5 max-[850px]:w-[95%] h-auto pt-5" 
+            <div className=" w-3/5 max-[850px]:w-[95%] h-auto mt-10" 
             data-aos="fade-up" data-aos-duration="2500" >
               <img
-                src={Pear}
+                src={Freshly}
                 alt="pear"
                 width={"100%"}
                 height="100vh"
@@ -222,11 +223,11 @@ export const Work = () => {
             </div>
           </div>
               {/* =============================================================== */}
-              <div className=" flex max-[850px]:flex-col w-full">
-            <div className=" w-3/5 max-[850px]:w-[95%] h-auto pt-5" 
+              <div className=" flex max-[850px]:flex-col w-full mb-10">
+            <div className=" w-3/5 max-[850px]:w-[95%] h-auto mt-1" 
             data-aos="fade-right" data-aos-duration="2500" >
               <img
-                src={Pear}
+                src={Fire}
                 alt="I@J"
                 width={"100%"}
                 height="100vh"
@@ -236,39 +237,24 @@ export const Work = () => {
             <div className=" w-2/5 max-[850px]:w-[85%] px-5 text-white max-[850px]:my-8"
             data-aos="fade-up" data-aos-duration="2500" >
               <h1 className="text-3xl font-bold text-white pb-2">
-                Intern to Job
+              Fire Website
                 <hr />
               </h1>
-              <p>Intern t0 Job is built with the reference website Inter Theory. </p>
+              <p>The fire calculator is a calculator that will return the
+                  yearly expenses (as of Today) , year expenses (as of
+                  Retirement) and the fire number is the amount that you need to
+                  become financially independent.</p>
               <h1 className="text-2xl font-bold text-white py-2">
                 Tech Stack :
               </h1>
               <p>
-                HTML || CSS || JavaScript
+                React || React-Reducer || CSS
               </p>
-              <h1 className="text-2xl font-bold text-white py-2">
-                Features :
-              </h1>
-              <p>
-                Login/Signup || Contact Us  || Search Functionality || Filter Functionality
-                ||Hamburger Navbar
-              </p>
-              <h1 className="text-2xl font-bold text-white py-2 animate-none md:animate-pulse z-0">
-                Area of responsibility :
-              </h1>
-              <p className="text-blue-500 font-bold">
-              Online Courses || Post Internship || Contact Us ||
-              Refund & Cancellation Policy
-
-              </p>
-              <p className=" font-bold">
-                A collaborative project built by a team of 5 Full stack web
-                developers executed in 5 days.
-              </p>
+              
 
               <div className="flex gap-10 max-[500px]:flex-col max-[500px]:gap-1">
                 <a
-                  href="https://github.com/sujjwal21/Intern_To_Job"
+                  href="https://github.com/abhishek1337chatterjee/Fire-Calculator"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -277,7 +263,7 @@ export const Work = () => {
                   </button>
                 </a>
                 <a
-                  href="https://cloudy-thing-7898-sujjwal21.vercel.app/"
+                  href="https://fire-calculator-zeta.vercel.app/"
                   target="_blank"
                   rel="noreferrer"
                 >
