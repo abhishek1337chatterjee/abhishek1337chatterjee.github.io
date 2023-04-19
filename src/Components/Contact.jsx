@@ -21,7 +21,7 @@ export const Contact = () => {
   return (
     <div
       name="contact"
-      className="w-full h-screen flex justify-center items-center p-4 mt-10"
+      className="w-full h-screen flex justify-center items-center p-4 mt-[300px]"
     >
       <form
         action={
