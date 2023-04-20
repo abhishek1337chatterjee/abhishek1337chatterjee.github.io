@@ -77,7 +77,7 @@ export const Navbar = () => {
           >
             <a
               href={Resume}
-              download="Abhishek-Chatterjee-Resume.pdf"
+              download
             >
               Resume{" "}
             </a>
@@ -196,7 +196,7 @@ export const Navbar = () => {
           >
             <a
               href={Resume}
-              download="Abhishek-Chatterjee-Resume.pdf"
+              download
             >
               Resume{" "}
             </a>
@@ -251,7 +251,7 @@ export const Navbar = () => {
             <a
               className="flex justify-between items-center w-full text-gray-300"
               href={Resume}
-              download="Abhishek-Chatterjee-Resume.pdf"
+              download
             >
               Resume <BsFillPersonLinesFill size={30} />
             </a>
