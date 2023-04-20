@@ -55,7 +55,7 @@ export const Navbar = () => {
           </Link>
         </li>
         <li>
-          <Button
+          {/* <Button
             variant="contained"
             startIcon={<FaDownload />}
             sx={{
@@ -79,9 +79,37 @@ export const Navbar = () => {
               href={Resume}
               download
             >
-              Resume{" "}
+              Resume
             </a>
+          </Button> */}
+          <a
+              href={Resume}
+              download
+            >
+              <Button
+            variant="contained"
+            startIcon={<FaDownload />}
+            sx={{
+              color: "white",
+              backgroundColor: "orange",
+              borderColor: "green",
+              fontWeight: "bolder",
+              fontFamily: "",
+              ":hover": {
+                bgcolor: "pink",
+                color: "white",
+              },
+            }}
+            onClick={() => {
+              window.open(
+                "https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link"
+              );
+            }}
+          >
+            
+              Resume
           </Button>
+            </a>
         </li>
       </ul>
 
