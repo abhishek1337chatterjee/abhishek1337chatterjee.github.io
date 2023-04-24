@@ -27,33 +27,34 @@ export const About = () => {
             skills with the right organization.
           </p>
         </div>
-        <Button
-                variant="contained"
-                startIcon={<FaDownload size={20} />}
-                sx={{
-                  color: "white",
-                  backgroundColor: "orange",
-                  borderColor: "green",
-                  fontWeight: "bold",
-                  fontSize: "15px",
-                  fontFamily: "",
-                  ":hover": {
-                    bgcolor: "pink",
-                    color: "white",
-                  },
-                  width: "120px",
-                  padding: "10px 40px 10px 40px",
-                }}
-                onClick={() => {
-                  window.open(
-                    "https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link"
-                  );
-                }}
-              >
-                <a href={Resume} download="fw20_1254-Abhishek-Chatterjee-Resume.pdf">
-                  Resume{" "}
-                </a>
-              </Button>
+        <a
+              href={Resume}
+              download
+            >
+              <Button
+            variant="contained"
+            startIcon={<FaDownload />}
+            sx={{
+              color: "white",
+              backgroundColor: "orange",
+              borderColor: "green",
+              fontWeight: "bolder",
+              fontFamily: "",
+              ":hover": {
+                bgcolor: "pink",
+                color: "white",
+              },
+            }}
+            onClick={() => {
+              window.open(
+                "https://drive.google.com/file/d/1GJ75qUzJh6KWhj95osLf77DGmUBoUNyz/view?usp=share_link"
+              );
+            }}
+          >
+            
+              Resume
+          </Button>
+            </a>
       </div>
     </div>
   );

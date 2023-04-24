@@ -37,7 +37,9 @@ export const Home = () => {
 
           <div>
             <div className="pt-4 flex flex-row lg:hidden z-0">
-              <Button
+              
+                <a href={Resume} download="Abhishek-Chatterjee-Resume.pdf">
+                <Button
                 variant="contained"
                 startIcon={<FaDownload size={20} />}
                 sx={{
@@ -60,10 +62,10 @@ export const Home = () => {
                   );
                 }}
               >
-                <a href={Resume} download="fw20_1254-Abhishek-Chatterjee-Resume.pdf">
                   Resume{" "}
+                  </Button>
                 </a>
-              </Button>
+              
 
               <Button
                 variant="contained"
