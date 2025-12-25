@@ -10,7 +10,7 @@ A modern, responsive portfolio website built with React 19, Vite, and Tailwind C
 |----------|--------------|
 | **Framework** | React 19, Vite 7, TypeScript |
 | **Styling** | Tailwind CSS 4, DaisyUI 5 |
-| **Animations** | Framer Motion 11 |
+| **Animations** | Framer Motion |
 | **Icons** | Lucide React |
 | **Deployment** | GitHub Pages |
 
@@ -30,7 +30,7 @@ A modern, responsive portfolio website built with React 19, Vite, and Tailwind C
 |---------|-------------|
 | **Hero** | Animated intro with typewriter effect, profile image |
 | **About** | Professional summary, highlight cards, resume download |
-| **Skills** | Frontend, Backend, Cloud/AWS, Tools & Platforms |
+| **Skills** | Cloud & Serverless, Backend, Tools & Platforms, Frontend |
 | **Projects** | Featured work with live demos and source links |
 | **GitHub Stats** | Custom stat cards, language bar, contribution calendar |
 | **Contact** | Contact form with validation |
@@ -103,10 +103,6 @@ Update meta tags in `index.html` for your own information.
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
 | `npm run deploy` | Deploy to GitHub Pages |
-
-## License
-
-MIT License - Feel free to use this as a template for your own portfolio!
 
 ---
 
