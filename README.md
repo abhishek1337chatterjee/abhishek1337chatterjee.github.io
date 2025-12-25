@@ -12,6 +12,7 @@ A modern, responsive portfolio website built with React 19, Vite, and Tailwind C
 | **Styling** | Tailwind CSS 4, DaisyUI 5 |
 | **Animations** | Framer Motion |
 | **Icons** | Lucide React |
+| **Linting** | Biome |
 | **Deployment** | GitHub Pages |
 
 ## Features
@@ -23,6 +24,8 @@ A modern, responsive portfolio website built with React 19, Vite, and Tailwind C
 - **GitHub Integration** - Live stats from GitHub API
 - **Contact Form** - Working form with GetForm.io
 - **SEO Optimized** - Meta tags, Open Graph, Twitter Cards
+- **Mobile FAB** - Floating action button with vertical stack animation for social links
+- **Animated Hamburger** - Modern 3-line menu that morphs into X
 
 ## Sections
 
@@ -101,7 +104,9 @@ Update meta tags in `index.html` for your own information.
 | `npm run dev` | Start development server |
 | `npm run build` | Build for production |
 | `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
+| `npm run lint` | Run Biome linter |
+| `npm run format` | Format code with Biome |
+| `npm run check` | Run Biome lint + format |
 | `npm run deploy` | Deploy to GitHub Pages |
 
 ---
