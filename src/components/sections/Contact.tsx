@@ -149,12 +149,10 @@ export default function Contact() {
           </div>
 
           <div className="flex justify-center">
-            <motion.button
+            <button
               type="submit"
               disabled={isSubmitting}
               className="btn btn-primary gap-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               {isSubmitting ? (
                 <>
@@ -167,7 +165,7 @@ export default function Contact() {
                   Send Message
                 </>
               )}
-            </motion.button>
+            </button>
           </div>
         </motion.form>
       </div>

@@ -31,3 +31,124 @@ body {
   background-color: #0a192f;
   color: #ccd6f6;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UNIFIED BUTTON HOVER EFFECTS
+   Modern glow + lift effect for all buttons
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Base button transition override */
+.btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary button (pink) - solid and outline */
+.btn-primary {
+  --glow-color: rgba(219, 39, 119, 0.5);
+  --glow-spread: rgba(219, 39, 119, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px var(--glow-color),
+    0 0 40px var(--glow-spread),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-outline.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px var(--glow-color),
+    0 0 40px var(--glow-spread),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  background-color: #db2777;
+  border-color: #db2777;
+}
+
+/* Secondary button (cyan) */
+.btn-secondary {
+  --glow-color: rgba(6, 182, 212, 0.5);
+  --glow-spread: rgba(6, 182, 212, 0.25);
+}
+
+.btn-secondary:hover,
+.btn-outline.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px var(--glow-color),
+    0 0 40px var(--glow-spread),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-outline.btn-secondary:hover {
+  background-color: #06b6d4;
+  border-color: #06b6d4;
+}
+
+/* Accent button (teal/gold) */
+.btn-accent {
+  --glow-color: rgba(6, 182, 212, 0.5);
+  --glow-spread: rgba(6, 182, 212, 0.25);
+}
+
+.btn-accent:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px var(--glow-color),
+    0 0 40px var(--glow-spread),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Ghost button - subtle glow effect */
+.btn-ghost {
+  --glow-color: rgba(204, 214, 246, 0.2);
+}
+
+.btn-ghost:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px var(--glow-color);
+  background-color: rgba(136, 146, 176, 0.1);
+}
+
+/* Ghost button with square shape (icon buttons) */
+.btn-ghost.btn-square:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 0 15px rgba(219, 39, 119, 0.3),
+    0 0 30px rgba(219, 39, 119, 0.15);
+  background-color: rgba(219, 39, 119, 0.1);
+  color: #db2777;
+}
+
+/* Active/pressed state */
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Shimmer effect on hover for solid buttons */
+.btn-primary:not(.btn-outline)::before,
+.btn-secondary:not(.btn-outline)::before,
+.btn-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-primary:not(.btn-outline):hover::before,
+.btn-secondary:not(.btn-outline):hover::before,
+.btn-accent:hover::before {
+  left: 100%;
+}
