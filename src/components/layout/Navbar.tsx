@@ -1,7 +1,54 @@
 import { useState } from 'react';
 import { Link } from 'react-scroll';
-import { Menu, X, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Modern animated hamburger component
+function AnimatedHamburger({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
+  return (
+    <button
+      className="relative w-10 h-10 flex items-center justify-center lg:hidden focus:outline-none"
+      onClick={onClick}
+      aria-label="Toggle menu"
+    >
+      <div className="relative w-6 h-5 flex flex-col justify-between">
+        {/* Top line */}
+        <motion.span
+          className="absolute h-0.5 w-full bg-[#ccd6f6] rounded-full origin-left"
+          style={{ top: 0 }}
+          animate={{
+            rotate: isOpen ? 45 : 0,
+            y: isOpen ? 0 : 0,
+            width: isOpen ? '100%' : '100%',
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        />
+        {/* Middle line */}
+        <motion.span
+          className="absolute h-0.5 bg-[#db2777] rounded-full"
+          style={{ top: '50%', translateY: '-50%' }}
+          animate={{
+            opacity: isOpen ? 0 : 1,
+            scaleX: isOpen ? 0 : 1,
+            width: '75%',
+          }}
+          transition={{ duration: 0.2 }}
+        />
+        {/* Bottom line */}
+        <motion.span
+          className="absolute h-0.5 w-full bg-[#ccd6f6] rounded-full origin-left"
+          style={{ bottom: 0 }}
+          animate={{
+            rotate: isOpen ? -45 : 0,
+            y: isOpen ? -2 : 0,
+            width: isOpen ? '100%' : '50%',
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        />
+      </div>
+    </button>
+  );
+}
 
 const navLinks = [
   { name: 'Home', to: 'home' },
@@ -66,14 +113,8 @@ export default function Navbar() {
           Resume
         </a>
 
-        {/* Mobile menu button */}
-        <button
-          className="btn btn-ghost btn-square lg:hidden text-[#ccd6f6]"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile menu button - Modern animated hamburger */}
+        <AnimatedHamburger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
       </div>
 
       {/* Mobile Navigation */}

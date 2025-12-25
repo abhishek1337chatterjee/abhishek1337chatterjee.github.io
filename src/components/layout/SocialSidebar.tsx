@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, FileText, Linkedin } from 'lucide-react';
 import { useState, type FC } from 'react';
 
@@ -155,6 +155,93 @@ function SocialIcon({ social }: { social: SocialLink }) {
   );
 }
 
+// Mobile FAB Component with vertical stack animation
+function MobileSocialFAB() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-40 lg:hidden">
+      {/* Vertical stack of social icons going UP */}
+      <AnimatePresence>
+        {isOpen && socials.map((social, index) => {
+          const Icon = social.icon;
+          // Stack vertically upward with spacing
+          const yOffset = -(index + 1) * 60; // 60px spacing going up
+
+          return (
+            <motion.a
+              key={social.name}
+              href={social.url}
+              target={social.url.startsWith('http') ? '_blank' : undefined}
+              rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+              download={social.name === 'Resume' ? true : undefined}
+              initial={{ scale: 0, y: 0, opacity: 0 }}
+              animate={{
+                scale: 1,
+                y: yOffset,
+                opacity: 1
+              }}
+              exit={{ scale: 0, y: 0, opacity: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 24,
+                delay: index * 0.05
+              }}
+              className={`absolute bottom-0 right-0 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${social.gradient} shadow-lg`}
+              style={{
+                boxShadow: `0 4px 15px ${social.hoverColor}40`,
+              }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Icon size={20} className="text-white" />
+            </motion.a>
+          );
+        })}
+      </AnimatePresence>
+
+      {/* Main FAB Toggle Button */}
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#db2777] to-[#9333ea] shadow-xl z-10"
+        whileTap={{ scale: 0.95 }}
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+        style={{
+          boxShadow: '0 4px 20px rgba(219, 39, 119, 0.4)',
+        }}
+      >
+        {/* Animated icon - plus to X */}
+        <motion.div
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="relative w-6 h-6"
+        >
+          {/* Horizontal line */}
+          <motion.span
+            className="absolute top-1/2 left-0 w-full h-0.5 bg-white rounded-full -translate-y-1/2"
+          />
+          {/* Vertical line */}
+          <motion.span
+            className="absolute top-0 left-1/2 h-full w-0.5 bg-white rounded-full -translate-x-1/2"
+          />
+        </motion.div>
+
+        {/* Pulse ring when closed */}
+        {!isOpen && (
+          <motion.div
+            className="absolute inset-0 rounded-full border-2 border-[#db2777]"
+            initial={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 1.5, opacity: 0 }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          />
+        )}
+      </motion.button>
+    </div>
+  );
+}
+
 export default function SocialSidebar() {
   return (
     <>
@@ -189,38 +276,8 @@ export default function SocialSidebar() {
         />
       </motion.div>
 
-      {/* Mobile Bottom Bar */}
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-        className="fixed bottom-0 left-0 right-0 z-40 lg:hidden"
-      >
-        <div className="mx-4 mb-4 p-3 rounded-2xl bg-[#0a192f]/80 backdrop-blur-md border border-[#8892b0]/10 shadow-2xl">
-          <div className="flex justify-around items-center">
-            {socials.map((social) => {
-              const Icon = social.icon;
-              return (
-                <motion.a
-                  key={social.name}
-                  href={social.url}
-                  target={social.url.startsWith('http') ? '_blank' : undefined}
-                  rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  download={social.name === 'Resume' ? true : undefined}
-                  className="flex flex-col items-center gap-1 p-2"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <div className={`p-2 rounded-xl bg-gradient-to-br ${social.gradient}`}>
-                    <Icon size={18} className="text-white" />
-                  </div>
-                  <span className="text-[10px] text-[#8892b0]">{social.name}</span>
-                </motion.a>
-              );
-            })}
-          </div>
-        </div>
-      </motion.div>
+      {/* Mobile FAB with Fan-out */}
+      <MobileSocialFAB />
     </>
   );
 }
