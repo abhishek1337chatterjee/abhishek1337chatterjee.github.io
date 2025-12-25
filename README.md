@@ -13,6 +13,7 @@ A modern, responsive portfolio website built with React 19, Vite, and Tailwind C
 | **Animations** | Framer Motion |
 | **Icons** | Lucide React |
 | **Linting** | Biome |
+| **CI/CD** | GitHub Actions |
 | **Deployment** | GitHub Pages |
 
 ## Features
@@ -26,6 +27,8 @@ A modern, responsive portfolio website built with React 19, Vite, and Tailwind C
 - **SEO Optimized** - Meta tags, Open Graph, Twitter Cards
 - **Mobile FAB** - Floating action button with vertical stack animation for social links
 - **Animated Hamburger** - Modern 3-line menu that morphs into X
+- **Auto Deploy** - GitHub Actions CI/CD with Biome lint checks
+- **Deployment Tracking** - Commit SHA displayed in footer for version verification
 
 ## Sections
 
@@ -57,7 +60,7 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm or yarn
 
 ### Installation
@@ -81,10 +84,14 @@ npm run dev
 ```bash
 # Build for production
 npm run build
-
-# Deploy to GitHub Pages
-npm run deploy
 ```
+
+Deployment is automated via GitHub Actions. Push to `master` branch triggers:
+1. Biome lint check
+2. TypeScript + Vite build
+3. Deploy to GitHub Pages
+
+The commit SHA is injected at build time and displayed in the footer.
 
 ## Configuration
 
@@ -107,7 +114,6 @@ Update meta tags in `index.html` for your own information.
 | `npm run lint` | Run Biome linter |
 | `npm run format` | Format code with Biome |
 | `npm run check` | Run Biome lint + format |
-| `npm run deploy` | Deploy to GitHub Pages |
 
 ---
 
