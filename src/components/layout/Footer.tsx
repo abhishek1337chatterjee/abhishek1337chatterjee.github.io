@@ -15,6 +15,11 @@ export default function Footer() {
         <p className="text-[#8892b0]/60 text-sm mt-2">
           &copy; {new Date().getFullYear()} All rights reserved.
         </p>
+        {import.meta.env.VITE_COMMIT_SHA && (
+          <p className="text-[#8892b0]/30 text-xs mt-3 font-mono">
+            {import.meta.env.VITE_COMMIT_SHA.slice(0, 7)}
+          </p>
+        )}
       </div>
     </footer>
   );

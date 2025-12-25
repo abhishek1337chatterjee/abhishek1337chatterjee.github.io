@@ -24,9 +24,7 @@
     "lint": "biome lint ./src",
     "format": "biome format --write ./src",
     "check": "biome check --write ./src",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -b gh-pages"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@types/react-scroll": "^1.8.10",
@@ -46,7 +44,6 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "daisyui": "^5.5.14",
-    "gh-pages": "^6.3.0",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
