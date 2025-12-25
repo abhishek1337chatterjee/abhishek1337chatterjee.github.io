@@ -1,70 +1,113 @@
-# Getting Started with Create React App
+# Abhishek Chatterjee - Portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive portfolio website built with React 19, Vite, and Tailwind CSS.
 
-## Available Scripts
+**Live Site:** [abhishek1337chatterjee.github.io](https://abhishek1337chatterjee.github.io)
 
-In the project directory, you can run:
+## Tech Stack
 
-### `npm start`
+| Category | Technologies |
+|----------|--------------|
+| **Framework** | React 19, Vite 7, TypeScript |
+| **Styling** | Tailwind CSS 4, DaisyUI 5 |
+| **Animations** | Framer Motion 11 |
+| **Icons** | Lucide React |
+| **Deployment** | GitHub Pages |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Responsive Design** - Works on all devices (320px to 1920px+)
+- **Dark Theme** - Navy/cyan/pink color scheme
+- **Smooth Animations** - Framer Motion powered transitions
+- **Dynamic Typewriter** - Cycling through roles on hero section
+- **GitHub Integration** - Live stats from GitHub API
+- **Contact Form** - Working form with GetForm.io
+- **SEO Optimized** - Meta tags, Open Graph, Twitter Cards
 
-### `npm test`
+## Sections
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Section | Description |
+|---------|-------------|
+| **Hero** | Animated intro with typewriter effect, profile image |
+| **About** | Professional summary, highlight cards, resume download |
+| **Skills** | Frontend, Backend, Cloud/AWS, Tools & Platforms |
+| **Projects** | Featured work with live demos and source links |
+| **GitHub Stats** | Custom stat cards, language bar, contribution calendar |
+| **Contact** | Contact form with validation |
 
-### `npm run build`
+## Project Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+src/
+├── assets/           # Images, profile pic, project screenshots
+├── components/
+│   ├── layout/       # Navbar, SocialSidebar, Footer
+│   └── sections/     # Hero, About, Skills, Projects, GitHubStats, Contact
+├── data/             # Skills, projects, social links data
+├── hooks/            # Custom hooks (useGitHubStats)
+├── App.tsx           # Main app component
+├── main.tsx          # Entry point
+└── index.css         # Global styles
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Started
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prerequisites
 
-### `npm run eject`
+- Node.js 18+
+- npm or yarn
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Installation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+# Clone the repository
+git clone https://github.com/abhishek1337chatterjee/abhishek1337chatterjee.github.io.git
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Navigate to directory
+cd abhishek1337chatterjee.github.io
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Install dependencies
+npm install
 
-## Learn More
+# Start development server
+npm run dev
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Build & Deploy
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+# Build for production
+npm run build
 
-### Code Splitting
+# Deploy to GitHub Pages
+npm run deploy
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Configuration
 
-### Analyzing the Bundle Size
+### Contact Form
+The contact form uses [GetForm.io](https://getform.io/). Update the form action URL in `src/components/sections/Contact.tsx`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### GitHub Stats
+Update the username in `src/components/sections/GitHubStats.tsx` and `src/hooks/useGitHubStats.ts`.
 
-### Making a Progressive Web App
+### SEO
+Update meta tags in `index.html` for your own information.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Scripts
 
-### Advanced Configuration
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run deploy` | Deploy to GitHub Pages |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## License
 
-### Deployment
+MIT License - Feel free to use this as a template for your own portfolio!
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Built with React 19 + Vite + Tailwind CSS

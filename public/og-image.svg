@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a192f"/>
+
+  <!-- Gradient overlay -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#db2777;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grad)"/>
+
+  <!-- Logo -->
+  <text x="100" y="120" font-family="monospace" font-size="48" font-weight="bold">
+    <tspan fill="#db2777">&lt;</tspan>
+    <tspan fill="#06b6d4">AC</tspan>
+    <tspan fill="#db2777">/&gt;</tspan>
+  </text>
+
+  <!-- Name -->
+  <text x="100" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold" fill="#ccd6f6">Abhishek Chatterjee</text>
+
+  <!-- Title -->
+  <text x="100" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#db2777">Serverless Engineer</text>
+  <text x="440" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#8892b0"> &amp; </text>
+  <text x="510" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#06b6d4">React Developer</text>
+
+  <!-- Skills badges -->
+  <rect x="100" y="420" width="80" height="36" rx="18" fill="#FF9900" opacity="0.9"/>
+  <text x="140" y="445" font-family="system-ui, sans-serif" font-size="16" fill="white" text-anchor="middle">AWS</text>
+
+  <rect x="200" y="420" width="100" height="36" rx="18" fill="#61dafb" opacity="0.9"/>
+  <text x="250" y="445" font-family="system-ui, sans-serif" font-size="16" fill="#0a192f" text-anchor="middle">React</text>
+
+  <rect x="320" y="420" width="120" height="36" rx="18" fill="#3178c6" opacity="0.9"/>
+  <text x="380" y="445" font-family="system-ui, sans-serif" font-size="16" fill="white" text-anchor="middle">TypeScript</text>
+
+  <rect x="460" y="420" width="90" height="36" rx="18" fill="#339933" opacity="0.9"/>
+  <text x="505" y="445" font-family="system-ui, sans-serif" font-size="16" fill="white" text-anchor="middle">Node.js</text>
+
+  <rect x="570" y="420" width="90" height="36" rx="18" fill="#2496ED" opacity="0.9"/>
+  <text x="615" y="445" font-family="system-ui, sans-serif" font-size="16" fill="white" text-anchor="middle">Docker</text>
+
+  <!-- URL -->
+  <text x="100" y="560" font-family="monospace" font-size="24" fill="#8892b0">abhishek1337chatterjee.github.io</text>
+
+  <!-- Decorative elements -->
+  <circle cx="1050" cy="150" r="80" fill="#db2777" opacity="0.1"/>
+  <circle cx="1100" cy="450" r="120" fill="#06b6d4" opacity="0.1"/>
+</svg>
