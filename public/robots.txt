@@ -1,0 +1,8 @@
+# robots.txt for https://abhishek1337chatterjee.github.io/
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://abhishek1337chatterjee.github.io/sitemap.xml
