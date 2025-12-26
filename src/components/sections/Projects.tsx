@@ -144,7 +144,7 @@ function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) 
                     Discontinued
                   </span>
                 )}
-                {project.hasDemo && !project.hasCode && project.type === 'personal' && (
+                {!project.hasCode && project.type === 'personal' && (
                   <span className="flex items-center gap-1 text-xs text-[#8892b0] bg-[#8892b0]/10 px-2 py-0.5 rounded">
                     <Lock size={12} />
                     Protected

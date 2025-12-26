@@ -2,6 +2,7 @@ import wearlyImg from '../assets/images/Wearly.gif';
 import pearImg from '../assets/images/Pear.gif';
 import freshlyImg from '../assets/images/Freshly.gif';
 import fireImg from '../assets/images/Fire.gif';
+import glanceImg from '../assets/images/glance.gif';
 
 // Project types
 export type ProjectType = 'showcase' | 'experience' | 'personal';
@@ -142,26 +143,34 @@ export const personalProjects: Project[] = [
     commitHash: '',
     title: 'Glance Dashboard',
     description:
-      'Personal RSS dashboard for aggregating news, GitHub activity, and custom feeds. Self-hosted on personal infrastructure.',
-    techStack: ['Docker', 'Glance', 'Self-hosted', 'RSS'],
-    features: ['RSS feed aggregation', 'GitHub activity tracking', 'Custom widgets', 'Dark theme'],
-    responsibilities: ['Full deployment and configuration'],
+      'Self-hosted personal dashboard with two custom Node.js microservices for specialized RSS feed generation. Features GitHub security advisories, kernel.org LTS tracking, movie/OTT feeds, and more. Deployed via Docker Compose with health checks and auto-start.',
+    image: glanceImg,
+    techStack: [
+      'Node.js 24',
+      'Express.js 5',
+      'Docker',
+      'Docker Compose',
+      'GraphQL',
+      'REST APIs',
+      'RSS/Atom',
+    ],
+    features: [
+      'GitHub Security Advisory feeds via GraphQL',
+      'Kernel.org LTS release tracking',
+      'Movie/OTT streaming feeds (TMDb + OMDb)',
+      '15+ RSS endpoints across services',
+      '30-60 min in-memory caching',
+      'Health checks with dependency chain',
+    ],
+    responsibilities: [
+      'Built github-feed microservice (security advisories, changelog parser)',
+      'Built movie-feed microservice (theater, OTT, trending)',
+      'Docker Compose orchestration with health checks',
+      'Systemd auto-start + Tailscale/Cloudflare tunnel',
+    ],
     deployedUrl: 'https://glance.abhishekmediaserver.online',
     type: 'personal',
     hasDemo: true,
-    hasCode: false,
-  },
-  {
-    id: 102,
-    commitHash: '',
-    title: 'GitHub Advisory RSS',
-    description:
-      'Docker container that converts GitHub Security Advisories into RSS/XML feed format for easy monitoring and integration with feed readers.',
-    techStack: ['Docker', 'RSS', 'GitHub API', 'XML'],
-    features: ['Security advisory monitoring', 'RSS feed generation', 'Docker containerized'],
-    responsibilities: ['Architecture design', 'Docker configuration', 'API integration'],
-    type: 'personal',
-    hasDemo: false,
     hasCode: false,
   },
 ];
