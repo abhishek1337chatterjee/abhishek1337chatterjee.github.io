@@ -45,8 +45,13 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-[#0a192f] px-4 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <section id="contact" className="py-20 bg-[#0a192f] px-4 lg:px-8 relative overflow-hidden">
+      {/* Gradient accent for contact - slightly more prominent as CTA section */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-[#db2777]/8 via-transparent to-transparent rounded-full blur-2xl" />
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#06b6d4]/5 to-transparent" />
+      </div>
+      <div className="max-w-4xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}

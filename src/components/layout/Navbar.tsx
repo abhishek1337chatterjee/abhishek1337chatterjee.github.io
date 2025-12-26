@@ -99,7 +99,7 @@ export default function Navbar() {
         <a
           href="/Abhishek-Chatterjee-Resume.pdf"
           download
-          className="btn btn-primary btn-sm gap-2 hidden sm:flex"
+          className="btn btn-accent btn-sm gap-2 hidden sm:flex"
         >
           <Download size={16} />
           Resume
@@ -147,7 +147,7 @@ export default function Navbar() {
                 <a
                   href="/Abhishek-Chatterjee-Resume.pdf"
                   download
-                  className="btn btn-primary btn-sm gap-2 mt-2"
+                  className="btn btn-accent btn-sm gap-2 mt-2"
                 >
                   <Download size={16} />
                   Resume

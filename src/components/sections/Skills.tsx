@@ -221,8 +221,13 @@ function SkillSection({
 
 export default function Skills() {
   return (
-    <section id="skills" className="py-20 bg-[#0a192f] px-4 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <section id="skills" className="py-20 bg-[#112240]/30 px-4 lg:px-8 relative overflow-hidden">
+      {/* Subtle diagonal accent line */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 -right-20 w-[600px] h-px bg-gradient-to-r from-transparent via-[#06b6d4]/20 to-transparent rotate-12" />
+        <div className="absolute bottom-1/3 -left-20 w-[500px] h-px bg-gradient-to-r from-transparent via-[#db2777]/15 to-transparent -rotate-12" />
+      </div>
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}

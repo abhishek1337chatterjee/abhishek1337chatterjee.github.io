@@ -384,7 +384,7 @@ export default function Projects() {
 
   return (
     <section id="projects" className="py-20 bg-[#0a192f] px-4 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}

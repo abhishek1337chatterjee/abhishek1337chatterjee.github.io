@@ -7,6 +7,7 @@ import Skills from './components/sections/Skills';
 import Projects from './components/sections/Projects';
 import GitHubStats from './components/sections/GitHubStats';
 import Contact from './components/sections/Contact';
+import SectionDivider from './components/ui/SectionDivider';
 
 function App() {
   return (
@@ -15,10 +16,15 @@ function App() {
       <SocialSidebar />
       <main className="lg:ml-16">
         <Hero />
+        <SectionDivider variant="gradient" />
         <About />
+        <SectionDivider variant="gradient" />
         <Skills />
+        <SectionDivider variant="gradient" />
         <Projects />
+        <SectionDivider variant="gradient" />
         <GitHubStats />
+        <SectionDivider variant="gradient" />
         <Contact />
       </main>
       <Footer />
