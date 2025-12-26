@@ -31,9 +31,7 @@ function StatCard({ icon, label, value, gradient, delay }: StatCardProps) {
       {/* Card content */}
       <div className="relative bg-[#112240] rounded-xl p-6 border border-[#8892b0]/10 h-full">
         <div className="flex items-center gap-4">
-          <div className={`p-3 rounded-lg ${gradient}`}>
-            {icon}
-          </div>
+          <div className={`p-3 rounded-lg ${gradient}`}>{icon}</div>
           <div>
             <motion.p
               className="text-3xl font-bold text-[#ccd6f6]"
@@ -94,10 +92,7 @@ function LanguageBar({ languages }: LanguageBarProps) {
         <div className="flex flex-wrap gap-4">
           {languages.map((lang) => (
             <div key={lang.name} className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: lang.color }}
-              />
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: lang.color }} />
               <span className="text-[#8892b0] text-sm">
                 {lang.name} <span className="text-[#ccd6f6]">{lang.percentage}%</span>
               </span>
@@ -138,9 +133,7 @@ export default function GitHubStats() {
         >
           <div className="flex items-center justify-center gap-3 mb-2">
             <Github size={36} className="text-[#ccd6f6]" />
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6]">
-              GitHub Statistics
-            </h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6]">GitHub Statistics</h2>
           </div>
           <div className="w-20 h-1 bg-gradient-to-r from-[#db2777] to-[#06b6d4] mx-auto rounded-full" />
         </motion.div>
@@ -191,9 +184,7 @@ export default function GitHubStats() {
               </div>
 
               {/* Languages Bar */}
-              {stats.topLanguages.length > 0 && (
-                <LanguageBar languages={stats.topLanguages} />
-              )}
+              {stats.topLanguages.length > 0 && <LanguageBar languages={stats.topLanguages} />}
             </>
           )}
 

@@ -13,20 +13,53 @@ interface AwsService {
 }
 
 const frontendSkills: SkillItem[] = [
-  { name: 'HTML', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg' },
-  { name: 'CSS', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg' },
-  { name: 'JavaScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg' },
-  { name: 'TypeScript', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg' },
-  { name: 'React.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg' },
-  { name: 'Next.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg' },
-  { name: 'Redux', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg' },
-  { name: 'Tailwind', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg' },
+  {
+    name: 'HTML',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg',
+  },
+  {
+    name: 'CSS',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg',
+  },
+  {
+    name: 'JavaScript',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',
+  },
+  {
+    name: 'TypeScript',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',
+  },
+  {
+    name: 'React.js',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg',
+  },
+  {
+    name: 'Next.js',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg',
+  },
+  {
+    name: 'Redux',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redux/redux-original.svg',
+  },
+  {
+    name: 'Tailwind',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg',
+  },
 ];
 
 const backendSkills: SkillItem[] = [
-  { name: 'Node.js', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg' },
-  { name: 'Express', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg' },
-  { name: 'MongoDB', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg' },
+  {
+    name: 'Node.js',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg',
+  },
+  {
+    name: 'Express',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg',
+  },
+  {
+    name: 'MongoDB',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
+  },
 ];
 
 const awsServices: AwsService[] = [
@@ -42,15 +75,42 @@ const awsServices: AwsService[] = [
 
 const tools: SkillItem[] = [
   { name: 'Git', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg' },
-  { name: 'GitHub', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg' },
-  { name: 'Docker', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
-  { name: 'Ubuntu', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-original.svg' },
-  { name: 'Linux', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg' },
-  { name: 'VS Code', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg' },
-  { name: 'Sanity', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sanity/sanity-original.svg' },
-  { name: 'NPM', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg' },
-  { name: 'Vercel', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg' },
-  { name: 'Cypress', icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cypressio/cypressio-original.svg' },
+  {
+    name: 'GitHub',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg',
+  },
+  {
+    name: 'Docker',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg',
+  },
+  {
+    name: 'Ubuntu',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-original.svg',
+  },
+  {
+    name: 'Linux',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg',
+  },
+  {
+    name: 'VS Code',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg',
+  },
+  {
+    name: 'Sanity',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/sanity/sanity-original.svg',
+  },
+  {
+    name: 'NPM',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/npm/npm-original-wordmark.svg',
+  },
+  {
+    name: 'Vercel',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vercel/vercel-original.svg',
+  },
+  {
+    name: 'Cypress',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cypressio/cypressio-original.svg',
+  },
 ];
 
 const containerVariants = {
@@ -84,9 +144,7 @@ function SkillCard({ skill }: { skill: SkillItem }) {
             whileHover={{ rotate: 10 }}
             transition={{ type: 'spring', stiffness: 300 }}
           />
-          <h3 className="card-title text-xs sm:text-sm text-[#ccd6f6] mt-2">
-            {skill.name}
-          </h3>
+          <h3 className="card-title text-xs sm:text-sm text-[#ccd6f6] mt-2">{skill.name}</h3>
         </div>
       </div>
     </motion.div>
@@ -113,9 +171,7 @@ function AwsServiceCard({ service }: { service: AwsService }) {
           >
             {service.shortName}
           </div>
-          <h3 className="card-title text-xs sm:text-sm text-[#ccd6f6] mt-2">
-            {service.name}
-          </h3>
+          <h3 className="card-title text-xs sm:text-sm text-[#ccd6f6] mt-2">{service.name}</h3>
         </div>
       </div>
     </motion.div>
@@ -129,7 +185,12 @@ interface SkillSectionProps {
   delay?: number;
 }
 
-function SkillSection({ title, skills, columns = "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", delay = 0 }: SkillSectionProps) {
+function SkillSection({
+  title,
+  skills,
+  columns = 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5',
+  delay = 0,
+}: SkillSectionProps) {
   return (
     <div className="mb-12">
       <motion.div
@@ -139,9 +200,7 @@ function SkillSection({ title, skills, columns = "grid-cols-2 sm:grid-cols-3 md:
         transition={{ duration: 0.5, delay }}
         className="mb-6"
       >
-        <h3 className="text-xl sm:text-2xl font-bold text-[#ccd6f6] mb-2 text-center">
-          {title}
-        </h3>
+        <h3 className="text-xl sm:text-2xl font-bold text-[#ccd6f6] mb-2 text-center">{title}</h3>
         <div className="w-12 h-0.5 bg-[#db2777] mx-auto" />
       </motion.div>
 
@@ -171,9 +230,7 @@ export default function Skills() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6] mb-2">
-            My Skills
-          </h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6] mb-2">My Skills</h2>
           <div className="w-20 h-1 bg-gradient-to-r from-[#db2777] to-[#06b6d4] mx-auto rounded-full" />
         </motion.div>
 
@@ -188,9 +245,7 @@ export default function Skills() {
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <Cloud size={24} className="text-[#FF9900]" />
-              <h3 className="text-xl sm:text-2xl font-bold text-[#ccd6f6]">
-                Cloud & Serverless
-              </h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-[#ccd6f6]">Cloud & Serverless</h3>
             </div>
             <div className="w-12 h-0.5 bg-[#FF9900] mx-auto" />
           </motion.div>
@@ -208,12 +263,7 @@ export default function Skills() {
           </motion.div>
         </div>
 
-        <SkillSection
-          title="Backend"
-          skills={backendSkills}
-          columns="grid-cols-3"
-          delay={0.2}
-        />
+        <SkillSection title="Backend" skills={backendSkills} columns="grid-cols-3" delay={0.2} />
 
         <SkillSection
           title="Tools & Platforms"

@@ -152,3 +152,51 @@ body {
 .btn-accent:hover::before {
   left: 100%;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GIT TIMELINE STYLES
+   Career timeline with commit-style project cards
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Commit hash monospace styling */
+.commit-hash {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+/* Git node pulse animation */
+.git-node {
+  animation: git-pulse 2s ease-in-out infinite;
+}
+
+@keyframes git-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(219, 39, 119, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(219, 39, 119, 0.8), 0 0 30px rgba(219, 39, 119, 0.4);
+  }
+}
+
+/* Commit card hover effect */
+.commit-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.commit-card-hover:hover {
+  transform: translateX(4px);
+  box-shadow: -4px 0 0 0 #06b6d4;
+}
+
+/* Discontinued badge animation */
+.discontinued-badge {
+  animation: discontinued-blink 3s ease-in-out infinite;
+}
+
+@keyframes discontinued-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

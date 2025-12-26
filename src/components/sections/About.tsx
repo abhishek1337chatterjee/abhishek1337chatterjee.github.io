@@ -58,8 +58,8 @@ export default function About() {
             <p>
               I'm a passionate{' '}
               <span className="text-[#db2777] font-semibold">Software Engineer</span> with{' '}
-              <span className="text-[#06b6d4] font-semibold">2+ years of experience</span>{' '}
-              building scalable applications. My journey started as a{' '}
+              <span className="text-[#06b6d4] font-semibold">2+ years of experience</span> building
+              scalable applications. My journey started as a{' '}
               <span className="text-[#ccd6f6]">Frontend Developer</span>, where I spent a year
               crafting user interfaces with <span className="text-[#06b6d4]">React</span> and
               building production-ready projects.
@@ -68,19 +68,19 @@ export default function About() {
             <p>
               Currently, I'm working as a{' '}
               <span className="text-[#db2777] font-semibold">Serverless Engineer</span> at a{' '}
-              <span className="text-[#ccd6f6]">Fintech company</span>, where I architect and
-              build cloud-native solutions using{' '}
-              <span className="text-[#06b6d4]">AWS services</span> including Lambda, Step Functions,
-              EventBridge, SQS, SNS, Cognito, and SES. I've also worked with{' '}
-              <span className="text-[#ccd6f6]">Sanity CMS</span> for content management and explored{' '}
-              <span className="text-[#ccd6f6]">Temporal.io</span> for workflow orchestration.
+              <span className="text-[#ccd6f6]">Fintech company</span>, where I architect and build
+              cloud-native solutions using <span className="text-[#06b6d4]">AWS services</span>{' '}
+              including Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, and SES. I've also
+              worked with <span className="text-[#ccd6f6]">Sanity CMS</span> for content management
+              and explored <span className="text-[#ccd6f6]">Temporal.io</span> for workflow
+              orchestration.
             </p>
 
             <p>
               Beyond my day job, I'm constantly exploring new technologies. Currently diving into{' '}
               <span className="text-[#06b6d4]">Docker</span> for containerization and{' '}
-              <span className="text-[#ccd6f6]">Mockoon</span> for API mocking. I'm a big advocate
-              of <span className="text-[#f59e0b] font-semibold">open source</span> and love working
+              <span className="text-[#ccd6f6]">Mockoon</span> for API mocking. I'm a big advocate of{' '}
+              <span className="text-[#f59e0b] font-semibold">open source</span> and love working
               with <span className="text-[#22c55e] font-semibold">Linux servers</span>, especially{' '}
               <span className="text-[#ccd6f6]">Ubuntu</span>.
             </p>

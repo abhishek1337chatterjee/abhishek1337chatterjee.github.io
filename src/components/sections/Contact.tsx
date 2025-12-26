@@ -16,9 +16,7 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -27,14 +25,11 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        'https://getform.io/f/8775dab5-b30d-48fc-9d52-4900b095464c',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch('https://getform.io/f/8775dab5-b30d-48fc-9d52-4900b095464c', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         alert('Message sent successfully!');
@@ -59,9 +54,7 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6] mb-2">
-            Contact
-          </h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6] mb-2">Contact</h2>
           <div className="w-20 h-1 bg-[#db2777] mx-auto mb-4" />
           <p className="text-[#8892b0]">
             Submit the form below or{' '}
@@ -149,11 +142,7 @@ export default function Contact() {
           </div>
 
           <div className="flex justify-center">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn btn-primary gap-2"
-            >
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary gap-2">
               {isSubmitting ? (
                 <>
                   <span className="loading loading-spinner loading-sm" />

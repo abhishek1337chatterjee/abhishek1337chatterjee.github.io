@@ -88,17 +88,10 @@ export default function Hero() {
                 className="btn btn-outline btn-primary gap-2 group cursor-pointer"
               >
                 View Work
-                <ArrowDown
-                  size={16}
-                  className="group-hover:translate-y-1 transition-transform"
-                />
+                <ArrowDown size={16} className="group-hover:translate-y-1 transition-transform" />
               </Link>
 
-              <a
-                href="/Abhishek-Chatterjee-Resume.pdf"
-                download
-                className="btn btn-accent gap-2"
-              >
+              <a href="/Abhishek-Chatterjee-Resume.pdf" download className="btn btn-accent gap-2">
                 <Download size={16} />
                 Resume
               </a>
@@ -132,24 +125,93 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
-              <svg
-                className="absolute inset-0 w-full h-full"
-                viewBox="0 0 200 200"
-              >
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
                 <polygon
                   points="100,10 180,50 180,150 100,190 20,150 20,50"
                   fill="#06b6d4"
                   className="drop-shadow-lg"
                 />
-                <line x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="20" y1="50" x2="180" y2="150" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="180" y1="50" x2="20" y2="150" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="20" y1="50" x2="180" y2="50" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="20" y1="150" x2="180" y2="150" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="100" y1="10" x2="20" y2="50" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="100" y1="10" x2="180" y2="50" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="100" y1="190" x2="20" y2="150" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <line x1="100" y1="190" x2="180" y2="150" stroke="white" strokeWidth="0.5" opacity="0.5" />
+                <line
+                  x1="100"
+                  y1="10"
+                  x2="100"
+                  y2="190"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="20"
+                  y1="50"
+                  x2="180"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="180"
+                  y1="50"
+                  x2="20"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="20"
+                  y1="50"
+                  x2="180"
+                  y2="50"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="20"
+                  y1="150"
+                  x2="180"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="100"
+                  y1="10"
+                  x2="20"
+                  y2="50"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="100"
+                  y1="10"
+                  x2="180"
+                  y2="50"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="100"
+                  y1="190"
+                  x2="20"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
+                <line
+                  x1="100"
+                  y1="190"
+                  x2="180"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  opacity="0.5"
+                />
               </svg>
               <img
                 src={profilePic}
