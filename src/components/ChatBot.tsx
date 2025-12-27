@@ -29,10 +29,10 @@ function MessageContent({ content }: { content: string }) {
     const pattern = /(https?:\/\/[^\s,)]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+91\s?\d{10}|\+91[-.\s]?\d{5}[-.\s]?\d{5})/g;
 
     let lastIndex = 0;
-    let match;
     let keyIndex = 0;
+    let match: RegExpExecArray | null = pattern.exec(text);
 
-    while ((match = pattern.exec(text)) !== null) {
+    while (match !== null) {
       // Add text before the match
       if (match.index > lastIndex) {
         elements.push(
@@ -42,7 +42,7 @@ function MessageContent({ content }: { content: string }) {
         );
       }
 
-      const [fullMatch, url, email, phone] = match;
+      const [, url, email, phone] = match;
 
       if (url) {
         // Clean URL (remove trailing punctuation)
@@ -102,6 +102,7 @@ function MessageContent({ content }: { content: string }) {
       }
 
       lastIndex = pattern.lastIndex;
+      match = pattern.exec(text);
     }
 
     // Add remaining text
@@ -128,9 +129,10 @@ export default function ChatBot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional scroll on message change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages.length]);
 
   // Close on escape key
   useEffect(() => {
