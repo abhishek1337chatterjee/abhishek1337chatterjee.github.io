@@ -374,7 +374,9 @@ function AnimatedBackground() {
       <div
         className="absolute top-0 left-0 w-80 h-80 opacity-20"
         style={{
-          background: `radial-gradient(circle, ${seasonConfig.glowColors[1] || seasonConfig.glowColors[0]} 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${
+            seasonConfig.glowColors[1] || seasonConfig.glowColors[0]
+          } 0%, transparent 70%)`,
         }}
       />
     </div>
@@ -493,13 +495,13 @@ export default function Hero() {
               a{' '}
               <Typewriter
                 words={[
+                  'Problem Solver',
                   'Serverless Engineer',
-                  'React Developer',
                   'AWS Enthusiast',
                   'Open Source Lover',
                   'Linux Geek',
                   'Cloud Architect',
-                  'Problem Solver',
+                  'React Developer',
                 ]}
                 loop={true}
                 cursor
@@ -762,7 +764,9 @@ export default function Hero() {
                 src={profilePic}
                 alt="Abhishek Chatterjee"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)' }}
+                style={{
+                  clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
+                }}
               />
 
               {/* Hexagon border overlay */}

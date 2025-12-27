@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import type { Components } from 'react-markdown';
 import {
   MessageCircle,
   X,
@@ -21,7 +23,7 @@ interface Message {
   content: string;
 }
 
-// Component to render message content with clickable URLs and copyable phone numbers
+// Component to render message content with markdown support
 function MessageContent({ content }: { content: string }) {
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
@@ -31,96 +33,127 @@ function MessageContent({ content }: { content: string }) {
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  // Parse content and return React elements
-  const parseContent = (text: string): React.ReactNode[] => {
-    const elements: React.ReactNode[] = [];
+  // Check if text contains a phone number and render with copy button
+  const renderWithPhoneSupport = (text: string): React.ReactNode => {
+    const phonePattern = /(\+91\s?\d{10}|\+91[-.\s]?\d{5}[-.\s]?\d{5})/g;
+    const parts = text.split(phonePattern);
 
-    // Combined pattern: URLs, emails, phone numbers
-    const pattern =
-      /(https?:\/\/[^\s,)]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+91\s?\d{10}|\+91[-.\s]?\d{5}[-.\s]?\d{5})/g;
+    if (parts.length === 1) return text;
 
-    let lastIndex = 0;
-    let keyIndex = 0;
-    let match: RegExpExecArray | null = pattern.exec(text);
-
-    while (match !== null) {
-      // Add text before the match
-      if (match.index > lastIndex) {
-        elements.push(<span key={`text-${keyIndex++}`}>{text.slice(lastIndex, match.index)}</span>);
-      }
-
-      const [, url, email, phone] = match;
-
-      if (url) {
-        // Clean URL (remove trailing punctuation)
-        const cleanUrl = url.replace(/[.,;:!?)]+$/, '');
-        const trailingPunc = url.slice(cleanUrl.length);
-
-        elements.push(
-          <a
-            key={`url-${keyIndex++}`}
-            href={cleanUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-0.5 text-[#06b6d4] hover:text-[#22d3ee] underline underline-offset-2 transition-colors"
-          >
-            {cleanUrl.length > 35 ? `${cleanUrl.slice(0, 35)}...` : cleanUrl}
-            <ExternalLink size={11} className="inline flex-shrink-0" />
-          </a>,
-        );
-
-        if (trailingPunc) {
-          elements.push(<span key={`punc-${keyIndex++}`}>{trailingPunc}</span>);
-        }
-      } else if (email) {
-        elements.push(
-          <a
-            key={`email-${keyIndex++}`}
-            href={`mailto:${email}`}
-            className="inline-flex items-center gap-0.5 text-[#06b6d4] hover:text-[#22d3ee] underline underline-offset-2 transition-colors"
-          >
-            {email}
-            <ExternalLink size={11} className="inline flex-shrink-0" />
-          </a>,
-        );
-      } else if (phone) {
-        elements.push(
-          <span key={`phone-${keyIndex++}`} className="inline-flex items-center gap-1">
+    return parts.map((part, index) => {
+      if (phonePattern.test(part)) {
+        phonePattern.lastIndex = 0; // Reset regex
+        return (
+          <span key={index} className="inline-flex items-center gap-1">
             <a
-              href={`tel:${phone.replace(/[-.\s]/g, '')}`}
+              href={`tel:${part.replace(/[-.\s]/g, '')}`}
               className="text-[#06b6d4] hover:text-[#22d3ee] underline underline-offset-2 transition-colors"
             >
-              {phone}
+              {part}
             </a>
             <button
-              onClick={() => handleCopy(phone)}
+              onClick={() => handleCopy(part)}
               className="p-0.5 rounded hover:bg-[#1e3a5f] transition-colors"
               title="Copy phone number"
               type="button"
             >
-              {copiedText === phone ? (
+              {copiedText === part ? (
                 <Check size={12} className="text-green-400" />
               ) : (
                 <Copy size={12} className="text-[#8892b0] hover:text-[#06b6d4]" />
               )}
             </button>
-          </span>,
+          </span>
         );
       }
-
-      lastIndex = pattern.lastIndex;
-      match = pattern.exec(text);
-    }
-
-    // Add remaining text
-    if (lastIndex < text.length) {
-      elements.push(<span key={`text-${keyIndex++}`}>{text.slice(lastIndex)}</span>);
-    }
-
-    return elements;
+      return part;
+    });
   };
 
-  return <>{parseContent(content)}</>;
+  // Custom components for ReactMarkdown
+  const markdownComponents: Components = {
+    // Headings
+    h1: ({ children }) => (
+      <h1 className="text-lg font-bold text-[#ccd6f6] mt-3 mb-2 first:mt-0">{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-base font-bold text-[#ccd6f6] mt-3 mb-2 first:mt-0">{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-sm font-bold text-[#ccd6f6] mt-2 mb-1 first:mt-0">{children}</h3>
+    ),
+
+    // Paragraphs
+    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+
+    // Links
+    a: ({ href, children }) => {
+      const isEmail = href?.startsWith('mailto:');
+      return (
+        <a
+          href={href}
+          target={isEmail ? undefined : '_blank'}
+          rel={isEmail ? undefined : 'noopener noreferrer'}
+          className="inline-flex items-center gap-0.5 text-[#06b6d4] hover:text-[#22d3ee] underline underline-offset-2 transition-colors"
+        >
+          {children}
+          <ExternalLink size={11} className="inline flex-shrink-0" />
+        </a>
+      );
+    },
+
+    // Lists
+    ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+    li: ({ children }) => <li className="text-[#ccd6f6]">{children}</li>,
+
+    // Code
+    code: ({ className, children }) => {
+      const isInline = !className;
+      if (isInline) {
+        return (
+          <code className="bg-[#1e3a5f] text-[#06b6d4] px-1.5 py-0.5 rounded text-xs font-mono">
+            {children}
+          </code>
+        );
+      }
+      // Code block
+      return (
+        <code className="block bg-[#1e3a5f] text-[#ccd6f6] p-3 rounded-lg text-xs font-mono overflow-x-auto my-2">
+          {children}
+        </code>
+      );
+    },
+    pre: ({ children }) => <pre className="my-2">{children}</pre>,
+
+    // Blockquote
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-2 border-[#06b6d4] pl-3 my-2 text-[#8892b0] italic">
+        {children}
+      </blockquote>
+    ),
+
+    // Bold and italic
+    strong: ({ children }) => <strong className="font-bold text-[#ccd6f6]">{children}</strong>,
+    em: ({ children }) => <em className="italic text-[#a8b2d1]">{children}</em>,
+
+    // Horizontal rule
+    hr: () => <hr className="border-[#8892b0]/20 my-3" />,
+
+    // Text nodes - handle phone numbers
+    text: ({ children }) => {
+      if (typeof children === 'string') {
+        return <>{renderWithPhoneSupport(children)}</>;
+      }
+      return <>{children}</>;
+    },
+  };
+
+  return (
+    <div className="markdown-content">
+      <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+    </div>
+  );
 }
 
 export default function ChatBot() {

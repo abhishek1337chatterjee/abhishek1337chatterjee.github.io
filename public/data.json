@@ -5,7 +5,7 @@
   "experience": "2+ years",
   "highlights": ["2+ Years Experience", "Serverless Engineer", "Linux Enthusiast", "Open Source Lover"],
 
-  "about": "Passionate Software Engineer with 2+ years of experience building scalable applications. Started as a Frontend Developer crafting UIs with React, now architecting cloud-native solutions as a Serverless Engineer. Beyond my day job, I'm constantly exploring new technologies like Docker for containerization and Mockoon for API mocking. I'm a big advocate of open source and love working with Linux servers, especially Ubuntu.",
+  "about": "Passionate Software Engineer with 2+ years of experience building scalable applications. Currently working as a Serverless Engineer at time.money (Fintech), where I build AWS Lambda functions using Serverless Framework and AWS SAM, design content schemas in Sanity CMS, and explore Temporal.io for durable workflow execution. Started my career as a Frontend Developer crafting UIs with React, TypeScript, and Redux. Beyond work, I'm constantly exploring new technologies like Docker for containerization and Biome.js for modern linting. I'm a big advocate of open source and love working with Linux servers, especially Ubuntu.",
 
   "workExperience": [
     {
@@ -15,14 +15,18 @@
       "type": "Fintech",
       "period": "2024 - Present",
       "location": "India",
-      "description": "Building scalable serverless architectures and event-driven systems for fintech applications.",
-      "highlights": ["AWS Lambda", "Step Functions", "EventBridge", "SQS", "SNS", "Cognito", "SES"],
+      "description": "Building scalable serverless architectures and event-driven systems for fintech applications. Working with cutting-edge technologies and modern development practices.",
+      "highlights": ["AWS Lambda", "Serverless Framework", "AWS SAM", "Step Functions", "EventBridge", "Sanity CMS", "Temporal.io"],
       "responsibilities": [
-        "Architecting cloud-native solutions using AWS services",
-        "Building event-driven systems with Step Functions and EventBridge",
-        "Implementing authentication with Cognito",
-        "Email services using SES"
-      ]
+        "Building and deploying multiple AWS Lambda functions using Serverless Framework and AWS SAM",
+        "Designing and implementing content schemas in Sanity CMS for the content management system",
+        "Architecting cloud-native solutions using AWS services (Lambda, Step Functions, EventBridge, SQS, SNS)",
+        "Exploring Temporal.io for durable execution and workflow orchestration",
+        "Implementing authentication flows with AWS Cognito",
+        "Building event-driven architectures for fintech applications",
+        "Working with latest technologies and modern tooling (Biome.js for linting)"
+      ],
+      "techStack": ["AWS Lambda", "Serverless Framework", "AWS SAM", "Sanity CMS", "Step Functions", "EventBridge", "SQS", "SNS", "Cognito", "SES", "Temporal.io", "Biome.js"]
     },
     {
       "role": "MERN Stack Developer / Frontend Developer",
@@ -68,7 +72,7 @@
     "cms": ["Sanity CMS"],
     "workflow": ["Temporal.io"],
     "devops": ["Docker", "Docker Compose", "Linux (Ubuntu)", "Mockoon", "Vercel"],
-    "tools": ["Git", "GitHub", "NPM", "Cypress", "VS Code", "GraphQL", "REST APIs"]
+    "tools": ["Git", "GitHub", "NPM", "Cypress", "VS Code", "GraphQL", "REST APIs", "Serverless Framework", "AWS SAM", "Biome.js"]
   },
 
   "projects": {

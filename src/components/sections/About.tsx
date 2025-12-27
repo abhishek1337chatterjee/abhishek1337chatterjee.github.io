@@ -91,8 +91,8 @@ export default function About() {
             </p>
 
             <p>
-              When I'm not coding, you'll find me watching cricket, assembling PCs, or contributing
-              to open source projects.
+              When I'm not coding, you'll find me watching cricket, assembling PCs, or exploring to
+              open source projects.
             </p>
           </motion.div>
 

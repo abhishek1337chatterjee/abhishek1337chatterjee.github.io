@@ -60,6 +60,10 @@ const backendSkills: SkillItem[] = [
     name: 'MongoDB',
     icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg',
   },
+  {
+    name: 'DynamoDB',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/dynamodb/dynamodb-original.svg',
+  },
 ];
 
 const awsServices: AwsService[] = [
@@ -110,6 +114,18 @@ const tools: SkillItem[] = [
   {
     name: 'Cypress',
     icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cypressio/cypressio-original.svg',
+  },
+  {
+    name: 'Serverless',
+    icon: 'https://user-images.githubusercontent.com/2752551/30405068-a7733b34-989e-11e7-8f66-7badaf1373ed.png',
+  },
+  {
+    name: 'AWS SAM',
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg',
+  },
+  {
+    name: 'Biome',
+    icon: 'https://biomejs.dev/img/favicon.svg',
   },
 ];
 
@@ -268,7 +284,7 @@ export default function Skills() {
           </motion.div>
         </div>
 
-        <SkillSection title="Backend" skills={backendSkills} columns="grid-cols-3" delay={0.2} />
+        <SkillSection title="Backend" skills={backendSkills} columns="grid-cols-2 sm:grid-cols-4" delay={0.2} />
 
         <SkillSection
           title="Tools & Platforms"
