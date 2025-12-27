@@ -1,9 +1,230 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-scroll';
 import { Typewriter } from 'react-simple-typewriter';
 import { ArrowDown, Download } from 'lucide-react';
 import profilePic from '../../assets/images/profile-pic.png';
+
+// ============================================
+// SEASONAL PARTICLE SYSTEM
+// ============================================
+
+type Season = 'winter' | 'spring' | 'summer' | 'autumn';
+type SpecialEvent = 'christmas' | 'newyear' | 'diwali' | null;
+
+interface SeasonConfig {
+  season: Season;
+  event: SpecialEvent;
+  colors: string[];
+  particleCount: number;
+  direction: 'up' | 'down' | 'float';
+  speed: { min: number; max: number };
+  shapes: ('circle' | 'snowflake' | 'leaf' | 'petal' | 'sparkle')[];
+  glowColors: string[];
+}
+
+// Detect current season and special events
+function getSeasonConfig(): SeasonConfig {
+  const now = new Date();
+  const month = now.getMonth(); // 0-11
+  const day = now.getDate();
+
+  // ============================================
+  // DEV MODE: Override season via URL params
+  // Usage: ?season=spring or ?season=autumn&event=diwali
+  // ============================================
+  const urlParams = new URLSearchParams(window.location.search);
+  const seasonOverride = urlParams.get('season') as Season | null;
+  const eventOverride = urlParams.get('event') as SpecialEvent | null;
+
+  // Check for special events first
+  let event: SpecialEvent = eventOverride;
+
+  if (!eventOverride) {
+    // Christmas: Dec 15 - Dec 31
+    if (month === 11 && day >= 15) {
+      event = 'christmas';
+    }
+    // New Year: Jan 1 - Jan 7
+    else if (month === 0 && day <= 7) {
+      event = 'newyear';
+    }
+    // Diwali: Roughly Oct 15 - Nov 15 (varies yearly, but this is approximate)
+    else if ((month === 9 && day >= 15) || (month === 10 && day <= 15)) {
+      event = 'diwali';
+    }
+  }
+
+  // Determine season based on month (or use override)
+  let season: Season;
+  if (seasonOverride && ['winter', 'spring', 'summer', 'autumn'].includes(seasonOverride)) {
+    season = seasonOverride;
+  } else if (month >= 2 && month <= 4) {
+    season = 'spring'; // Mar, Apr, May
+  } else if (month >= 5 && month <= 7) {
+    season = 'summer'; // Jun, Jul, Aug
+  } else if (month >= 8 && month <= 10) {
+    season = 'autumn'; // Sep, Oct, Nov
+  } else {
+    season = 'winter'; // Dec, Jan, Feb
+  }
+
+  // Return config based on season and event
+  const configs: Record<Season, SeasonConfig> = {
+    winter: {
+      season: 'winter',
+      event,
+      colors: event === 'christmas'
+        ? ['#ffffff', '#a5f3fc', '#fca5a5', '#86efac'] // White, ice blue, red, green for Christmas
+        : event === 'newyear'
+          ? ['#fbbf24', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#ffffff'] // Gold, orange, pink, purple, cyan for New Year
+          : ['#ffffff', '#e0f2fe', '#bae6fd', '#7dd3fc'], // White and ice blues
+      particleCount: event === 'newyear' ? 45 : 35,
+      direction: event === 'newyear' ? 'up' : 'down',
+      speed: event === 'newyear' ? { min: 10, max: 18 } : { min: 12, max: 20 },
+      shapes: event === 'newyear'
+        ? ['sparkle', 'sparkle', 'sparkle', 'circle'] // Firework sparkles for New Year
+        : ['snowflake', 'snowflake', 'snowflake', 'circle'], // More snowflakes
+      glowColors: event === 'christmas'
+        ? ['rgba(239, 68, 68, 0.1)', 'rgba(34, 197, 94, 0.1)']
+        : event === 'newyear'
+          ? ['rgba(251, 191, 36, 0.2)', 'rgba(236, 72, 153, 0.15)'] // Golden and pink glow
+          : ['rgba(186, 230, 253, 0.1)', 'rgba(255, 255, 255, 0.05)'],
+    },
+    spring: {
+      season: 'spring',
+      event: null,
+      colors: ['#ff69b4', '#ff85c1', '#f9a8d4', '#e879f9', '#a7f3d0'], // Brighter pinks, magenta, mint
+      particleCount: 35,
+      direction: 'float',
+      speed: { min: 12, max: 20 },
+      shapes: ['petal', 'petal', 'petal', 'circle'], // More petals
+      glowColors: ['rgba(249, 168, 212, 0.15)', 'rgba(232, 121, 249, 0.12)'],
+    },
+    summer: {
+      season: 'summer',
+      event: null,
+      colors: ['#fef08a', '#fde047', '#facc15', '#fb923c', '#f97316'], // Brighter yellows and oranges
+      particleCount: 30,
+      direction: 'up',
+      speed: { min: 15, max: 22 },
+      shapes: ['sparkle', 'sparkle', 'sparkle', 'circle'], // More sparkles
+      glowColors: ['rgba(250, 204, 21, 0.15)', 'rgba(251, 146, 60, 0.12)'],
+    },
+    autumn: {
+      season: 'autumn',
+      event,
+      colors: event === 'diwali'
+        ? ['#fbbf24', '#f59e0b', '#ef4444', '#e879f9', '#06b6d4'] // Diwali: brighter golds, oranges, reds, purples
+        : ['#fed7aa', '#fdba74', '#fb923c', '#dc2626', '#b45309'], // Fall colors
+      particleCount: event === 'diwali' ? 45 : 30,
+      direction: event === 'diwali' ? 'up' : 'down',
+      speed: { min: 8, max: 15 },
+      shapes: event === 'diwali'
+        ? ['sparkle', 'sparkle', 'sparkle', 'circle'] // More sparkles for Diwali
+        : ['leaf', 'leaf', 'leaf', 'circle'], // More leaves for autumn
+      glowColors: event === 'diwali'
+        ? ['rgba(251, 191, 36, 0.2)', 'rgba(232, 121, 249, 0.15)']
+        : ['rgba(251, 146, 60, 0.12)', 'rgba(180, 83, 9, 0.1)'],
+    },
+  };
+
+  return configs[season];
+}
+
+// Generate particles based on season config
+function generateSeasonalParticles(config: SeasonConfig) {
+  const particles = [];
+
+  for (let i = 0; i < config.particleCount; i++) {
+    const color = config.colors[Math.floor(Math.random() * config.colors.length)];
+    const shape = config.shapes[Math.floor(Math.random() * config.shapes.length)];
+
+    // Determine size based on shape type
+    let size: number;
+    switch (shape) {
+      case 'snowflake':
+        size = 12 + Math.random() * 12; // 12-24px
+        break;
+      case 'leaf':
+        size = 14 + Math.random() * 10; // 14-24px
+        break;
+      case 'petal':
+        size = 12 + Math.random() * 10; // 12-22px
+        break;
+      case 'sparkle':
+        size = 10 + Math.random() * 12; // 10-22px
+        break;
+      default: // circle
+        size = 2 + Math.random() * 4; // 2-6px (small glowing dots)
+    }
+
+    particles.push({
+      id: i,
+      x: Math.random() * 100,
+      y: config.direction === 'down' ? Math.random() * 30 : 70 + Math.random() * 30,
+      size,
+      duration: config.speed.min + Math.random() * (config.speed.max - config.speed.min),
+      delay: Math.random() * 10,
+      color,
+      shape,
+      rotation: Math.random() * 360,
+      wobble: Math.random() * 30 - 15, // -15 to 15 degrees wobble
+    });
+  }
+
+  return particles;
+}
+
+// SVG Shape Components
+function SnowflakeShape({ size, color }: { size: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <g stroke={color} strokeWidth="1.5" strokeLinecap="round">
+        {/* Main cross */}
+        <line x1="12" y1="2" x2="12" y2="22" />
+        <line x1="2" y1="12" x2="22" y2="12" />
+        {/* Diagonal lines */}
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+        <line x1="19.07" y1="4.93" x2="4.93" y2="19.07" />
+        {/* Small branches */}
+        <line x1="12" y1="2" x2="9" y2="5" />
+        <line x1="12" y1="2" x2="15" y2="5" />
+        <line x1="12" y1="22" x2="9" y2="19" />
+        <line x1="12" y1="22" x2="15" y2="19" />
+        <line x1="2" y1="12" x2="5" y2="9" />
+        <line x1="2" y1="12" x2="5" y2="15" />
+        <line x1="22" y1="12" x2="19" y2="9" />
+        <line x1="22" y1="12" x2="19" y2="15" />
+      </g>
+    </svg>
+  );
+}
+
+function LeafShape({ size, color }: { size: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <path d="M12 2C6.5 2 2 6.5 2 12c0 2.5 1 4.8 2.5 6.5L12 22l7.5-3.5C21 16.8 22 14.5 22 12c0-5.5-4.5-10-10-10z" opacity="0.9" />
+      <path d="M12 6v12M8 10c2 2 4 2 4 2s2 0 4-2" stroke={color} strokeWidth="0.5" fill="none" opacity="0.5" />
+    </svg>
+  );
+}
+
+function PetalShape({ size, color }: { size: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <ellipse cx="12" cy="12" rx="5" ry="10" opacity="0.8" />
+    </svg>
+  );
+}
+
+function SparkleShape({ size, color }: { size: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
+    </svg>
+  );
+}
 
 // Custom icons to avoid deprecation warnings
 function GithubIcon({ size = 20 }: { size?: number }) {
@@ -25,88 +246,116 @@ function LinkedinIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-// Particle field data
-const particles = [
-  { x: 5, y: 90, size: 3, duration: 15, delay: 0, color: 'cyan' },
-  { x: 12, y: 85, size: 2, duration: 18, delay: 2, color: 'pink' },
-  { x: 20, y: 95, size: 4, duration: 14, delay: 1, color: 'cyan' },
-  { x: 28, y: 88, size: 2, duration: 20, delay: 3, color: 'cyan' },
-  { x: 35, y: 92, size: 3, duration: 16, delay: 0.5, color: 'pink' },
-  { x: 42, y: 87, size: 2, duration: 19, delay: 4, color: 'cyan' },
-  { x: 50, y: 93, size: 4, duration: 15, delay: 1.5, color: 'pink' },
-  { x: 58, y: 89, size: 2, duration: 17, delay: 2.5, color: 'cyan' },
-  { x: 65, y: 94, size: 3, duration: 18, delay: 0, color: 'cyan' },
-  { x: 72, y: 86, size: 2, duration: 14, delay: 3.5, color: 'pink' },
-  { x: 80, y: 91, size: 4, duration: 16, delay: 1, color: 'cyan' },
-  { x: 88, y: 88, size: 2, duration: 20, delay: 2, color: 'pink' },
-  { x: 95, y: 95, size: 3, duration: 15, delay: 4.5, color: 'cyan' },
-  { x: 8, y: 82, size: 2, duration: 22, delay: 5, color: 'pink' },
-  { x: 25, y: 80, size: 3, duration: 17, delay: 6, color: 'cyan' },
-  { x: 45, y: 85, size: 2, duration: 21, delay: 7, color: 'cyan' },
-  { x: 62, y: 83, size: 3, duration: 16, delay: 5.5, color: 'pink' },
-  { x: 78, y: 81, size: 2, duration: 19, delay: 6.5, color: 'cyan' },
-  { x: 92, y: 84, size: 3, duration: 18, delay: 7.5, color: 'pink' },
-  { x: 15, y: 78, size: 2, duration: 23, delay: 8, color: 'cyan' },
-];
+// Render the appropriate shape based on particle config
+function ParticleShape({ shape, size, color }: { shape: string; size: number; color: string }) {
+  switch (shape) {
+    case 'snowflake':
+      return <SnowflakeShape size={size} color={color} />;
+    case 'leaf':
+      return <LeafShape size={size} color={color} />;
+    case 'petal':
+      return <PetalShape size={size} color={color} />;
+    case 'sparkle':
+      return <SparkleShape size={size} color={color} />;
+    default:
+      return null; // Circle is handled by the div itself
+  }
+}
 
-// Particle Field background component
+// Seasonal Particle Field background component
 function AnimatedBackground() {
+  // Memoize season config and particles to prevent recalculation on re-renders
+  const seasonConfig = useMemo(() => getSeasonConfig(), []);
+  const particles = useMemo(() => generateSeasonalParticles(seasonConfig), [seasonConfig]);
+
+  // Determine animation based on direction
+  const getAnimation = (particle: ReturnType<typeof generateSeasonalParticles>[0]) => {
+    const { direction } = seasonConfig;
+
+    if (direction === 'down') {
+      // Falling animation (snowflakes, leaves)
+      return {
+        y: [0, 800],
+        x: [0, particle.wobble, -particle.wobble, particle.wobble, 0],
+        rotate: [particle.rotation, particle.rotation + 360],
+        opacity: [0, 1, 1, 0],
+        scale: [0.5, 1, 1, 0.5],
+      };
+    } else if (direction === 'up') {
+      // Rising animation (fireflies, sparkles)
+      return {
+        y: [0, -800],
+        opacity: [0, 1, 1, 0],
+        scale: [0.3, 1, 1.2, 0.5],
+      };
+    } else {
+      // Float animation (petals - gentle side-to-side)
+      return {
+        y: [0, -400, -800],
+        x: [0, particle.wobble * 3, -particle.wobble * 2, particle.wobble * 2, 0],
+        rotate: [particle.rotation, particle.rotation + 180],
+        opacity: [0, 1, 1, 0],
+        scale: [0.5, 1, 0.8],
+      };
+    }
+  };
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Subtle gradient base */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a192f] via-[#0a192f] to-[#0d1f3c]" />
 
-      {/* Floating particles */}
-      {particles.map((particle, i) => (
+      {/* Seasonal particles */}
+      {particles.map((particle) => (
         <motion.div
-          key={i}
-          className="absolute rounded-full"
+          key={particle.id}
+          className="absolute flex items-center justify-center"
           style={{
-            width: particle.size,
-            height: particle.size,
             left: `${particle.x}%`,
-            bottom: `${100 - particle.y}%`,
-            background: particle.color === 'cyan'
-              ? 'radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%)'
-              : 'radial-gradient(circle, #db2777 0%, rgba(219, 39, 119, 0) 70%)',
-            boxShadow: particle.color === 'cyan'
-              ? '0 0 6px 2px rgba(6, 182, 212, 0.4)'
-              : '0 0 6px 2px rgba(219, 39, 119, 0.4)',
+            top: seasonConfig.direction === 'down' ? `${particle.y - 30}%` : undefined,
+            bottom: seasonConfig.direction !== 'down' ? `${100 - particle.y}%` : undefined,
+            width: particle.shape === 'circle' ? particle.size : 'auto',
+            height: particle.shape === 'circle' ? particle.size : 'auto',
+            ...(particle.shape === 'circle' && {
+              background: `radial-gradient(circle, ${particle.color} 0%, transparent 70%)`,
+              boxShadow: `0 0 8px 3px ${particle.color}40`,
+              borderRadius: '50%',
+            }),
           }}
-          animate={{
-            y: [0, -800],
-            opacity: [0, 1, 1, 0],
-            scale: [0.5, 1, 1, 0.5],
-          }}
+          animate={getAnimation(particle)}
           transition={{
             duration: particle.duration,
             delay: particle.delay,
             repeat: Infinity,
-            ease: 'linear',
-            times: [0, 0.1, 0.9, 1],
+            ease: seasonConfig.direction === 'down' ? 'easeIn' : 'linear',
+            times: seasonConfig.direction === 'float' ? [0, 0.5, 1] : [0, 0.1, 0.9, 1],
           }}
-        />
+        >
+          {particle.shape !== 'circle' && (
+            <ParticleShape shape={particle.shape} size={particle.size} color={particle.color} />
+          )}
+        </motion.div>
       ))}
 
-      {/* Subtle ambient glow at bottom */}
+      {/* Subtle ambient glow at bottom - uses seasonal colors */}
       <div
         className="absolute bottom-0 left-0 right-0 h-40"
         style={{
-          background: 'linear-gradient(to top, rgba(6, 182, 212, 0.05) 0%, transparent 100%)',
+          background: `linear-gradient(to top, ${seasonConfig.glowColors[0]} 0%, transparent 100%)`,
         }}
       />
 
-      {/* Subtle ambient glow at top corners */}
+      {/* Subtle ambient glow at top corners - uses seasonal colors */}
       <div
         className="absolute top-0 right-0 w-96 h-96 opacity-30"
         style={{
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
+          background: `radial-gradient(circle, ${seasonConfig.glowColors[0]} 0%, transparent 70%)`,
         }}
       />
       <div
         className="absolute top-0 left-0 w-80 h-80 opacity-20"
         style={{
-          background: 'radial-gradient(circle, rgba(219, 39, 119, 0.1) 0%, transparent 70%)',
+          background: `radial-gradient(circle, ${seasonConfig.glowColors[1] || seasonConfig.glowColors[0]} 0%, transparent 70%)`,
         }}
       />
     </div>
