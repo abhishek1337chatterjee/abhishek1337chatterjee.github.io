@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import type { Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   MessageCircle,
   X,
@@ -33,16 +34,15 @@ function MessageContent({ content }: { content: string }) {
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  // Check if text contains a phone number and render with copy button
-  const renderWithPhoneSupport = (text: string): React.ReactNode => {
+  // Process text to detect and render phone numbers with copy button
+  const processPhoneNumbers = (text: string): ReactNode[] => {
     const phonePattern = /(\+91\s?\d{10}|\+91[-.\s]?\d{5}[-.\s]?\d{5})/g;
     const parts = text.split(phonePattern);
 
-    if (parts.length === 1) return text;
-
     return parts.map((part, index) => {
-      if (phonePattern.test(part)) {
-        phonePattern.lastIndex = 0; // Reset regex
+      // Check if this part matches phone pattern
+      const isPhone = /^\+91[\s\d.-]+$/.test(part) && part.replace(/[-.\s]/g, '').length >= 12;
+      if (isPhone) {
         return (
           <span key={index} className="inline-flex items-center gap-1">
             <a
@@ -66,25 +66,43 @@ function MessageContent({ content }: { content: string }) {
           </span>
         );
       }
-      return part;
+      return part || null;
     });
+  };
+
+  // Recursively process children to handle phone numbers in text nodes
+  const processChildren = (children: ReactNode): ReactNode => {
+    if (typeof children === 'string') {
+      const processed = processPhoneNumbers(children);
+      return processed.length === 1 ? processed[0] : <>{processed}</>;
+    }
+    if (Array.isArray(children)) {
+      return children.map((child, i) => <span key={i}>{processChildren(child)}</span>);
+    }
+    return children;
   };
 
   // Custom components for ReactMarkdown
   const markdownComponents: Components = {
     // Headings
     h1: ({ children }) => (
-      <h1 className="text-lg font-bold text-[#ccd6f6] mt-3 mb-2 first:mt-0">{children}</h1>
+      <h1 className="text-lg font-bold text-[#ccd6f6] mt-3 mb-2 first:mt-0">
+        {processChildren(children)}
+      </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="text-base font-bold text-[#ccd6f6] mt-3 mb-2 first:mt-0">{children}</h2>
+      <h2 className="text-base font-bold text-[#ccd6f6] mt-3 mb-2 first:mt-0">
+        {processChildren(children)}
+      </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-sm font-bold text-[#ccd6f6] mt-2 mb-1 first:mt-0">{children}</h3>
+      <h3 className="text-sm font-bold text-[#ccd6f6] mt-2 mb-1 first:mt-0">
+        {processChildren(children)}
+      </h3>
     ),
 
     // Paragraphs
-    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+    p: ({ children }) => <p className="mb-2 last:mb-0">{processChildren(children)}</p>,
 
     // Links
     a: ({ href, children }) => {
@@ -94,7 +112,7 @@ function MessageContent({ content }: { content: string }) {
           href={href}
           target={isEmail ? undefined : '_blank'}
           rel={isEmail ? undefined : 'noopener noreferrer'}
-          className="inline-flex items-center gap-0.5 text-[#06b6d4] hover:text-[#22d3ee] underline underline-offset-2 transition-colors"
+          className="inline-flex items-center gap-0.5 text-[#06b6d4] hover:text-[#22d3ee] underline underline-offset-2 transition-colors break-all"
         >
           {children}
           <ExternalLink size={11} className="inline flex-shrink-0" />
@@ -105,7 +123,7 @@ function MessageContent({ content }: { content: string }) {
     // Lists
     ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-    li: ({ children }) => <li className="text-[#ccd6f6]">{children}</li>,
+    li: ({ children }) => <li className="text-[#ccd6f6]">{processChildren(children)}</li>,
 
     // Code
     code: ({ className, children }) => {
@@ -129,29 +147,25 @@ function MessageContent({ content }: { content: string }) {
     // Blockquote
     blockquote: ({ children }) => (
       <blockquote className="border-l-2 border-[#06b6d4] pl-3 my-2 text-[#8892b0] italic">
-        {children}
+        {processChildren(children)}
       </blockquote>
     ),
 
     // Bold and italic
-    strong: ({ children }) => <strong className="font-bold text-[#ccd6f6]">{children}</strong>,
-    em: ({ children }) => <em className="italic text-[#a8b2d1]">{children}</em>,
+    strong: ({ children }) => (
+      <strong className="font-bold text-[#ccd6f6]">{processChildren(children)}</strong>
+    ),
+    em: ({ children }) => <em className="italic text-[#a8b2d1]">{processChildren(children)}</em>,
 
     // Horizontal rule
     hr: () => <hr className="border-[#8892b0]/20 my-3" />,
-
-    // Text nodes - handle phone numbers
-    text: ({ children }) => {
-      if (typeof children === 'string') {
-        return <>{renderWithPhoneSupport(children)}</>;
-      }
-      return <>{children}</>;
-    },
   };
 
   return (
     <div className="markdown-content">
-      <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }

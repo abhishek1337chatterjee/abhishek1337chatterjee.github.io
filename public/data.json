@@ -142,7 +142,7 @@
   },
 
   "interests": [
-    "Open source contributor and advocate",
+    "Open source enthusiast and advocate",
     "Linux enthusiast (especially Ubuntu)",
     "Watching cricket",
     "Assembling PCs",
@@ -163,9 +163,9 @@
   },
 
   "openSource": {
-    "description": "Active contributor to various open source projects on GitHub",
+    "description": "Passionate open source enthusiast who actively uses and advocates for open source software",
     "github": "https://github.com/abhishek1337chatterjee",
-    "activities": ["Bug fixes", "Feature implementations", "Documentation improvements"]
+    "activities": ["Using open source tools and frameworks", "Reporting issues and bugs on GitHub", "Advocating for open source adoption"]
   },
 
   "lastUpdated": "2025-12-27"
