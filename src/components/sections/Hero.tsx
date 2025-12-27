@@ -75,57 +75,57 @@ function getSeasonConfig(): SeasonConfig {
       season: 'winter',
       event,
       colors: event === 'christmas'
-        ? ['#ffffff', '#a5f3fc', '#fca5a5', '#86efac'] // White, ice blue, red, green for Christmas
+        ? ['#ffffffcc', '#a5f3fccc', '#fca5a5aa', '#86efacaa'] // Softer with transparency
         : event === 'newyear'
-          ? ['#fbbf24', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#ffffff'] // Gold, orange, pink, purple, cyan for New Year
-          : ['#ffffff', '#e0f2fe', '#bae6fd', '#7dd3fc'], // White and ice blues
-      particleCount: event === 'newyear' ? 45 : 35,
+          ? ['#fbbf24cc', '#f59e0bcc', '#ec4899aa', '#8b5cf6aa', '#06b6d4aa'] // Softer golds/pinks
+          : ['#ffffffbb', '#e0f2febb', '#bae6fdaa', '#7dd3fcaa'], // Soft ice blues
+      particleCount: event === 'newyear' ? 25 : 20,
       direction: event === 'newyear' ? 'up' : 'down',
-      speed: event === 'newyear' ? { min: 10, max: 18 } : { min: 12, max: 20 },
+      speed: { min: 18, max: 28 }, // Slower, more gentle
       shapes: event === 'newyear'
-        ? ['sparkle', 'sparkle', 'sparkle', 'circle'] // Firework sparkles for New Year
-        : ['snowflake', 'snowflake', 'snowflake', 'circle'], // More snowflakes
+        ? ['sparkle', 'sparkle', 'circle', 'circle'] // Balanced mix
+        : ['snowflake', 'snowflake', 'circle', 'circle'],
       glowColors: event === 'christmas'
-        ? ['rgba(239, 68, 68, 0.1)', 'rgba(34, 197, 94, 0.1)']
+        ? ['rgba(239, 68, 68, 0.06)', 'rgba(34, 197, 94, 0.06)']
         : event === 'newyear'
-          ? ['rgba(251, 191, 36, 0.2)', 'rgba(236, 72, 153, 0.15)'] // Golden and pink glow
-          : ['rgba(186, 230, 253, 0.1)', 'rgba(255, 255, 255, 0.05)'],
+          ? ['rgba(251, 191, 36, 0.08)', 'rgba(236, 72, 153, 0.06)']
+          : ['rgba(186, 230, 253, 0.06)', 'rgba(255, 255, 255, 0.03)'],
     },
     spring: {
       season: 'spring',
       event: null,
-      colors: ['#ff69b4', '#ff85c1', '#f9a8d4', '#e879f9', '#a7f3d0'], // Brighter pinks, magenta, mint
-      particleCount: 35,
+      colors: ['#ff69b4aa', '#ff85c1aa', '#f9a8d4aa', '#e879f9aa', '#a7f3d0aa'], // Softer pinks
+      particleCount: 20,
       direction: 'float',
-      speed: { min: 12, max: 20 },
-      shapes: ['petal', 'petal', 'petal', 'circle'], // More petals
-      glowColors: ['rgba(249, 168, 212, 0.15)', 'rgba(232, 121, 249, 0.12)'],
+      speed: { min: 20, max: 30 }, // Slower float
+      shapes: ['petal', 'petal', 'circle', 'circle'],
+      glowColors: ['rgba(249, 168, 212, 0.08)', 'rgba(232, 121, 249, 0.06)'],
     },
     summer: {
       season: 'summer',
       event: null,
-      colors: ['#fef08a', '#fde047', '#facc15', '#fb923c', '#f97316'], // Brighter yellows and oranges
-      particleCount: 30,
+      colors: ['#fef08acc', '#fde047aa', '#facc15aa', '#fb923caa'], // Softer yellows
+      particleCount: 18,
       direction: 'up',
-      speed: { min: 15, max: 22 },
-      shapes: ['sparkle', 'sparkle', 'sparkle', 'circle'], // More sparkles
-      glowColors: ['rgba(250, 204, 21, 0.15)', 'rgba(251, 146, 60, 0.12)'],
+      speed: { min: 22, max: 32 }, // Gentle rise
+      shapes: ['sparkle', 'sparkle', 'circle', 'circle'],
+      glowColors: ['rgba(250, 204, 21, 0.08)', 'rgba(251, 146, 60, 0.06)'],
     },
     autumn: {
       season: 'autumn',
       event,
       colors: event === 'diwali'
-        ? ['#fbbf24', '#f59e0b', '#ef4444', '#e879f9', '#06b6d4'] // Diwali: brighter golds, oranges, reds, purples
-        : ['#fed7aa', '#fdba74', '#fb923c', '#dc2626', '#b45309'], // Fall colors
-      particleCount: event === 'diwali' ? 45 : 30,
+        ? ['#fbbf24cc', '#f59e0baa', '#ef4444aa', '#e879f9aa', '#06b6d4aa'] // Softer Diwali colors
+        : ['#fed7aaaa', '#fdba74aa', '#fb923caa', '#dc2626aa', '#b45309aa'], // Soft fall colors
+      particleCount: event === 'diwali' ? 25 : 18,
       direction: event === 'diwali' ? 'up' : 'down',
-      speed: { min: 8, max: 15 },
+      speed: { min: 16, max: 26 }, // Gentler fall
       shapes: event === 'diwali'
-        ? ['sparkle', 'sparkle', 'sparkle', 'circle'] // More sparkles for Diwali
-        : ['leaf', 'leaf', 'leaf', 'circle'], // More leaves for autumn
+        ? ['sparkle', 'sparkle', 'circle', 'circle']
+        : ['leaf', 'leaf', 'circle', 'circle'],
       glowColors: event === 'diwali'
-        ? ['rgba(251, 191, 36, 0.2)', 'rgba(232, 121, 249, 0.15)']
-        : ['rgba(251, 146, 60, 0.12)', 'rgba(180, 83, 9, 0.1)'],
+        ? ['rgba(251, 191, 36, 0.1)', 'rgba(232, 121, 249, 0.06)']
+        : ['rgba(251, 146, 60, 0.06)', 'rgba(180, 83, 9, 0.05)'],
     },
   };
 
@@ -140,23 +140,23 @@ function generateSeasonalParticles(config: SeasonConfig) {
     const color = config.colors[Math.floor(Math.random() * config.colors.length)];
     const shape = config.shapes[Math.floor(Math.random() * config.shapes.length)];
 
-    // Determine size based on shape type
+    // Determine size based on shape type - kept subtle to avoid distraction
     let size: number;
     switch (shape) {
       case 'snowflake':
-        size = 12 + Math.random() * 12; // 12-24px
+        size = 6 + Math.random() * 6; // 6-12px (subtle)
         break;
       case 'leaf':
-        size = 14 + Math.random() * 10; // 14-24px
+        size = 8 + Math.random() * 6; // 8-14px (subtle)
         break;
       case 'petal':
-        size = 12 + Math.random() * 10; // 12-22px
+        size = 6 + Math.random() * 6; // 6-12px (subtle)
         break;
       case 'sparkle':
-        size = 10 + Math.random() * 12; // 10-22px
+        size = 5 + Math.random() * 6; // 5-11px (subtle)
         break;
       default: // circle
-        size = 2 + Math.random() * 4; // 2-6px (small glowing dots)
+        size = 1.5 + Math.random() * 2; // 1.5-3.5px (tiny glowing dots)
     }
 
     particles.push({
@@ -176,11 +176,11 @@ function generateSeasonalParticles(config: SeasonConfig) {
   return particles;
 }
 
-// SVG Shape Components
+// SVG Shape Components - kept subtle with reduced opacity
 function SnowflakeShape({ size, color }: { size: number; color: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <g stroke={color} strokeWidth="1.5" strokeLinecap="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" opacity="0.6">
+      <g stroke={color} strokeWidth="1" strokeLinecap="round">
         {/* Main cross */}
         <line x1="12" y1="2" x2="12" y2="22" />
         <line x1="2" y1="12" x2="22" y2="12" />
@@ -192,10 +192,6 @@ function SnowflakeShape({ size, color }: { size: number; color: string }) {
         <line x1="12" y1="2" x2="15" y2="5" />
         <line x1="12" y1="22" x2="9" y2="19" />
         <line x1="12" y1="22" x2="15" y2="19" />
-        <line x1="2" y1="12" x2="5" y2="9" />
-        <line x1="2" y1="12" x2="5" y2="15" />
-        <line x1="22" y1="12" x2="19" y2="9" />
-        <line x1="22" y1="12" x2="19" y2="15" />
       </g>
     </svg>
   );
@@ -203,24 +199,23 @@ function SnowflakeShape({ size, color }: { size: number; color: string }) {
 
 function LeafShape({ size, color }: { size: number; color: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-      <path d="M12 2C6.5 2 2 6.5 2 12c0 2.5 1 4.8 2.5 6.5L12 22l7.5-3.5C21 16.8 22 14.5 22 12c0-5.5-4.5-10-10-10z" opacity="0.9" />
-      <path d="M12 6v12M8 10c2 2 4 2 4 2s2 0 4-2" stroke={color} strokeWidth="0.5" fill="none" opacity="0.5" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} opacity="0.5">
+      <path d="M12 2C6.5 2 2 6.5 2 12c0 2.5 1 4.8 2.5 6.5L12 22l7.5-3.5C21 16.8 22 14.5 22 12c0-5.5-4.5-10-10-10z" />
     </svg>
   );
 }
 
 function PetalShape({ size, color }: { size: number; color: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-      <ellipse cx="12" cy="12" rx="5" ry="10" opacity="0.8" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} opacity="0.5">
+      <ellipse cx="12" cy="12" rx="5" ry="10" />
     </svg>
   );
 }
 
 function SparkleShape({ size, color }: { size: number; color: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color} opacity="0.6">
       <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
     </svg>
   );
@@ -318,7 +313,7 @@ function AnimatedBackground() {
             height: particle.shape === 'circle' ? particle.size : 'auto',
             ...(particle.shape === 'circle' && {
               background: `radial-gradient(circle, ${particle.color} 0%, transparent 70%)`,
-              boxShadow: `0 0 8px 3px ${particle.color}40`,
+              boxShadow: `0 0 4px 1px ${particle.color}30`,
               borderRadius: '50%',
             }),
           }}
