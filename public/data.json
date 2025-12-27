@@ -1,0 +1,35 @@
+{
+  "name": "Abhishek Chatterjee",
+  "title": "Serverless Engineer & React Developer",
+  "location": "India",
+  "experience": "2+ years",
+  "currentRole": "Serverless Engineer at a Fintech company",
+  "about": "Passionate Software Engineer with 2+ years of experience building scalable applications. Started as a Frontend Developer crafting UIs with React, now architecting cloud-native solutions as a Serverless Engineer.",
+  "journey": [
+    "Started as Frontend Developer (1 year) building UIs with React",
+    "Currently working as Serverless Engineer at a Fintech company",
+    "Architecting cloud-native solutions using AWS services"
+  ],
+  "skills": {
+    "frontend": ["React", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    "cloud": ["AWS Lambda", "Step Functions", "EventBridge", "SQS", "SNS", "Cognito", "SES"],
+    "backend": ["Node.js", "Serverless Framework"],
+    "cms": ["Sanity CMS"],
+    "workflow": ["Temporal.io"],
+    "devops": ["Docker", "Linux (Ubuntu)", "Mockoon"],
+    "other": ["Git", "GitHub", "Open Source"]
+  },
+  "interests": [
+    "Open source contributor and advocate",
+    "Linux enthusiast (especially Ubuntu)",
+    "Watching cricket",
+    "Assembling PCs",
+    "Exploring new technologies"
+  ],
+  "contact": {
+    "github": "https://github.com/abhishek1337chatterjee",
+    "linkedin": "https://www.linkedin.com/in/abhishekchatterjee-saheb1337",
+    "portfolio": "https://abhishek1337chatterjee.github.io"
+  },
+  "lastUpdated": "2025-12-27"
+}
