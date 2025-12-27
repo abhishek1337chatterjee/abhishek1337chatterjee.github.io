@@ -3,61 +3,166 @@
   "title": "Serverless Engineer & React Developer",
   "location": "India",
   "experience": "2+ years",
-  "currentRole": "Serverless Engineer at a Fintech company",
-  "about": "Passionate Software Engineer with 2+ years of experience building scalable applications. Started as a Frontend Developer crafting UIs with React, now architecting cloud-native solutions as a Serverless Engineer.",
-  "journey": [
-    "Started as Frontend Developer (1 year) building UIs with React",
-    "Currently working as Serverless Engineer at a Fintech company",
-    "Architecting cloud-native solutions using AWS services"
-  ],
-  "skills": {
-    "frontend": ["React", "TypeScript", "Tailwind CSS", "Framer Motion"],
-    "cloud": ["AWS Lambda", "Step Functions", "EventBridge", "SQS", "SNS", "Cognito", "SES"],
-    "backend": ["Node.js", "Serverless Framework"],
-    "cms": ["Sanity CMS"],
-    "workflow": ["Temporal.io"],
-    "devops": ["Docker", "Linux (Ubuntu)", "Mockoon"],
-    "other": ["Git", "GitHub", "Open Source"]
-  },
-  "projects": [
+  "highlights": ["2+ Years Experience", "Serverless Engineer", "Linux Enthusiast", "Open Source Lover"],
+
+  "about": "Passionate Software Engineer with 2+ years of experience building scalable applications. Started as a Frontend Developer crafting UIs with React, now architecting cloud-native solutions as a Serverless Engineer. Beyond my day job, I'm constantly exploring new technologies like Docker for containerization and Mockoon for API mocking. I'm a big advocate of open source and love working with Linux servers, especially Ubuntu.",
+
+  "workExperience": [
     {
-      "name": "Portfolio Website",
-      "description": "Personal portfolio with AI chatbot, seasonal particle effects, and modern UI",
-      "tech": ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "Vercel AI SDK"],
-      "features": ["AI-powered chatbot", "Responsive design", "Seasonal animations", "Dark theme"],
-      "link": "https://abhishek1337chatterjee.github.io"
+      "role": "Serverless Engineer",
+      "company": "time.money",
+      "companyWebsite": "https://time.money",
+      "type": "Fintech",
+      "period": "2024 - Present",
+      "location": "India",
+      "description": "Building scalable serverless architectures and event-driven systems for fintech applications.",
+      "highlights": ["AWS Lambda", "Step Functions", "EventBridge", "SQS", "SNS", "Cognito", "SES"],
+      "responsibilities": [
+        "Architecting cloud-native solutions using AWS services",
+        "Building event-driven systems with Step Functions and EventBridge",
+        "Implementing authentication with Cognito",
+        "Email services using SES"
+      ]
     },
     {
-      "name": "Glance Dashboard",
-      "description": "A microservices monitoring dashboard for tracking service health and metrics",
-      "tech": ["React", "TypeScript", "Tailwind CSS"],
-      "features": ["Real-time monitoring", "Service health checks", "Interactive UI"]
-    },
-    {
-      "name": "Serverless API Backend",
-      "description": "Backend API service built with Serverless Framework and AWS Lambda",
-      "tech": ["Node.js", "AWS Lambda", "API Gateway", "Groq AI"],
-      "features": ["Streaming responses", "CORS support", "AI integration"]
-    },
-    {
-      "name": "Open Source Contributions",
-      "description": "Active contributor to various open source projects on GitHub",
-      "tech": ["Various"],
-      "features": ["Bug fixes", "Feature implementations", "Documentation improvements"],
-      "link": "https://github.com/abhishek1337chatterjee"
+      "role": "MERN Stack Developer / Frontend Developer",
+      "company": "Latitude Technolabs",
+      "companyWebsite": "https://latitudetechnolabs.com",
+      "period": "2023 - 2024",
+      "location": "India",
+      "description": "Specialized in frontend development and client-focused solutions. Proactive in API development with technologies like Appwrite.",
+      "highlights": ["React", "TypeScript", "Redux", "Appwrite", "Canvas API"],
+      "responsibilities": [
+        "Frontend architecture and development",
+        "Canvas integration for product customization",
+        "Payment API integration",
+        "Building eCommerce platforms"
+      ],
+      "projects": [
+        {
+          "name": "Jet Prints",
+          "description": "Advanced eCommerce platform for custom printing on products like mugs and business cards. Integrated PDF upload and payment processing.",
+          "tech": ["React", "Redux", "TypeScript", "Express.js", "Node.js", "Canvas API"],
+          "features": ["Custom product design", "PDF upload", "Payment processing", "Canvas-based editor"],
+          "status": "Discontinued"
+        }
+      ]
     }
   ],
+
+  "education": [
+    {
+      "institution": "Masai School",
+      "program": "Full Stack Web Development",
+      "period": "2022 - 2023",
+      "duration": "11 months",
+      "description": "Intensive 11-month bootcamp transforming into a full-stack developer. Built multiple collaborative projects with teams.",
+      "highlights": ["MERN Stack", "React", "Node.js", "MongoDB", "Team Collaboration"]
+    }
+  ],
+
+  "skills": {
+    "frontend": ["HTML", "CSS", "JavaScript", "TypeScript", "React.js", "Next.js", "Redux", "Tailwind CSS", "Framer Motion", "Chakra UI"],
+    "backend": ["Node.js", "Express.js", "MongoDB"],
+    "cloud": ["AWS Lambda", "Step Functions", "EventBridge", "SQS", "SNS", "Cognito", "SES", "API Gateway"],
+    "cms": ["Sanity CMS"],
+    "workflow": ["Temporal.io"],
+    "devops": ["Docker", "Docker Compose", "Linux (Ubuntu)", "Mockoon", "Vercel"],
+    "tools": ["Git", "GitHub", "NPM", "Cypress", "VS Code", "GraphQL", "REST APIs"]
+  },
+
+  "projects": {
+    "personal": [
+      {
+        "name": "Glance Dashboard",
+        "description": "Self-hosted personal dashboard with two custom Node.js microservices for specialized RSS feed generation. Features GitHub security advisories, kernel.org LTS tracking, movie/OTT feeds, and more. Deployed via Docker Compose with health checks and auto-start.",
+        "tech": ["Node.js 24", "Express.js 5", "Docker", "Docker Compose", "GraphQL", "REST APIs", "RSS/Atom"],
+        "features": [
+          "GitHub Security Advisory feeds via GraphQL",
+          "Kernel.org LTS release tracking",
+          "Movie/OTT streaming feeds (TMDb + OMDb)",
+          "15+ RSS endpoints across services",
+          "30-60 min in-memory caching",
+          "Health checks with dependency chain"
+        ],
+        "link": "https://glance.abhishekmediaserver.online"
+      },
+      {
+        "name": "Portfolio Website",
+        "description": "Personal portfolio with AI chatbot, seasonal particle effects, and modern UI built with React and TypeScript.",
+        "tech": ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "Vercel AI SDK", "Groq AI"],
+        "features": ["AI-powered chatbot", "Responsive design", "Seasonal animations", "Dark theme", "GitHub stats integration"],
+        "link": "https://abhishek1337chatterjee.github.io"
+      }
+    ],
+    "masaiSchool": [
+      {
+        "name": "Wearly Website",
+        "description": "Full-stack online fashion and cosmetic retailer. Built in 5 days as a collaborative team effort.",
+        "tech": ["React", "Redux", "React Router", "Chakra UI", "Node.js", "Express", "MongoDB"],
+        "features": ["Login/Signup", "Google Authentication", "Admin Section", "Cart", "Place Order"],
+        "teamSize": 5,
+        "duration": "5 days",
+        "github": "https://github.com/abhishek1337chatterjee/Wearly-Website",
+        "demo": "https://wearly.vercel.app/"
+      },
+      {
+        "name": "Pear Website",
+        "description": "Sleek product showcase website built with reference to apple.com.",
+        "tech": ["React", "Redux", "Axios", "React-Router-Dom", "Firebase-Auth", "Chakra-UI", "Vitejs"],
+        "features": ["Login/Signup", "Google Authentication", "Admin Section", "Cart", "Place Order"],
+        "teamSize": 5,
+        "duration": "5 days",
+        "github": "https://github.com/abhishek1337chatterjee/Pear-website",
+        "demo": "https://pear-website.netlify.app/"
+      },
+      {
+        "name": "Freshly Website",
+        "description": "Freshly delivers gourmet ready-made meals. Dedicated to making healthy eating and achieving health and fitness goals easier than ever.",
+        "tech": ["HTML", "CSS", "JavaScript"],
+        "features": ["Login/Signup using local storage", "Filtering Sorting", "Adding items to chart"],
+        "teamSize": 5,
+        "duration": "5 days",
+        "github": "https://github.com/abhishek1337chatterjee/freshly.com",
+        "demo": "https://fluffy-croquembouche-14d5f2.netlify.app/"
+      },
+      {
+        "name": "Fire Calculator",
+        "description": "Calculator that returns yearly expenses, retirement expenses, and the FIRE number - the amount needed to become financially independent.",
+        "tech": ["React", "React-Reducer", "CSS"],
+        "features": ["Calculate FIRE number", "Retirement planning"],
+        "github": "https://github.com/abhishek1337chatterjee/Fire-Calculator",
+        "demo": "https://fire-calculator-zeta.vercel.app/"
+      }
+    ]
+  },
+
   "interests": [
     "Open source contributor and advocate",
     "Linux enthusiast (especially Ubuntu)",
     "Watching cricket",
     "Assembling PCs",
-    "Exploring new technologies"
+    "Exploring new technologies",
+    "Self-hosting services"
   ],
+
   "contact": {
+    "email": "abhishek1337chatterjee@gmail.com",
+    "phone": "+91 8420739602",
+    "whatsapp": "https://wa.me/918420739602",
     "github": "https://github.com/abhishek1337chatterjee",
     "linkedin": "https://www.linkedin.com/in/abhishekchatterjee-saheb1337",
-    "portfolio": "https://abhishek1337chatterjee.github.io"
+    "twitter": "https://x.com/Abhishek1337C",
+    "portfolio": "https://abhishek1337chatterjee.github.io",
+    "resume": "https://abhishek1337chatterjee.github.io/Abhishek-Chatterjee-Resume.pdf",
+    "preferred": "Email or LinkedIn for professional inquiries"
   },
+
+  "openSource": {
+    "description": "Active contributor to various open source projects on GitHub",
+    "github": "https://github.com/abhishek1337chatterjee",
+    "activities": ["Bug fixes", "Feature implementations", "Documentation improvements"]
+  },
+
   "lastUpdated": "2025-12-27"
 }
