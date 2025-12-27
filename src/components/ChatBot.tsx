@@ -1,6 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Bot, User, Loader2, Copy, Check, ExternalLink } from 'lucide-react';
+import {
+  MessageCircle,
+  X,
+  Send,
+  Bot,
+  User,
+  Loader2,
+  Copy,
+  Check,
+  ExternalLink,
+} from 'lucide-react';
 
 // API endpoint from environment variable
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:3000/api/chat';
@@ -26,7 +36,8 @@ function MessageContent({ content }: { content: string }) {
     const elements: React.ReactNode[] = [];
 
     // Combined pattern: URLs, emails, phone numbers
-    const pattern = /(https?:\/\/[^\s,)]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+91\s?\d{10}|\+91[-.\s]?\d{5}[-.\s]?\d{5})/g;
+    const pattern =
+      /(https?:\/\/[^\s,)]+)|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|(\+91\s?\d{10}|\+91[-.\s]?\d{5}[-.\s]?\d{5})/g;
 
     let lastIndex = 0;
     let keyIndex = 0;
@@ -35,11 +46,7 @@ function MessageContent({ content }: { content: string }) {
     while (match !== null) {
       // Add text before the match
       if (match.index > lastIndex) {
-        elements.push(
-          <span key={`text-${keyIndex++}`}>
-            {text.slice(lastIndex, match.index)}
-          </span>
-        );
+        elements.push(<span key={`text-${keyIndex++}`}>{text.slice(lastIndex, match.index)}</span>);
       }
 
       const [, url, email, phone] = match;
@@ -59,7 +66,7 @@ function MessageContent({ content }: { content: string }) {
           >
             {cleanUrl.length > 35 ? `${cleanUrl.slice(0, 35)}...` : cleanUrl}
             <ExternalLink size={11} className="inline flex-shrink-0" />
-          </a>
+          </a>,
         );
 
         if (trailingPunc) {
@@ -74,7 +81,7 @@ function MessageContent({ content }: { content: string }) {
           >
             {email}
             <ExternalLink size={11} className="inline flex-shrink-0" />
-          </a>
+          </a>,
         );
       } else if (phone) {
         elements.push(
@@ -97,7 +104,7 @@ function MessageContent({ content }: { content: string }) {
                 <Copy size={12} className="text-[#8892b0] hover:text-[#06b6d4]" />
               )}
             </button>
-          </span>
+          </span>,
         );
       }
 
@@ -107,11 +114,7 @@ function MessageContent({ content }: { content: string }) {
 
     // Add remaining text
     if (lastIndex < text.length) {
-      elements.push(
-        <span key={`text-${keyIndex++}`}>
-          {text.slice(lastIndex)}
-        </span>
-      );
+      elements.push(<span key={`text-${keyIndex++}`}>{text.slice(lastIndex)}</span>);
     }
 
     return elements;
@@ -143,89 +146,87 @@ export default function ChatBot() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
 
-  const sendMessage = useCallback(async (userMessage: string) => {
-    if (!userMessage.trim() || isLoading) return;
+  const sendMessage = useCallback(
+    async (userMessage: string) => {
+      if (!userMessage.trim() || isLoading) return;
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: userMessage,
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
-    setIsLoading(true);
-    setError(null);
-
-    // Prepare messages for API (include history)
-    const apiMessages = [...messages, userMsg].map((m) => ({
-      role: m.role,
-      content: m.content,
-    }));
-
-    try {
-      const response = await fetch(CHAT_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMessages }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get response');
-      }
-
-      // Create assistant message placeholder
-      const assistantId = (Date.now() + 1).toString();
-      setMessages((prev) => [
-        ...prev,
-        { id: assistantId, role: 'assistant', content: '' },
-      ]);
-
-      // Read streaming response with word-by-word effect
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      const addWordWithDelay = async (word: string, id: string) => {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === id ? { ...m, content: m.content + word } : m
-          )
-        );
-        // Small delay for smoother word-by-word effect
-        await new Promise((resolve) => setTimeout(resolve, 15));
+      const userMsg: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: userMessage,
       };
 
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      setMessages((prev) => [...prev, userMsg]);
+      setInput('');
+      setIsLoading(true);
+      setError(null);
 
-          const chunk = decoder.decode(value, { stream: true });
-          buffer += chunk;
+      // Prepare messages for API (include history)
+      const apiMessages = [...messages, userMsg].map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
 
-          // Process buffer word by word
-          const words = buffer.split(/(\s+)/);
-          // Keep the last potentially incomplete word in buffer
-          buffer = words.pop() || '';
+      try {
+        const response = await fetch(CHAT_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: apiMessages }),
+        });
 
-          for (const word of words) {
-            await addWordWithDelay(word, assistantId);
+        if (!response.ok) {
+          throw new Error('Failed to get response');
+        }
+
+        // Create assistant message placeholder
+        const assistantId = (Date.now() + 1).toString();
+        setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
+
+        // Read streaming response with word-by-word effect
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        const addWordWithDelay = async (word: string, id: string) => {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === id ? { ...m, content: m.content + word } : m)),
+          );
+          // Small delay for smoother word-by-word effect
+          await new Promise((resolve) => setTimeout(resolve, 15));
+        };
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+
+            // Process buffer word by word
+            const words = buffer.split(/(\s+)/);
+            // Keep the last potentially incomplete word in buffer
+            buffer = words.pop() || '';
+
+            for (const word of words) {
+              await addWordWithDelay(word, assistantId);
+            }
+          }
+
+          // Add any remaining content in buffer
+          if (buffer) {
+            await addWordWithDelay(buffer, assistantId);
           }
         }
-
-        // Add any remaining content in buffer
-        if (buffer) {
-          await addWordWithDelay(buffer, assistantId);
-        }
+      } catch (err) {
+        console.error('Chat error:', err);
+        setError('Failed to send message. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error('Chat error:', err);
-      setError('Failed to send message. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [messages, isLoading]);
+    },
+    [messages, isLoading],
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -328,7 +329,8 @@ export default function ChatBot() {
                     <Bot size={16} className="text-white" />
                   </div>
                   <div className="max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed bg-[#112240] text-[#ccd6f6] rounded-bl-md border border-[#8892b0]/10">
-                    Hi! I'm Abhishek's AI assistant. Ask me anything about his skills, experience, or projects!
+                    Hi! I'm Abhishek's AI assistant. Ask me anything about his skills, experience,
+                    or projects!
                   </div>
                 </motion.div>
               )}
@@ -367,9 +369,8 @@ export default function ChatBot() {
                     {message.content ? (
                       <MessageContent content={message.content} />
                     ) : (
-                      message.role === 'assistant' && isLoading && (
-                        <Loader2 size={18} className="text-[#06b6d4] animate-spin" />
-                      )
+                      message.role === 'assistant' &&
+                      isLoading && <Loader2 size={18} className="text-[#06b6d4] animate-spin" />
                     )}
                   </div>
                 </motion.div>
@@ -392,20 +393,13 @@ export default function ChatBot() {
               )}
 
               {/* Error message */}
-              {error && (
-                <div className="text-center text-red-400 text-sm py-2">
-                  {error}
-                </div>
-              )}
+              {error && <div className="text-center text-red-400 text-sm py-2">{error}</div>}
 
               <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}
-            <form
-              onSubmit={handleSubmit}
-              className="p-4 border-t border-[#8892b0]/10 bg-[#0a192f]"
-            >
+            <form onSubmit={handleSubmit} className="p-4 border-t border-[#8892b0]/10 bg-[#0a192f]">
               <div className="flex gap-2">
                 <input
                   type="text"

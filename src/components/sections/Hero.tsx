@@ -74,22 +74,25 @@ function getSeasonConfig(): SeasonConfig {
     winter: {
       season: 'winter',
       event,
-      colors: event === 'christmas'
-        ? ['#ffffffcc', '#a5f3fccc', '#fca5a5aa', '#86efacaa'] // Softer with transparency
-        : event === 'newyear'
-          ? ['#fbbf24cc', '#f59e0bcc', '#ec4899aa', '#8b5cf6aa', '#06b6d4aa'] // Softer golds/pinks
-          : ['#ffffffbb', '#e0f2febb', '#bae6fdaa', '#7dd3fcaa'], // Soft ice blues
+      colors:
+        event === 'christmas'
+          ? ['#ffffffcc', '#a5f3fccc', '#fca5a5aa', '#86efacaa'] // Softer with transparency
+          : event === 'newyear'
+            ? ['#fbbf24cc', '#f59e0bcc', '#ec4899aa', '#8b5cf6aa', '#06b6d4aa'] // Softer golds/pinks
+            : ['#ffffffbb', '#e0f2febb', '#bae6fdaa', '#7dd3fcaa'], // Soft ice blues
       particleCount: event === 'newyear' ? 25 : 20,
       direction: event === 'newyear' ? 'up' : 'down',
       speed: { min: 18, max: 28 }, // Slower, more gentle
-      shapes: event === 'newyear'
-        ? ['sparkle', 'sparkle', 'circle', 'circle'] // Balanced mix
-        : ['snowflake', 'snowflake', 'circle', 'circle'],
-      glowColors: event === 'christmas'
-        ? ['rgba(239, 68, 68, 0.06)', 'rgba(34, 197, 94, 0.06)']
-        : event === 'newyear'
-          ? ['rgba(251, 191, 36, 0.08)', 'rgba(236, 72, 153, 0.06)']
-          : ['rgba(186, 230, 253, 0.06)', 'rgba(255, 255, 255, 0.03)'],
+      shapes:
+        event === 'newyear'
+          ? ['sparkle', 'sparkle', 'circle', 'circle'] // Balanced mix
+          : ['snowflake', 'snowflake', 'circle', 'circle'],
+      glowColors:
+        event === 'christmas'
+          ? ['rgba(239, 68, 68, 0.06)', 'rgba(34, 197, 94, 0.06)']
+          : event === 'newyear'
+            ? ['rgba(251, 191, 36, 0.08)', 'rgba(236, 72, 153, 0.06)']
+            : ['rgba(186, 230, 253, 0.06)', 'rgba(255, 255, 255, 0.03)'],
     },
     spring: {
       season: 'spring',
@@ -114,18 +117,21 @@ function getSeasonConfig(): SeasonConfig {
     autumn: {
       season: 'autumn',
       event,
-      colors: event === 'diwali'
-        ? ['#fbbf24cc', '#f59e0baa', '#ef4444aa', '#e879f9aa', '#06b6d4aa'] // Softer Diwali colors
-        : ['#fed7aaaa', '#fdba74aa', '#fb923caa', '#dc2626aa', '#b45309aa'], // Soft fall colors
+      colors:
+        event === 'diwali'
+          ? ['#fbbf24cc', '#f59e0baa', '#ef4444aa', '#e879f9aa', '#06b6d4aa'] // Softer Diwali colors
+          : ['#fed7aaaa', '#fdba74aa', '#fb923caa', '#dc2626aa', '#b45309aa'], // Soft fall colors
       particleCount: event === 'diwali' ? 25 : 18,
       direction: event === 'diwali' ? 'up' : 'down',
       speed: { min: 16, max: 26 }, // Gentler fall
-      shapes: event === 'diwali'
-        ? ['sparkle', 'sparkle', 'circle', 'circle']
-        : ['leaf', 'leaf', 'circle', 'circle'],
-      glowColors: event === 'diwali'
-        ? ['rgba(251, 191, 36, 0.1)', 'rgba(232, 121, 249, 0.06)']
-        : ['rgba(251, 146, 60, 0.06)', 'rgba(180, 83, 9, 0.05)'],
+      shapes:
+        event === 'diwali'
+          ? ['sparkle', 'sparkle', 'circle', 'circle']
+          : ['leaf', 'leaf', 'circle', 'circle'],
+      glowColors:
+        event === 'diwali'
+          ? ['rgba(251, 191, 36, 0.1)', 'rgba(232, 121, 249, 0.06)']
+          : ['rgba(251, 146, 60, 0.06)', 'rgba(180, 83, 9, 0.05)'],
     },
   };
 
@@ -224,7 +230,16 @@ function SparkleShape({ size, color }: { size: number; color: string }) {
 // Custom icons to avoid deprecation warnings
 function GithubIcon({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
       <path d="M9 18c-4.51 2-5-2-7-2" />
     </svg>
@@ -233,7 +248,16 @@ function GithubIcon({ size = 20 }: { size?: number }) {
 
 function LinkedinIcon({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
       <rect width="4" height="12" x="2" y="9" />
       <circle cx="4" cy="4" r="2" />
@@ -393,19 +417,16 @@ export default function Hero() {
           delay: 600 + index * 80,
           fill: 'forwards',
           easing: 'ease-out',
-        }
+        },
       );
 
       // Continuous shimmer
       lineAnim.onfinish = () => {
-        svgLine.animate(
-          [{ opacity: 0.5 }, { opacity: 0.9 }, { opacity: 0.5 }],
-          {
-            duration: 2500 + index * 150,
-            iterations: Infinity,
-            easing: 'ease-in-out',
-          }
-        );
+        svgLine.animate([{ opacity: 0.5 }, { opacity: 0.9 }, { opacity: 0.5 }], {
+          duration: 2500 + index * 150,
+          iterations: Infinity,
+          easing: 'ease-in-out',
+        });
       };
     });
   }, []);
@@ -519,7 +540,10 @@ export default function Hero() {
                   />
                   <span className="relative btn btn-ghost bg-[#0a192f] hover:bg-[#112240] text-[#06b6d4] gap-2 rounded-[6px]">
                     View Work
-                    <ArrowDown size={16} className="group-hover:translate-y-1 transition-transform" />
+                    <ArrowDown
+                      size={16}
+                      className="group-hover:translate-y-1 transition-transform"
+                    />
                   </span>
                 </span>
               </Link>
@@ -581,10 +605,20 @@ export default function Hero() {
                     </filter>
                     <linearGradient id="glowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#06b6d4">
-                        <animate attributeName="stop-color" values="#06b6d4;#db2777;#06b6d4" dur="6s" repeatCount="indefinite" />
+                        <animate
+                          attributeName="stop-color"
+                          values="#06b6d4;#db2777;#06b6d4"
+                          dur="6s"
+                          repeatCount="indefinite"
+                        />
                       </stop>
                       <stop offset="100%" stopColor="#db2777">
-                        <animate attributeName="stop-color" values="#db2777;#06b6d4;#db2777" dur="6s" repeatCount="indefinite" />
+                        <animate
+                          attributeName="stop-color"
+                          values="#db2777;#06b6d4;#db2777"
+                          dur="6s"
+                          repeatCount="indefinite"
+                        />
                       </stop>
                     </linearGradient>
                   </defs>
@@ -624,26 +658,103 @@ export default function Hero() {
               </motion.div>
 
               {/* Main SVG with hexagon and lines */}
-              <svg
-                ref={svgRef}
-                className="absolute inset-0 w-full h-full"
-                viewBox="0 0 200 200"
-              >
+              <svg ref={svgRef} className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
                 <polygon
                   points="100,10 180,50 180,150 100,190 20,150 20,50"
                   fill="#06b6d4"
                   className="hex-fill"
                   style={{ opacity: 0 }}
                 />
-                <line className="hex-line" x1="100" y1="10" x2="100" y2="190" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="20" y1="50" x2="180" y2="150" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="180" y1="50" x2="20" y2="150" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="20" y1="50" x2="180" y2="50" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="20" y1="150" x2="180" y2="150" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="100" y1="10" x2="20" y2="50" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="100" y1="10" x2="180" y2="50" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="100" y1="190" x2="20" y2="150" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
-                <line className="hex-line" x1="100" y1="190" x2="180" y2="150" stroke="white" strokeWidth="0.5" style={{ opacity: 0 }} />
+                <line
+                  className="hex-line"
+                  x1="100"
+                  y1="10"
+                  x2="100"
+                  y2="190"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="20"
+                  y1="50"
+                  x2="180"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="180"
+                  y1="50"
+                  x2="20"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="20"
+                  y1="50"
+                  x2="180"
+                  y2="50"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="20"
+                  y1="150"
+                  x2="180"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="100"
+                  y1="10"
+                  x2="20"
+                  y2="50"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="100"
+                  y1="10"
+                  x2="180"
+                  y2="50"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="100"
+                  y1="190"
+                  x2="20"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
+                <line
+                  className="hex-line"
+                  x1="100"
+                  y1="190"
+                  x2="180"
+                  y2="150"
+                  stroke="white"
+                  strokeWidth="0.5"
+                  style={{ opacity: 0 }}
+                />
               </svg>
 
               {/* Profile image */}
