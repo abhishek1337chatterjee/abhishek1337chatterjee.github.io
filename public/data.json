@@ -19,6 +19,34 @@
     "devops": ["Docker", "Linux (Ubuntu)", "Mockoon"],
     "other": ["Git", "GitHub", "Open Source"]
   },
+  "projects": [
+    {
+      "name": "Portfolio Website",
+      "description": "Personal portfolio with AI chatbot, seasonal particle effects, and modern UI",
+      "tech": ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "Vercel AI SDK"],
+      "features": ["AI-powered chatbot", "Responsive design", "Seasonal animations", "Dark theme"],
+      "link": "https://abhishek1337chatterjee.github.io"
+    },
+    {
+      "name": "Glance Dashboard",
+      "description": "A microservices monitoring dashboard for tracking service health and metrics",
+      "tech": ["React", "TypeScript", "Tailwind CSS"],
+      "features": ["Real-time monitoring", "Service health checks", "Interactive UI"]
+    },
+    {
+      "name": "Serverless API Backend",
+      "description": "Backend API service built with Serverless Framework and AWS Lambda",
+      "tech": ["Node.js", "AWS Lambda", "API Gateway", "Groq AI"],
+      "features": ["Streaming responses", "CORS support", "AI integration"]
+    },
+    {
+      "name": "Open Source Contributions",
+      "description": "Active contributor to various open source projects on GitHub",
+      "tech": ["Various"],
+      "features": ["Bug fixes", "Feature implementations", "Documentation improvements"],
+      "link": "https://github.com/abhishek1337chatterjee"
+    }
+  ],
   "interests": [
     "Open source contributor and advocate",
     "Linux enthusiast (especially Ubuntu)",
