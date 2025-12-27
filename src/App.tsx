@@ -8,12 +8,14 @@ import Projects from './components/sections/Projects';
 import GitHubStats from './components/sections/GitHubStats';
 import Contact from './components/sections/Contact';
 import SectionDivider from './components/ui/SectionDivider';
+import ChatBot from './components/ChatBot';
 
 function App() {
   return (
     <div className="min-h-screen bg-[#0a192f] text-[#ccd6f6] overflow-x-hidden">
       <Navbar />
       <SocialSidebar />
+      <ChatBot />
       <main className="lg:ml-16">
         <Hero />
         <SectionDivider variant="gradient" />

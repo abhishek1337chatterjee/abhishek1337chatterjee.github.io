@@ -37,6 +37,7 @@ jobs:
         run: npm run build
         env:
           VITE_COMMIT_SHA: ${{ github.sha }}
+          VITE_CHAT_API_URL: ${{ secrets.VITE_CHAT_API_URL }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
