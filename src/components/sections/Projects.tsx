@@ -304,8 +304,17 @@ function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) 
 }
 
 // Phase Section Component
-function PhaseSection({ phase, index }: { phase: CareerPhase; index: number }) {
+function PhaseSection({
+  phase,
+  index,
+  onViewMasaiProjects,
+}: {
+  phase: CareerPhase;
+  index: number;
+  onViewMasaiProjects?: () => void;
+}) {
   const hasProjects = phase.projects.length > 0;
+  const isMasaiSchool = phase.id === 'masai-school';
 
   return (
     <motion.div
@@ -329,6 +338,44 @@ function PhaseSection({ phase, index }: { phase: CareerPhase; index: number }) {
                 isLast={i === phase.projects.length - 1}
               />
             ))
+          ) : isMasaiSchool && onViewMasaiProjects ? (
+            <div className="py-4 border-l-2 border-[#06b6d4]/30 pl-4">
+              <button
+                type="button"
+                onClick={onViewMasaiProjects}
+                className="group flex items-center gap-2 text-sm text-[#06b6d4] hover:text-[#06b6d4]/80 transition-colors"
+              >
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-[#06b6d4]"
+                >
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+                <span>View my bootcamp projects in Personal tab</span>
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="group-hover:translate-x-1 transition-transform"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           ) : (
             <div className="py-4 text-sm text-[#8892b0] italic border-l-2 border-[#8892b0]/20 pl-4">
               Company projects are confidential. Check highlights above for technologies used.
@@ -345,35 +392,85 @@ type TabType = 'career' | 'personal';
 
 // Personal Projects Content
 function PersonalProjectsContent() {
+  // Split projects by source
+  const masaiProjects = personalProjects.filter((p) => p.source === 'masai');
+  const sideProjects = personalProjects.filter((p) => p.source !== 'masai');
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="space-y-4"
+      className="space-y-6"
     >
-      <div className="bg-[#0a192f]/50 rounded-xl p-4 sm:p-6 border border-[#10b981]/20">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-[#10b981]/20 flex items-center justify-center">
-            <Beaker size={18} className="text-[#10b981]" />
+      {/* Side Projects Section */}
+      {sideProjects.length > 0 && (
+        <div className="bg-[#0a192f]/50 rounded-xl p-4 sm:p-6 border border-[#10b981]/20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-[#10b981]/20 flex items-center justify-center">
+              <Beaker size={18} className="text-[#10b981]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-[#ccd6f6]">Side Projects & Experiments</h3>
+              <p className="text-xs text-[#8892b0]">Things I'm building outside of work</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-[#ccd6f6]">Side Projects & Experiments</h3>
-            <p className="text-xs text-[#8892b0]">Things I'm building outside of work</p>
-          </div>
-        </div>
 
-        <div className="ml-2 pl-4 border-l-2 border-[#10b981]/30">
-          {personalProjects.map((project, i) => (
-            <CommitCard
-              key={project.id}
-              project={project}
-              isLast={i === personalProjects.length - 1}
-            />
-          ))}
+          <div className="ml-2 pl-4 border-l-2 border-[#10b981]/30">
+            {sideProjects.map((project, i) => (
+              <CommitCard
+                key={project.id}
+                project={project}
+                isLast={i === sideProjects.length - 1}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Masai School Projects Section */}
+      {masaiProjects.length > 0 && (
+        <div
+          id="masai-projects"
+          className="bg-[#0a192f]/50 rounded-xl p-4 sm:p-6 border border-[#06b6d4]/20"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-[#06b6d4]/20 flex items-center justify-center">
+              <svg
+                width={18}
+                height={18}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-[#06b6d4]"
+              >
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-[#ccd6f6]">Masai School Projects</h3>
+              <p className="text-xs text-[#8892b0]">
+                Collaborative projects built during my bootcamp journey
+              </p>
+            </div>
+          </div>
+
+          <div className="ml-2 pl-4 border-l-2 border-[#06b6d4]/30">
+            {masaiProjects.map((project, i) => (
+              <CommitCard
+                key={project.id}
+                project={project}
+                isLast={i === masaiProjects.length - 1}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
@@ -381,6 +478,18 @@ function PersonalProjectsContent() {
 // Main Projects Component
 export default function Projects() {
   const [activeTab, setActiveTab] = useState<TabType>('career');
+
+  // Handler to switch to Personal tab and scroll to Masai projects
+  const handleViewMasaiProjects = () => {
+    setActiveTab('personal');
+    // Wait for tab switch animation, then scroll to Masai projects section
+    setTimeout(() => {
+      const masaiSection = document.getElementById('masai-projects');
+      if (masaiSection) {
+        masaiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 350); // Match the animation duration
+  };
 
   return (
     <section id="projects" className="py-20 bg-[#0a192f] px-4 lg:px-8">
@@ -447,7 +556,12 @@ export default function Projects() {
               className="space-y-8"
             >
               {careerPhases.map((phase, index) => (
-                <PhaseSection key={phase.id} phase={phase} index={index} />
+                <PhaseSection
+                  key={phase.id}
+                  phase={phase}
+                  index={index}
+                  onViewMasaiProjects={handleViewMasaiProjects}
+                />
               ))}
             </motion.div>
           ) : (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-scroll';
 import { Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 // Modern animated hamburger component
 function AnimatedHamburger({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
@@ -97,8 +98,8 @@ export default function Navbar() {
 
       <div className="navbar-end gap-2">
         <a
-          href="/Abhishek-Chatterjee-Resume.pdf"
-          download
+          href={RESUME_PATH}
+          onClick={handleResumeClick}
           className="btn btn-accent btn-sm gap-2 hidden sm:flex"
         >
           <Download size={16} />
@@ -145,8 +146,8 @@ export default function Navbar() {
                 transition={{ delay: navLinks.length * 0.05 }}
               >
                 <a
-                  href="/Abhishek-Chatterjee-Resume.pdf"
-                  download
+                  href={RESUME_PATH}
+                  onClick={handleResumeClick}
                   className="btn btn-accent btn-sm gap-2 mt-2"
                 >
                   <Download size={16} />

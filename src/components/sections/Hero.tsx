@@ -4,6 +4,7 @@ import { Link } from 'react-scroll';
 import { Typewriter } from 'react-simple-typewriter';
 import { ArrowDown, Download } from 'lucide-react';
 import profilePic from '../../assets/images/profile-pic.png';
+import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 // ============================================
 // SEASONAL PARTICLE SYSTEM
@@ -550,7 +551,7 @@ export default function Hero() {
                 </span>
               </Link>
 
-              <a href="/Abhishek-Chatterjee-Resume.pdf" download className="btn btn-accent gap-2">
+              <a href={RESUME_PATH} onClick={handleResumeClick} className="btn btn-accent gap-2">
                 <Download size={16} />
                 Resume
               </a>

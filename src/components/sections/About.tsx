@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Download, Briefcase, Cloud, Heart, Terminal } from 'lucide-react';
+import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 const highlights = [
   { icon: Briefcase, text: '2+ Years Experience', color: 'text-[#db2777]' },
@@ -105,8 +106,8 @@ export default function About() {
             transition={{ delay: 0.5, duration: 0.6 }}
           >
             <motion.a
-              href="/Abhishek-Chatterjee-Resume.pdf"
-              download
+              href={RESUME_PATH}
+              onClick={handleResumeClick}
               className="group relative inline-flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

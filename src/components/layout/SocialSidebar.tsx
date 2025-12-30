@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, FileText, Linkedin } from 'lucide-react';
 import { useState, type FC } from 'react';
+import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 // Custom icons to avoid deprecation warnings
 const GitHubIcon: FC<{ size?: number; className?: string; style?: React.CSSProperties }> = ({
@@ -81,7 +82,7 @@ const socials: SocialLink[] = [
   },
   {
     name: 'Resume',
-    url: '/Abhishek-Chatterjee-Resume.pdf',
+    url: RESUME_PATH,
     icon: FileText,
     gradient: 'from-[#06b6d4] to-[#22d3ee]',
     hoverColor: '#06b6d4',
@@ -143,7 +144,7 @@ function SocialIcon({ social }: { social: SocialLink }) {
         href={social.url}
         target={social.url.startsWith('http') ? '_blank' : undefined}
         rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-        download={social.name === 'Resume' ? true : undefined}
+        onClick={social.name === 'Resume' ? handleResumeClick : undefined}
         className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-[#112240]/80 backdrop-blur-sm border border-[#8892b0]/10 transition-all duration-300 hover:border-transparent"
         whileHover={{
           scale: 1.15,
@@ -205,7 +206,7 @@ function MobileSocialFAB() {
                 href={social.url}
                 target={social.url.startsWith('http') ? '_blank' : undefined}
                 rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                download={social.name === 'Resume' ? true : undefined}
+                onClick={social.name === 'Resume' ? handleResumeClick : undefined}
                 initial={{ scale: 0, y: 0, opacity: 0 }}
                 animate={{
                   scale: 1,

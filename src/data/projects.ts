@@ -24,6 +24,7 @@ export interface Project {
   hasDemo: boolean;
   hasCode: boolean;
   isDiscontinued?: boolean;
+  source?: 'masai' | 'side-project'; // To identify project origin
 }
 
 export interface CompanyInfo {
@@ -173,6 +174,100 @@ export const personalProjects: Project[] = [
     hasDemo: true,
     hasCode: false,
   },
+  // Masai School Projects (moved from career timeline)
+  {
+    id: 102,
+    commitHash: '',
+    title: 'Wearly Website',
+    description:
+      'Wearly is a full-stack online fashion and cosmetic retailer. The project was built in 5 days as a collaborative effort.',
+    image: wearlyImg,
+    techStack: ['React', 'Redux', 'React Router', 'Chakra UI', 'Node.js', 'Express', 'MongoDB'],
+    features: ['Login/Signup', 'Google Authentication', 'Admin Section', 'Cart', 'Place Order'],
+    responsibilities: [
+      'Login and SignUp Page using Firebase',
+      'Protecting the Routes',
+      'Showing the user after login in the homepage',
+    ],
+    githubUrl: 'https://github.com/abhishek1337chatterjee/Wearly-Website',
+    deployedUrl: 'https://wearly.vercel.app/',
+    teamSize: 5,
+    duration: '5 days',
+    type: 'personal',
+    hasDemo: true,
+    hasCode: true,
+    source: 'masai',
+  },
+  {
+    id: 103,
+    commitHash: '',
+    title: 'Pear Website',
+    description:
+      'Pear is built with the reference website apple.com. A sleek product showcase website.',
+    image: pearImg,
+    techStack: [
+      'React',
+      'Redux',
+      'Axios',
+      'React-Router-Dom',
+      'Firebase-Auth',
+      'Chakra-UI',
+      'Vitejs',
+    ],
+    features: ['Login/Signup', 'Google Authentication', 'Admin Section', 'Cart', 'Place Order'],
+    responsibilities: [
+      'Login and SignUp Page using Firebase',
+      'Protecting the Routes',
+      'Showing the user after login in the homepage',
+    ],
+    githubUrl: 'https://github.com/abhishek1337chatterjee/Pear-website',
+    deployedUrl: 'https://pear-website.netlify.app/',
+    teamSize: 5,
+    duration: '5 days',
+    type: 'personal',
+    hasDemo: true,
+    hasCode: true,
+    source: 'masai',
+  },
+  {
+    id: 104,
+    commitHash: '',
+    title: 'Freshly Website',
+    description:
+      'Freshly delivers gourmet ready-made meals, prepared and delivered at the door. It is dedicated to making healthy eating and achieving health and fitness goals easier than ever.',
+    image: freshlyImg,
+    techStack: ['HTML', 'CSS', 'JavaScript'],
+    features: ['Login/Signup using local storage', 'Filtering Sorting', 'Adding items to chart'],
+    responsibilities: [
+      'The complete landing page',
+      'After login user details shown in landing page',
+    ],
+    githubUrl: 'https://github.com/abhishek1337chatterjee/freshly.com',
+    deployedUrl: 'https://fluffy-croquembouche-14d5f2.netlify.app/',
+    teamSize: 5,
+    duration: '5 days',
+    type: 'personal',
+    hasDemo: true,
+    hasCode: true,
+    source: 'masai',
+  },
+  {
+    id: 105,
+    commitHash: '',
+    title: 'Fire Calculator',
+    description:
+      'The fire calculator is a calculator that will return the yearly expenses (as of Today), year expenses (as of Retirement) and the fire number is the amount that you need to become financially independent.',
+    image: fireImg,
+    techStack: ['React', 'React-Reducer', 'CSS'],
+    features: ['Calculate FIRE number', 'Retirement planning'],
+    responsibilities: ['Full application development'],
+    githubUrl: 'https://github.com/abhishek1337chatterjee/Fire-Calculator',
+    deployedUrl: 'https://fire-calculator-zeta.vercel.app/',
+    type: 'personal',
+    hasDemo: true,
+    hasCode: true,
+    source: 'masai',
+  },
 ];
 
 // Career phases (reverse chronological) - Professional timeline only
@@ -240,7 +335,7 @@ export const careerPhases: CareerPhase[] = [
       'Intensive 11-month bootcamp transforming into a full-stack developer. Built multiple collaborative projects with teams.',
     highlights: ['MERN Stack', 'React', 'Node.js', 'MongoDB', 'Team Collaboration'],
     source: 'static', // Always static - never from Sanity
-    projects: masaiProjects,
+    projects: [], // Projects moved to Personal tab
   },
 ];
 
