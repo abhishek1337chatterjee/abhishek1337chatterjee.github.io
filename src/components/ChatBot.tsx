@@ -74,7 +74,7 @@ function MessageContent({ content }: { content: string }) {
   const processChildren = (children: ReactNode): ReactNode => {
     if (typeof children === 'string') {
       const processed = processPhoneNumbers(children);
-      return processed.length === 1 ? processed[0] : <>{processed}</>;
+      return processed.length === 1 ? processed[0] : processed;
     }
     if (Array.isArray(children)) {
       return children.map((child, i) => <span key={i}>{processChildren(child)}</span>);
