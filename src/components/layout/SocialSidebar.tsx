@@ -191,7 +191,7 @@ function MobileSocialFAB() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 lg:hidden">
+    <div className="fixed bottom-6 left-6 z-40 lg:hidden">
       {/* Vertical stack of social icons going UP */}
       <AnimatePresence>
         {isOpen &&
@@ -220,7 +220,7 @@ function MobileSocialFAB() {
                   damping: 24,
                   delay: index * 0.05,
                 }}
-                className={`absolute bottom-0 right-0 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${social.gradient} shadow-lg`}
+                className={`absolute bottom-0 left-0 flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${social.gradient} shadow-lg`}
                 style={{
                   boxShadow: `0 4px 15px ${social.hoverColor}40`,
                 }}
