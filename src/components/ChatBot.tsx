@@ -282,11 +282,11 @@ export default function ChatBot() {
 
   return (
     <>
-      {/* Chat Button - Left on mobile, Right on desktop */}
+      {/* Chat Button - Always on right side to avoid content overlap */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#06b6d4] to-[#0891b2] shadow-xl
-                   bottom-6 left-6 lg:left-auto lg:right-6"
+                   bottom-6 right-6"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         initial={{ y: 100, opacity: 0 }}
@@ -342,8 +342,7 @@ export default function ChatBot() {
             transition={{ duration: 0.2 }}
             className="fixed z-50 flex flex-col bg-[#0a192f] border border-[#8892b0]/20 rounded-2xl shadow-2xl overflow-hidden
                        bottom-24 left-4 right-4 h-[70vh] max-h-[500px]
-                       sm:left-6 sm:right-auto sm:w-[380px]
-                       lg:left-auto lg:right-6"
+                       sm:left-auto sm:right-6 sm:w-[380px]"
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[#06b6d4]/10 to-[#db2777]/10 border-b border-[#8892b0]/10">
