@@ -1,19 +1,19 @@
-import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import ReactMarkdown from 'react-markdown';
-import type { Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
-  MessageCircle,
-  X,
-  Send,
   Bot,
-  User,
-  Loader2,
-  Copy,
   Check,
+  Copy,
   ExternalLink,
+  Loader2,
+  MessageCircle,
+  Send,
+  User,
+  X,
 } from 'lucide-react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import type { Components } from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 // API endpoint from environment variable
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:3000/api/chat';

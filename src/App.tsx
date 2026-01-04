@@ -1,14 +1,14 @@
+import ChatBot from './components/ChatBot';
+import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
 import SocialSidebar from './components/layout/SocialSidebar';
-import Footer from './components/layout/Footer';
-import Hero from './components/sections/Hero';
 import About from './components/sections/About';
-import Skills from './components/sections/Skills';
-import Projects from './components/sections/Projects';
-import GitHubStats from './components/sections/GitHubStats';
 import Contact from './components/sections/Contact';
+import GitHubStats from './components/sections/GitHubStats';
+import Hero from './components/sections/Hero';
+import Projects from './components/sections/Projects';
+import Skills from './components/sections/Skills';
 import SectionDivider from './components/ui/SectionDivider';
-import ChatBot from './components/ChatBot';
 
 function App() {
   return (

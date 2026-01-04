@@ -1,13 +1,13 @@
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle, Beaker, Building2, ChevronDown, ExternalLink, Lock } from 'lucide-react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, ChevronDown, AlertTriangle, Lock, Beaker, Building2 } from 'lucide-react';
 
 import {
-  careerPhases,
-  personalProjects,
-  type Project,
   type CareerPhase,
   type CompanyInfo,
+  careerPhases,
+  type Project,
+  personalProjects,
 } from '../../data/projects';
 
 // Custom GitHub icon

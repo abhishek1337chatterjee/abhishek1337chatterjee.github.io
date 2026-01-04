@@ -1,8 +1,8 @@
-import wearlyImg from '../assets/images/Wearly.gif';
-import pearImg from '../assets/images/Pear.gif';
-import freshlyImg from '../assets/images/Freshly.gif';
 import fireImg from '../assets/images/Fire.gif';
+import freshlyImg from '../assets/images/Freshly.gif';
 import glanceImg from '../assets/images/glance.gif';
+import pearImg from '../assets/images/Pear.gif';
+import wearlyImg from '../assets/images/Wearly.gif';
 
 // Project types
 export type ProjectType = 'showcase' | 'experience' | 'personal';

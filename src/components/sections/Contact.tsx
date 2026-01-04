@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, Send } from 'lucide-react';
+import { useState } from 'react';
 
 const contactInfo = {
   email: 'abhishek1337chatterjee@gmail.com',

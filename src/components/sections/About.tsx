@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Download, Briefcase, Cloud, Heart, Terminal } from 'lucide-react';
+import { Briefcase, Cloud, Download, Heart, Terminal } from 'lucide-react';
 import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 const highlights = [

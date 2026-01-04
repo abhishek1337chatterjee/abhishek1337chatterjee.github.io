@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail, FileText } from 'lucide-react';
+import { FileText, Github, Linkedin, Mail } from 'lucide-react';
 
 export interface Social {
   name: string;

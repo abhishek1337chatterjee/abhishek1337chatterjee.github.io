@@ -284,7 +284,12 @@ export default function Skills() {
           </motion.div>
         </div>
 
-        <SkillSection title="Backend" skills={backendSkills} columns="grid-cols-2 sm:grid-cols-4" delay={0.2} />
+        <SkillSection
+          title="Backend"
+          skills={backendSkills}
+          columns="grid-cols-2 sm:grid-cols-4"
+          delay={0.2}
+        />
 
         <SkillSection
           title="Tools & Platforms"

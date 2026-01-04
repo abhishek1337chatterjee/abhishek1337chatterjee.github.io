@@ -1,8 +1,8 @@
-import { useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowDown, Download } from 'lucide-react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-scroll';
 import { Typewriter } from 'react-simple-typewriter';
-import { ArrowDown, Download } from 'lucide-react';
 import profilePic from '../../assets/images/profile-pic.png';
 import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 

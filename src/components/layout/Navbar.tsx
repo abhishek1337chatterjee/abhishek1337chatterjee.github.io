@@ -1,7 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion';
+import { Download } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-scroll';
-import { Download } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 // Modern animated hamburger component

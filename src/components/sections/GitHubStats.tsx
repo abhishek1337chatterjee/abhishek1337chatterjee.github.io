@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
+import { Code2, FolderGit2, GitFork, Github, Star, Users } from 'lucide-react';
 import { GitHubCalendar } from 'react-github-calendar';
-import { Github, Star, GitFork, Users, FolderGit2, Code2 } from 'lucide-react';
 import { useGitHubStats } from '../../hooks/useGitHubStats';
 
 const GITHUB_USERNAME = 'abhishek1337chatterjee';

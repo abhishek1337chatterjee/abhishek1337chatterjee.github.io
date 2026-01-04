@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, FileText, Linkedin } from 'lucide-react';
-import { useState, type FC } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { FileText, Linkedin, Mail } from 'lucide-react';
+import { type FC, useState } from 'react';
 import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
 
 // Custom icons to avoid deprecation warnings
