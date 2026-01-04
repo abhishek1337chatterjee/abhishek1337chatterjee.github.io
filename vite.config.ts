@@ -13,4 +13,22 @@ export default defineConfig({
     tailwindcss(),
   ],
   base: '/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React core
+          'vendor-react': ['react', 'react-dom'],
+          // Animation library (large)
+          'vendor-motion': ['framer-motion'],
+          // Markdown rendering
+          'vendor-markdown': ['react-markdown', 'remark-gfm'],
+          // AI SDK
+          'vendor-ai': ['ai', '@ai-sdk/react'],
+          // Icons
+          'vendor-icons': ['lucide-react'],
+        },
+      },
+    },
+  },
 })
