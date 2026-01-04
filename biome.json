@@ -41,6 +41,10 @@
         "noDangerouslySetInnerHtml": "error",
         "noDangerouslySetInnerHtmlWithChildren": "error",
         "noGlobalEval": "error"
+      },
+      "nursery": {
+        "noMultiAssign": "warn",
+        "noReturnAssign": "warn"
       }
     }
   },
