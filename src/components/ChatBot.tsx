@@ -17,11 +17,26 @@ import remarkGfm from 'remark-gfm';
 
 // API endpoint from environment variable
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:3000/api/chat';
+const SUGGESTIONS_API_URL = CHAT_API_URL.replace('/api/chat', '/api/suggestions');
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+}
+
+// Parse suggestions from bot response
+function parseSuggestions(content: string): { text: string; suggestions: string[] } {
+  const suggestionsMatch = content.match(/\[SUGGESTIONS\]:\s*(.+)$/m);
+  if (suggestionsMatch) {
+    const suggestions = suggestionsMatch[1]
+      .split('|')
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    const text = content.replace(/\n?\[SUGGESTIONS\]:.+$/m, '').trim();
+    return { text, suggestions };
+  }
+  return { text: content, suggestions: [] };
 }
 
 // Component to render message content with markdown support
@@ -161,12 +176,56 @@ function MessageContent({ content }: { content: string }) {
     hr: () => <hr className="border-[#8892b0]/20 my-3" />,
   };
 
+  // Remove suggestions line from content for display
+  const { text: displayContent } = parseSuggestions(content);
+
   return (
     <div className="markdown-content">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-        {content}
+        {displayContent}
       </ReactMarkdown>
     </div>
+  );
+}
+
+// Suggestion chips component
+function SuggestionChips({
+  suggestions,
+  onSelect,
+  isLoading,
+  selectedIndex,
+}: {
+  suggestions: string[];
+  onSelect: (suggestion: string, index: number) => void;
+  isLoading: boolean;
+  selectedIndex: number;
+}) {
+  if (suggestions.length === 0 || isLoading) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-wrap gap-2 mt-3"
+    >
+      {suggestions.map((suggestion, index) => (
+        <motion.button
+          key={suggestion}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: index * 0.1 }}
+          onClick={() => onSelect(suggestion, index)}
+          className={`px-3 py-1.5 text-xs rounded-full transition-colors ${
+            selectedIndex === index
+              ? 'bg-[#06b6d4]/20 border border-[#06b6d4] text-[#06b6d4]'
+              : 'bg-[#112240] border border-[#06b6d4]/30 text-[#06b6d4] hover:bg-[#06b6d4]/10 hover:border-[#06b6d4]/50'
+          }`}
+        >
+          {suggestion}
+        </motion.button>
+      ))}
+      <span className="text-[10px] text-[#8892b0]/50 self-center ml-1">Tab to fill</span>
+    </motion.div>
   );
 }
 
@@ -176,7 +235,37 @@ export default function ChatBot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const hasFetchedSuggestions = useRef(false);
+
+  // Fetch initial suggestions when chat opens
+  useEffect(() => {
+    if (isOpen && messages.length === 0 && !hasFetchedSuggestions.current) {
+      hasFetchedSuggestions.current = true;
+      setLoadingSuggestions(true);
+      fetch(SUGGESTIONS_API_URL)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.suggestions && Array.isArray(data.suggestions)) {
+            setSuggestions(data.suggestions);
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to fetch suggestions:', err);
+          // Fallback suggestions
+          setSuggestions([
+            'What are your technical skills?',
+            'Tell me about your experience',
+            'What projects have you worked on?',
+          ]);
+        })
+        .finally(() => setLoadingSuggestions(false));
+    }
+  }, [isOpen, messages.length]);
 
   // Auto-scroll to bottom when new messages arrive
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional scroll on message change
@@ -193,6 +282,26 @@ export default function ChatBot() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // Reset selected suggestion when suggestions change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional reset when suggestions change
+  useEffect(() => {
+    setSelectedSuggestionIndex(-1);
+  }, [suggestions]);
+
+  // Handle Tab key to cycle through suggestions
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Tab' && suggestions.length > 0 && !isLoading) {
+      e.preventDefault();
+      const nextIndex = e.shiftKey
+        ? selectedSuggestionIndex <= 0
+          ? suggestions.length - 1
+          : selectedSuggestionIndex - 1
+        : (selectedSuggestionIndex + 1) % suggestions.length;
+      setSelectedSuggestionIndex(nextIndex);
+      setInput(suggestions[nextIndex]);
+    }
+  };
+
   const sendMessage = useCallback(
     async (userMessage: string) => {
       if (!userMessage.trim() || isLoading) return;
@@ -207,6 +316,7 @@ export default function ChatBot() {
       setInput('');
       setIsLoading(true);
       setError(null);
+      setSuggestions([]); // Clear suggestions while loading
 
       // Prepare messages for API (include history)
       const apiMessages = [...messages, userMsg].map((m) => ({
@@ -233,8 +343,10 @@ export default function ChatBot() {
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let fullContent = '';
 
         const addWordWithDelay = async (word: string, id: string) => {
+          fullContent += word;
           setMessages((prev) =>
             prev.map((m) => (m.id === id ? { ...m, content: m.content + word } : m)),
           );
@@ -264,6 +376,12 @@ export default function ChatBot() {
           if (buffer) {
             await addWordWithDelay(buffer, assistantId);
           }
+
+          // Extract suggestions from the complete response
+          const { suggestions: newSuggestions } = parseSuggestions(fullContent);
+          if (newSuggestions.length > 0) {
+            setSuggestions(newSuggestions);
+          }
         }
       } catch (err) {
         console.error('Chat error:', err);
@@ -278,6 +396,12 @@ export default function ChatBot() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(input);
+  };
+
+  const handleSuggestionClick = (suggestion: string, index: number) => {
+    setInput(suggestion);
+    setSelectedSuggestionIndex(index);
+    inputRef.current?.focus();
   };
 
   return (
@@ -369,58 +493,95 @@ export default function ChatBot() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3"
+                  className="flex flex-col"
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-[#06b6d4] to-[#0891b2]">
-                    <Bot size={16} className="text-white" />
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-[#06b6d4] to-[#0891b2]">
+                      <Bot size={16} className="text-white" />
+                    </div>
+                    <div className="max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed bg-[#112240] text-[#ccd6f6] rounded-bl-md border border-[#8892b0]/10">
+                      Hi! I'm Abhishek's AI assistant. Ask me anything about his skills, experience,
+                      or projects!
+                    </div>
                   </div>
-                  <div className="max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed bg-[#112240] text-[#ccd6f6] rounded-bl-md border border-[#8892b0]/10">
-                    Hi! I'm Abhishek's AI assistant. Ask me anything about his skills, experience,
-                    or projects!
+                  {/* Initial suggestions */}
+                  <div className="ml-11">
+                    {loadingSuggestions ? (
+                      <div className="flex items-center gap-2 mt-3 text-xs text-[#8892b0]">
+                        <Loader2 size={12} className="animate-spin" />
+                        Loading suggestions...
+                      </div>
+                    ) : (
+                      <SuggestionChips
+                        suggestions={suggestions}
+                        onSelect={handleSuggestionClick}
+                        isLoading={isLoading}
+                        selectedIndex={selectedSuggestionIndex}
+                      />
+                    )}
                   </div>
                 </motion.div>
               )}
 
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
-                >
-                  {/* Avatar */}
-                  <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-br from-[#db2777] to-[#9333ea]'
-                        : 'bg-gradient-to-br from-[#06b6d4] to-[#0891b2]'
-                    }`}
+              {messages.map((message, index) => {
+                const isLastAssistant =
+                  message.role === 'assistant' && index === messages.length - 1;
+                return (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col"
                   >
-                    {message.role === 'user' ? (
-                      <User size={16} className="text-white" />
-                    ) : (
-                      <Bot size={16} className="text-white" />
-                    )}
-                  </div>
+                    <div
+                      className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      {/* Avatar */}
+                      <div
+                        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                          message.role === 'user'
+                            ? 'bg-gradient-to-br from-[#db2777] to-[#9333ea]'
+                            : 'bg-gradient-to-br from-[#06b6d4] to-[#0891b2]'
+                        }`}
+                      >
+                        {message.role === 'user' ? (
+                          <User size={16} className="text-white" />
+                        ) : (
+                          <Bot size={16} className="text-white" />
+                        )}
+                      </div>
 
-                  {/* Message bubble */}
-                  <div
-                    className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words overflow-wrap-anywhere ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-br from-[#db2777] to-[#9333ea] text-white rounded-br-md'
-                        : 'bg-[#112240] text-[#ccd6f6] rounded-bl-md border border-[#8892b0]/10'
-                    }`}
-                    style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
-                  >
-                    {message.content ? (
-                      <MessageContent content={message.content} />
-                    ) : (
-                      message.role === 'assistant' &&
-                      isLoading && <Loader2 size={18} className="text-[#06b6d4] animate-spin" />
+                      {/* Message bubble */}
+                      <div
+                        className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed break-words overflow-wrap-anywhere ${
+                          message.role === 'user'
+                            ? 'bg-gradient-to-br from-[#db2777] to-[#9333ea] text-white rounded-br-md'
+                            : 'bg-[#112240] text-[#ccd6f6] rounded-bl-md border border-[#8892b0]/10'
+                        }`}
+                        style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+                      >
+                        {message.content ? (
+                          <MessageContent content={message.content} />
+                        ) : (
+                          message.role === 'assistant' &&
+                          isLoading && <Loader2 size={18} className="text-[#06b6d4] animate-spin" />
+                        )}
+                      </div>
+                    </div>
+                    {/* Show suggestions after last assistant message */}
+                    {isLastAssistant && !isLoading && message.content && (
+                      <div className="ml-11">
+                        <SuggestionChips
+                          suggestions={suggestions}
+                          onSelect={handleSuggestionClick}
+                          isLoading={isLoading}
+                          selectedIndex={selectedSuggestionIndex}
+                        />
+                      </div>
                     )}
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
 
               {/* Loading indicator for initial response */}
               {isLoading && messages[messages.length - 1]?.role === 'user' && (
@@ -448,9 +609,11 @@ export default function ChatBot() {
             <form onSubmit={handleSubmit} className="p-4 border-t border-[#8892b0]/10 bg-[#0a192f]">
               <div className="flex gap-2">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   placeholder="Ask me anything..."
                   className="flex-1 px-4 py-2.5 bg-[#112240] border border-[#8892b0]/20 rounded-xl text-[#ccd6f6] text-sm placeholder-[#8892b0]/50 focus:outline-none focus:border-[#06b6d4]/50 transition-colors"
                   disabled={isLoading}

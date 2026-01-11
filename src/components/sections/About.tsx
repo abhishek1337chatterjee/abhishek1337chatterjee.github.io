@@ -38,7 +38,7 @@ const highlightColorMap: Record<string, string> = {
 // Function to render text with highlighted phrases
 function renderHighlightedText(
   text: string,
-  highlights: HighlightedPhrase[] = []
+  highlights: HighlightedPhrase[] = [],
 ): React.ReactNode {
   if (!highlights || highlights.length === 0) {
     return text;
@@ -169,9 +169,7 @@ export default function About() {
                 transition={{ delay: 0.3, duration: 0.6 }}
               >
                 {bioParagraphs.map((paragraph, index) => (
-                  <p key={index}>
-                    {renderHighlightedText(paragraph, about.highlightedPhrases)}
-                  </p>
+                  <p key={index}>{renderHighlightedText(paragraph, about.highlightedPhrases)}</p>
                 ))}
               </motion.div>
 
