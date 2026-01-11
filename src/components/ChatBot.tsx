@@ -224,7 +224,7 @@ function SuggestionChips({
           {suggestion}
         </motion.button>
       ))}
-      <span className="text-[10px] text-[#8892b0]/50 self-center ml-1">Tab to fill</span>
+      <span className="text-[10px] text-[#8892b0]/50 self-center ml-1">Click to send • Tab to edit</span>
     </motion.div>
   );
 }
@@ -256,11 +256,11 @@ export default function ChatBot() {
         })
         .catch((err) => {
           console.error('Failed to fetch suggestions:', err);
-          // Fallback suggestions
+          // Fallback suggestions (third person)
           setSuggestions([
-            'What are your technical skills?',
-            'Tell me about your experience',
-            'What projects have you worked on?',
+            "What are Abhishek's technical skills?",
+            "Tell me about Abhishek's experience",
+            'What projects has Abhishek worked on?',
           ]);
         })
         .finally(() => setLoadingSuggestions(false));
@@ -399,9 +399,8 @@ export default function ChatBot() {
   };
 
   const handleSuggestionClick = (suggestion: string, index: number) => {
-    setInput(suggestion);
     setSelectedSuggestionIndex(index);
-    inputRef.current?.focus();
+    sendMessage(suggestion); // Auto-send on click
   };
 
   return (

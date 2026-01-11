@@ -10,7 +10,16 @@ This portfolio serves as both a professional showcase and a technical demonstrat
 
 ## Key Features
 
-- **AI-Powered ChatBot** - Streaming chatbot with markdown support, phone number detection, and word-by-word animation effects
+- **AI-Powered ChatBot** - Interactive chatbot powered by Sanity CMS data with streaming responses and intelligent suggestions
+  - **Initial Suggestions**: Fetched from `/api/suggestions` endpoint when chat opens (uses Sanity CMS data)
+  - **Follow-up Suggestions**: AI-generated after each bot response, parsed via `[SUGGESTIONS]: query1 | query2 | query3` format
+  - **Tab Navigation**: Press Tab to cycle through suggestions and auto-fill input (Shift+Tab for reverse)
+  - **One-Click Send**: Click any suggestion chip to auto-send the query
+  - **Third-Person Format**: All suggestions use "Abhishek's" format (e.g., "What are Abhishek's skills?")
+  - **Word-by-Word Streaming**: Smooth 15ms delay animation for natural conversation flow
+  - **Markdown Support**: Custom renderer with phone number detection, copy button, and external links
+  - **Hint Text**: "Click to send • Tab to edit" displayed below suggestion chips
+- **Sanity CMS Integration** - Headless CMS backend via external API (abhishek-api) for all portfolio and chatbot content
 - **Responsive Design** - Fully responsive from mobile (320px) to ultra-wide displays (1920px+)
 - **Performance Optimized** - Code splitting with manual chunks for vendor libraries (React, Framer Motion, AI SDK, Markdown)
 - **React Compiler** - Babel plugin integration for React 19's experimental compiler
@@ -35,19 +44,34 @@ The project uses Vite's `rollupOptions` to implement strategic code splitting:
 This approach ensures optimal initial load times and efficient caching strategies.
 
 ### AI ChatBot Architecture
-The chatbot implementation demonstrates advanced streaming patterns:
-- Streaming response handling with word-by-word display effect
-- Custom markdown renderer with phone number detection and copy functionality
-- In-memory message history management
-- Error handling with user-friendly feedback
-- Responsive modal interface with smooth animations
+The chatbot implementation demonstrates advanced streaming patterns with Sanity CMS integration:
+- **Data Source**: All chatbot knowledge comes from Sanity CMS via external API (abhishek-api)
+- **API Endpoints** (both served by abhishek-api):
+  - `CHAT_API_URL` - Streaming chat responses with message history (default: `http://localhost:3000/api/chat`)
+  - `SUGGESTIONS_API_URL` - Initial conversation starters (auto-derived by replacing `/api/chat` with `/api/suggestions`)
+- **Smart Suggestions System**:
+  - **Initial Suggestions**: Fetched from API on chat open, returns `{ suggestions: ["query1", "query2", "query3"] }`
+  - **Follow-up Suggestions**: AI-generated after each bot response, embedded in streaming response as `[SUGGESTIONS]: query1 | query2 | query3`
+  - **Tab Key Navigation**: Tab cycles forward through suggestions, Shift+Tab cycles backward, auto-fills input field
+  - **Click to Send**: Clicking a suggestion chip auto-sends the query (no manual submit needed)
+  - **Visual Feedback**: Selected suggestion highlighted with cyan border and background
+  - **Hint Text**: "Click to send • Tab to edit" displayed below chips
+  - **Third-Person Format**: All suggestions use "Abhishek's" (e.g., "What are Abhishek's skills?" not "your skills")
+  - **Fallback**: If API fails, uses hardcoded third-person suggestions
+- **Streaming Response**: Word-by-word display with 15ms delay for natural conversation flow
+- **Markdown Support**: Custom ReactMarkdown renderer with phone number detection, copy button, and external link handling
+- **Message History**: In-memory conversation history sent with each request for context-aware responses
+- **Error Handling**: User-friendly error messages with retry capability
+- **Responsive UI**: Mobile-optimized modal with smooth Framer Motion animations
 
 ### Component Architecture
 The application follows a clear separation of concerns:
 - **Layout Components**: Persistent UI elements (Navbar, Footer, SocialSidebar)
 - **Section Components**: Page sections (Hero, About, Skills, Projects, GitHubStats, Contact)
 - **UI Components**: Reusable elements (SectionDivider)
-- **Specialized Components**: ChatBot with complex state management
+- **Specialized Components**: ChatBot with complex state management and suggestion system
+- **Data Layer**: Sanity CMS integration via `src/lib/sanity.ts` with typed GROQ queries
+- **Custom Hooks**: `useSanityData`, `useGitHubStats` for centralized data fetching
 
 ## Tech Stack
 
@@ -58,8 +82,9 @@ The application follows a clear separation of concerns:
 | **Vite** | Build Tool | 7.3.1 |
 | **Tailwind CSS** | Styling Framework | 4.1.18 |
 | **DaisyUI** | Component Library | 5.5.14 |
-| **Framer Motion** | Animation Library | 12.24.11 |
-| **AI SDK** | Chatbot Integration | 6.0.20 |
+| **Framer Motion** | Animation Library | 12.25.0 |
+| **AI SDK** | Chatbot Integration | 6.0.27 |
+| **Sanity CMS** | Headless CMS | 7.14.0 |
 | **React Markdown** | Markdown Rendering | 10.1.0 |
 | **Lucide React** | Icon System | 0.562.0 |
 | **Biome** | Linting & Formatting | 2.3.10 |
@@ -71,7 +96,6 @@ abhishek1337chatterjee.github.io/
 ├── .github/
 │   └── workflows/       # GitHub Actions CI/CD pipeline
 ├── public/
-│   ├── data.json        # Portfolio data
 │   ├── favicon.svg      # Site favicon
 │   ├── og-image.png     # OpenGraph preview image
 │   ├── robots.txt       # Search engine directives
@@ -94,26 +118,28 @@ abhishek1337chatterjee.github.io/
 │   │   │   └── Contact.tsx         # Contact form
 │   │   ├── ui/
 │   │   │   └── SectionDivider.tsx  # Animated section dividers
-│   │   └── ChatBot.tsx              # AI chatbot with streaming
-│   ├── data/
-│   │   ├── projects.ts   # Project data with career phases
-│   │   ├── skills.ts     # Technical skills and tools
-│   │   └── socials.ts    # Social media links
+│   │   └── ChatBot.tsx              # AI chatbot with suggestions
 │   ├── hooks/
-│   │   └── useGitHubStats.ts  # GitHub API integration hook
+│   │   ├── useGitHubStats.ts  # GitHub API integration hook
+│   │   └── useSanityData.ts   # Sanity CMS data fetching hooks
+│   ├── lib/
+│   │   └── sanity.ts      # Sanity client, queries, and types
 │   ├── utils/
-│   │   └── resume.ts     # Resume download utility
-│   ├── App.tsx           # Main application component
-│   ├── main.tsx          # React application entry point
-│   ├── index.css         # Global styles and Tailwind imports
-│   └── vite-env.d.ts     # Vite environment types
-├── biome.json            # Biome linter configuration
-├── index.html            # HTML entry with SEO meta tags
-├── package.json          # Dependencies and scripts
-├── tsconfig.json         # TypeScript configuration (project references)
-├── tsconfig.app.json     # App-specific TypeScript config
-├── tsconfig.node.json    # Node environment TypeScript config
-└── vite.config.ts        # Vite configuration with React compiler
+│   │   └── resume.ts      # Resume download utility
+│   ├── App.tsx            # Main application component
+│   ├── main.tsx           # React application entry point
+│   ├── index.css          # Global styles and Tailwind imports
+│   └── vite-env.d.ts      # Vite environment types
+├── studio/                # Sanity Studio (CMS admin interface)
+│   ├── schemas/           # Content schema definitions
+│   └── sanity.config.ts   # Sanity Studio configuration
+├── biome.json             # Biome linter configuration
+├── index.html             # HTML entry with SEO meta tags
+├── package.json           # Dependencies and scripts
+├── tsconfig.json          # TypeScript configuration (project references)
+├── tsconfig.app.json      # App-specific TypeScript config
+├── tsconfig.node.json     # Node environment TypeScript config
+└── vite.config.ts         # Vite configuration with React compiler
 ```
 
 ## Getting Started
@@ -182,22 +208,30 @@ npm run build
 
 | Variable | Required | Description | Default |
 |----------|----------|-------------|---------|
-| `VITE_CHAT_API_URL` | No | ChatBot API endpoint | `http://localhost:3000/api/chat` |
+| `VITE_CHAT_API_URL` | No | ChatBot API endpoint (streaming chat) | `http://localhost:3000/api/chat` |
 
 Create `.env` file in project root:
 ```bash
 VITE_CHAT_API_URL=https://your-api-endpoint.com/api/chat
 ```
 
+**Note**: The suggestions endpoint is automatically derived from `VITE_CHAT_API_URL` by replacing `/api/chat` with `/api/suggestions`.
+
+**ChatBot API Requirements**:
+- `CHAT_API_URL` must return streaming text response (not JSON) with optional `[SUGGESTIONS]: query1 | query2 | query3` at the end
+- `SUGGESTIONS_API_URL` must return JSON: `{ "suggestions": ["query1", "query2", "query3"] }`
+- Both endpoints use data from Sanity CMS (via abhishek-api backend)
+
 ### Customization Guide
 
 #### Update Personal Information
-1. **Meta Tags**: Edit `index.html` (lines 8-106) for SEO, Open Graph, and structured data
-2. **GitHub Stats**: Update username in `src/components/sections/GitHubStats.tsx` and `src/hooks/useGitHubStats.ts`
-3. **Contact Form**: Update action URL in `src/components/sections/Contact.tsx`
-4. **Projects**: Modify `src/data/projects.ts` to add/remove projects
-5. **Skills**: Edit `src/data/skills.ts` for technical skills
-6. **Social Links**: Update `src/data/socials.ts` for social media profiles
+1. **Sanity CMS**: Edit content via Sanity Studio at `https://your-project.sanity.studio`
+   - About, Skills, Projects, Career Phases, Social Links, Site Settings
+   - Run `cd studio && npm run dev` to start local Sanity Studio
+2. **Sanity Project ID**: Update in `src/lib/sanity.ts` if using your own Sanity project
+3. **Meta Tags**: Edit `index.html` (lines 8-106) for SEO, Open Graph, and structured data
+4. **GitHub Stats**: Update username in `src/components/sections/GitHubStats.tsx` and `src/hooks/useGitHubStats.ts`
+5. **Contact Form**: Update action URL in `src/components/sections/Contact.tsx`
 
 #### Styling Customization
 - **Colors**: Tailwind theme configuration in Tailwind CSS 4 format
@@ -260,9 +294,15 @@ The site is deployed to GitHub Pages via GitHub Actions. The workflow:
 ## Troubleshooting
 
 ### ChatBot Not Responding
-- Verify `VITE_CHAT_API_URL` environment variable
-- Check API endpoint CORS configuration
+- Verify `VITE_CHAT_API_URL` environment variable (e.g., `http://localhost:3000/api/chat`)
+- Ensure suggestions endpoint exists at `/api/suggestions` (or chatbot will use fallback suggestions)
+- Check API endpoint CORS configuration (must allow origin from portfolio domain)
 - Inspect browser console for network errors
+- Verify API returns:
+  - **Chat endpoint**: Plain text stream (not JSON) with optional `[SUGGESTIONS]: query1 | query2 | query3` at the end
+  - **Suggestions endpoint**: JSON `{ "suggestions": ["query1", "query2", "query3"] }`
+- Ensure Sanity CMS data is accessible via the API backend (abhishek-api)
+- Test suggestions: Open chat and check if initial suggestions load (if not, check API logs)
 
 ### Build Failures
 - Clear `node_modules` and reinstall: `rm -rf node_modules package-lock.json && npm install`
