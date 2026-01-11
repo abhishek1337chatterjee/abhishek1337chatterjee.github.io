@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.29",
+    "@sanity/client": "^7.14.0",
+    "@sanity/image-url": "^2.0.2",
     "@types/react-scroll": "^1.8.10",
     "ai": "^6.0.27",
     "babel-plugin-react-compiler": "^1.0.0",

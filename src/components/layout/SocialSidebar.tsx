@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { FileText, Linkedin, Mail } from 'lucide-react';
-import { type FC, useState } from 'react';
-import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
+import { type FC, useEffect, useState } from 'react';
+import { getSiteSettings, type SanitySiteSettings } from '../../lib/sanity';
+import { handleResumeClick } from '../../utils/resume';
 
 // Custom icons to avoid deprecation warnings
 const GitHubIcon: FC<{ size?: number; className?: string; style?: React.CSSProperties }> = ({
@@ -51,7 +52,8 @@ interface SocialLink {
   hoverColor: string;
 }
 
-const socials: SocialLink[] = [
+// Base socials without resume (resume is added dynamically from Sanity)
+const baseSocials: SocialLink[] = [
   {
     name: 'LinkedIn',
     url: 'https://www.linkedin.com/in/abhishekchatterjee-saheb1337/',
@@ -80,14 +82,18 @@ const socials: SocialLink[] = [
     gradient: 'from-[#db2777] to-[#f472b6]',
     hoverColor: '#db2777',
   },
-  {
+];
+
+// Helper to create resume social link
+function createResumeSocial(resumeUrl: string): SocialLink {
+  return {
     name: 'Resume',
-    url: RESUME_PATH,
+    url: resumeUrl,
     icon: FileText,
     gradient: 'from-[#06b6d4] to-[#22d3ee]',
     hoverColor: '#06b6d4',
-  },
-];
+  };
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -142,9 +148,9 @@ function SocialIcon({ social }: { social: SocialLink }) {
       {/* Icon Button */}
       <motion.a
         href={social.url}
-        target={social.url.startsWith('http') ? '_blank' : undefined}
+        target={social.url.startsWith('http') && social.name !== 'Resume' ? '_blank' : undefined}
         rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-        onClick={social.name === 'Resume' ? handleResumeClick : undefined}
+        onClick={social.name === 'Resume' ? (e) => handleResumeClick(e, social.url) : undefined}
         className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-[#112240]/80 backdrop-blur-sm border border-[#8892b0]/10 transition-all duration-300 hover:border-transparent"
         whileHover={{
           scale: 1.15,
@@ -187,7 +193,7 @@ function SocialIcon({ social }: { social: SocialLink }) {
 }
 
 // Mobile FAB Component with vertical stack animation
-function MobileSocialFAB() {
+function MobileSocialFAB({ socials }: { socials: SocialLink[] }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -204,9 +210,13 @@ function MobileSocialFAB() {
               <motion.a
                 key={social.name}
                 href={social.url}
-                target={social.url.startsWith('http') ? '_blank' : undefined}
+                target={
+                  social.url.startsWith('http') && social.name !== 'Resume' ? '_blank' : undefined
+                }
                 rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                onClick={social.name === 'Resume' ? handleResumeClick : undefined}
+                onClick={
+                  social.name === 'Resume' ? (e) => handleResumeClick(e, social.url) : undefined
+                }
                 initial={{ scale: 0, y: 0, opacity: 0 }}
                 animate={{
                   scale: 1,
@@ -271,10 +281,22 @@ function MobileSocialFAB() {
 }
 
 export default function SocialSidebar() {
+  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
+
+  useEffect(() => {
+    getSiteSettings().then(setSettings);
+  }, []);
+
+  // Build socials array with resume from Sanity
+  const socials = settings?.resumeUrl
+    ? [...baseSocials, createResumeSocial(settings.resumeUrl)]
+    : baseSocials;
+
   return (
     <>
       {/* Desktop Sidebar */}
       <motion.div
+        key={socials.length}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -305,7 +327,7 @@ export default function SocialSidebar() {
       </motion.div>
 
       {/* Mobile FAB with Fan-out */}
-      <MobileSocialFAB />
+      <MobileSocialFAB socials={socials} />
     </>
   );
 }

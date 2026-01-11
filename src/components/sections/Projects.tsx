@@ -1,14 +1,20 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, Beaker, Building2, ChevronDown, ExternalLink, Lock } from 'lucide-react';
-import { useState } from 'react';
-
 import {
-  type CareerPhase,
-  type CompanyInfo,
-  careerPhases,
-  type Project,
-  personalProjects,
-} from '../../data/projects';
+  AlertTriangle,
+  Beaker,
+  Building2,
+  ChevronDown,
+  ExternalLink,
+  Loader2,
+  Lock,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  getCareerPhases,
+  getProjects,
+  type SanityCareerPhase,
+  type SanityProject,
+} from '../../lib/sanity';
 
 // Custom GitHub icon
 function GitHubIcon({ size = 16 }: { size?: number }) {
@@ -51,25 +57,43 @@ function GitBranchIcon({ size = 20 }: { size?: number }) {
 }
 
 // Company Badge with Website Link
-function CompanyBadge({ company }: { company: CompanyInfo }) {
+function CompanyBadge({
+  companyName,
+  companyWebsite,
+}: {
+  companyName: string;
+  companyWebsite?: string;
+}) {
+  if (!companyWebsite) {
+    return (
+      <span className="inline-flex items-baseline">
+        <span className="mx-2 text-[#8892b0]">•</span>
+        <span className="inline-flex items-baseline gap-1.5 text-[#8892b0]">
+          <Building2 size={13} className="text-[#db2777] translate-y-[1px]" />
+          <span>{companyName}</span>
+        </span>
+      </span>
+    );
+  }
+
   return (
     <span className="inline-flex items-baseline">
       <span className="mx-2 text-[#8892b0]">•</span>
       <a
-        href={company.website}
+        href={companyWebsite}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-baseline gap-1.5 text-[#8892b0] hover:text-[#06b6d4] transition-colors"
       >
         <Building2 size={13} className="text-[#db2777] translate-y-[1px]" />
-        <span>{company.name}</span>
+        <span>{companyName}</span>
       </a>
     </span>
   );
 }
 
 // Phase Header Component
-function PhaseHeader({ phase }: { phase: CareerPhase }) {
+function PhaseHeader({ phase }: { phase: SanityCareerPhase }) {
   return (
     <div className="mb-6">
       <div className="flex items-center gap-3 mb-2">
@@ -80,29 +104,33 @@ function PhaseHeader({ phase }: { phase: CareerPhase }) {
       <div className="ml-7 pl-4 border-l-2 border-[#8892b0]/30">
         <p className="text-[#06b6d4] text-sm font-mono mb-1">
           {phase.role}
-          {phase.company && <CompanyBadge company={phase.company} />}
+          {phase.companyName && (
+            <CompanyBadge companyName={phase.companyName} companyWebsite={phase.companyWebsite} />
+          )}
         </p>
         <p className="text-[#8892b0] text-xs mb-3">{phase.period}</p>
-        <p className="text-[#8892b0] text-sm mb-3">{phase.description}</p>
+        {phase.description && <p className="text-[#8892b0] text-sm mb-3">{phase.description}</p>}
 
         {/* Highlight badges */}
-        <div className="flex flex-wrap gap-2">
-          {phase.highlights.map((highlight) => (
-            <span
-              key={highlight}
-              className="px-2 py-0.5 text-xs rounded bg-[#112240] text-[#06b6d4] border border-[#06b6d4]/30"
-            >
-              {highlight}
-            </span>
-          ))}
-        </div>
+        {phase.highlights && phase.highlights.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {phase.highlights.map((highlight) => (
+              <span
+                key={highlight}
+                className="px-2 py-0.5 text-xs rounded bg-[#112240] text-[#06b6d4] border border-[#06b6d4]/30"
+              >
+                {highlight}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 // Expandable Commit Card Component
-function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) {
+function CommitCard({ project, isLast }: { project: SanityProject; isLast: boolean }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -115,9 +143,9 @@ function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) 
         <div className="relative z-10 flex-shrink-0">
           <div
             className={`w-4 h-4 rounded-full border-2 ${
-              project.type === 'showcase'
+              project.projectType === 'showcase'
                 ? 'bg-[#06b6d4] border-[#06b6d4]'
-                : project.type === 'personal'
+                : project.projectType === 'personal'
                   ? 'bg-[#10b981] border-[#10b981]'
                   : 'bg-[#8892b0] border-[#8892b0]'
             } shadow-[0_0_8px_rgba(6,182,212,0.4)]`}
@@ -144,7 +172,7 @@ function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) 
                     Discontinued
                   </span>
                 )}
-                {!project.hasCode && project.type === 'personal' && (
+                {!project.hasCode && project.projectType === 'personal' && (
                   <span className="flex items-center gap-1 text-xs text-[#8892b0] bg-[#8892b0]/10 px-2 py-0.5 rounded">
                     <Lock size={12} />
                     Protected
@@ -230,7 +258,7 @@ function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) 
                   <p className="text-[#8892b0] text-sm mb-4">{project.description}</p>
 
                   {/* Features */}
-                  {project.features.length > 0 && (
+                  {project.features && project.features.length > 0 && (
                     <div className="mb-4">
                       <h5 className="text-xs font-semibold text-[#06b6d4] mb-2">Features:</h5>
                       <div className="flex flex-wrap gap-2">
@@ -247,7 +275,7 @@ function CommitCard({ project, isLast }: { project: Project; isLast: boolean }) 
                   )}
 
                   {/* Responsibilities */}
-                  {project.responsibilities.length > 0 && (
+                  {project.responsibilities && project.responsibilities.length > 0 && (
                     <div className="mb-4">
                       <h5 className="text-xs font-semibold text-[#db2777] mb-2">My Role:</h5>
                       <ul className="text-xs text-[#8892b0] list-disc list-inside space-y-1">
@@ -309,12 +337,12 @@ function PhaseSection({
   index,
   onViewMasaiProjects,
 }: {
-  phase: CareerPhase;
+  phase: SanityCareerPhase;
   index: number;
   onViewMasaiProjects?: () => void;
 }) {
-  const hasProjects = phase.projects.length > 0;
-  const isMasaiSchool = phase.id === 'masai-school';
+  const hasProjects = phase.projects && phase.projects.length > 0;
+  const isMasaiSchool = phase.isEducation;
 
   return (
     <motion.div
@@ -331,11 +359,11 @@ function PhaseSection({
         {/* Projects list or empty state */}
         <div className="ml-7 pl-4">
           {hasProjects ? (
-            phase.projects.map((project, i) => (
+            phase.projects!.map((project, i) => (
               <CommitCard
-                key={project.id}
+                key={project._id}
                 project={project}
-                isLast={i === phase.projects.length - 1}
+                isLast={i === phase.projects!.length - 1}
               />
             ))
           ) : isMasaiSchool && onViewMasaiProjects ? (
@@ -391,10 +419,10 @@ function PhaseSection({
 type TabType = 'career' | 'personal';
 
 // Personal Projects Content
-function PersonalProjectsContent() {
+function PersonalProjectsContent({ projects }: { projects: SanityProject[] }) {
   // Split projects by source
-  const masaiProjects = personalProjects.filter((p) => p.source === 'masai');
-  const sideProjects = personalProjects.filter((p) => p.source !== 'masai');
+  const masaiProjects = projects.filter((p) => p.source === 'masai');
+  const sideProjects = projects.filter((p) => p.source === 'side-project' || !p.source);
 
   return (
     <motion.div
@@ -420,7 +448,7 @@ function PersonalProjectsContent() {
           <div className="ml-2 pl-4 border-l-2 border-[#10b981]/30">
             {sideProjects.map((project, i) => (
               <CommitCard
-                key={project.id}
+                key={project._id}
                 project={project}
                 isLast={i === sideProjects.length - 1}
               />
@@ -463,7 +491,7 @@ function PersonalProjectsContent() {
           <div className="ml-2 pl-4 border-l-2 border-[#06b6d4]/30">
             {masaiProjects.map((project, i) => (
               <CommitCard
-                key={project.id}
+                key={project._id}
                 project={project}
                 isLast={i === masaiProjects.length - 1}
               />
@@ -475,9 +503,36 @@ function PersonalProjectsContent() {
   );
 }
 
+// Loading skeleton
+function ProjectsSkeleton() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 className="w-8 h-8 animate-spin text-[#06b6d4]" />
+      <span className="ml-3 text-[#8892b0]">Loading projects...</span>
+    </div>
+  );
+}
+
 // Main Projects Component
 export default function Projects() {
   const [activeTab, setActiveTab] = useState<TabType>('career');
+  const [careerPhases, setCareerPhases] = useState<SanityCareerPhase[]>([]);
+  const [allProjects, setAllProjects] = useState<SanityProject[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([getCareerPhases(), getProjects()])
+      .then(([phases, projects]) => {
+        setCareerPhases(phases);
+        setAllProjects(projects);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Filter personal projects (showcase and personal types, not linked to career phases)
+  const personalProjects = allProjects.filter(
+    (p) => p.projectType === 'showcase' || p.projectType === 'personal',
+  );
 
   // Handler to switch to Personal tab and scroll to Masai projects
   const handleViewMasaiProjects = () => {
@@ -545,29 +600,33 @@ export default function Projects() {
         </motion.div>
 
         {/* Tab Content */}
-        <AnimatePresence mode="wait">
-          {activeTab === 'career' ? (
-            <motion.div
-              key="career"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8"
-            >
-              {careerPhases.map((phase, index) => (
-                <PhaseSection
-                  key={phase.id}
-                  phase={phase}
-                  index={index}
-                  onViewMasaiProjects={handleViewMasaiProjects}
-                />
-              ))}
-            </motion.div>
-          ) : (
-            <PersonalProjectsContent key="personal" />
-          )}
-        </AnimatePresence>
+        {loading ? (
+          <ProjectsSkeleton />
+        ) : (
+          <AnimatePresence mode="wait">
+            {activeTab === 'career' ? (
+              <motion.div
+                key="career"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
+              >
+                {careerPhases.map((phase, index) => (
+                  <PhaseSection
+                    key={phase._id}
+                    phase={phase}
+                    index={index}
+                    onViewMasaiProjects={handleViewMasaiProjects}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <PersonalProjectsContent key="personal" projects={personalProjects} />
+            )}
+          </AnimatePresence>
+        )}
       </div>
     </section>
   );

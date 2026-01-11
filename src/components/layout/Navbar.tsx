@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Download } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-scroll';
-import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
+import { getSiteSettings, type SanitySiteSettings } from '../../lib/sanity';
+import { handleResumeClick } from '../../utils/resume';
 
 // Modern animated hamburger component
 function AnimatedHamburger({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
@@ -62,6 +63,11 @@ const navLinks = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
+
+  useEffect(() => {
+    getSiteSettings().then(setSettings);
+  }, []);
 
   return (
     <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-[#0a192f]/95 backdrop-blur-md border-b border-[#8892b0]/10 px-4 lg:px-8">
@@ -97,14 +103,16 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-end gap-2">
-        <a
-          href={RESUME_PATH}
-          onClick={handleResumeClick}
-          className="btn btn-accent btn-sm gap-2 hidden sm:flex"
-        >
-          <Download size={16} />
-          Resume
-        </a>
+        {settings?.resumeUrl && (
+          <a
+            href={settings.resumeUrl}
+            onClick={(e) => handleResumeClick(e, settings.resumeUrl!)}
+            className="btn btn-accent btn-sm gap-2 hidden sm:flex"
+          >
+            <Download size={16} />
+            Resume
+          </a>
+        )}
 
         {/* Mobile menu button - Modern animated hamburger */}
         <AnimatedHamburger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
@@ -140,20 +148,22 @@ export default function Navbar() {
                   </Link>
                 </motion.li>
               ))}
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navLinks.length * 0.05 }}
-              >
-                <a
-                  href={RESUME_PATH}
-                  onClick={handleResumeClick}
-                  className="btn btn-accent btn-sm gap-2 mt-2"
+              {settings?.resumeUrl && (
+                <motion.li
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: navLinks.length * 0.05 }}
                 >
-                  <Download size={16} />
-                  Resume
-                </a>
-              </motion.li>
+                  <a
+                    href={settings.resumeUrl}
+                    onClick={(e) => handleResumeClick(e, settings.resumeUrl!)}
+                    className="btn btn-accent btn-sm gap-2 mt-2"
+                  >
+                    <Download size={16} />
+                    Resume
+                  </a>
+                </motion.li>
+              )}
             </ul>
           </motion.div>
         )}

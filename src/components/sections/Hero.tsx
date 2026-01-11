@@ -1,10 +1,15 @@
 import { motion } from 'framer-motion';
 import { ArrowDown, Download } from 'lucide-react';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-scroll';
 import { Typewriter } from 'react-simple-typewriter';
-import profilePic from '../../assets/images/profile-pic.png';
-import { handleResumeClick, RESUME_PATH } from '../../utils/resume';
+import {
+  getAbout,
+  getSiteSettings,
+  type SanityAbout,
+  type SanitySiteSettings,
+} from '../../lib/sanity';
+import { handleResumeClick } from '../../utils/resume';
 
 // ============================================
 // SEASONAL PARTICLE SYSTEM
@@ -386,6 +391,16 @@ function AnimatedBackground() {
 
 export default function Hero() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [about, setAbout] = useState<SanityAbout | null>(null);
+  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
+
+  // Fetch data from Sanity
+  useEffect(() => {
+    Promise.all([getAbout(), getSiteSettings()]).then(([aboutData, settingsData]) => {
+      setAbout(aboutData);
+      setSettings(settingsData);
+    });
+  }, []);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -551,10 +566,16 @@ export default function Hero() {
                 </span>
               </Link>
 
-              <a href={RESUME_PATH} onClick={handleResumeClick} className="btn btn-accent gap-2">
-                <Download size={16} />
-                Resume
-              </a>
+              {settings?.resumeUrl && (
+                <a
+                  href={settings.resumeUrl}
+                  onClick={(e) => handleResumeClick(e, settings.resumeUrl!)}
+                  className="btn btn-accent gap-2"
+                >
+                  <Download size={16} />
+                  Resume
+                </a>
+              )}
 
               <div className="flex gap-2">
                 <a
@@ -761,14 +782,16 @@ export default function Hero() {
               </svg>
 
               {/* Profile image */}
-              <img
-                src={profilePic}
-                alt="Abhishek Chatterjee"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{
-                  clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
-                }}
-              />
+              {about?.profileImage && (
+                <img
+                  src={about.profileImage}
+                  alt={about.name || 'Profile'}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{
+                    clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
+                  }}
+                />
+              )}
 
               {/* Hexagon border overlay */}
               <motion.div
