@@ -47,6 +47,9 @@ export default defineConfig({
   projectId: '1ewtvnrz',
   dataset: 'production',
 
+  // Use /studio basePath for production (GitHub Pages), empty for local dev
+  basePath: process.env.SANITY_STUDIO_BASEPATH || '',
+
   plugins: [
     structureTool({structure}),
     visionTool(),
