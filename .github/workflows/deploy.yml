@@ -49,6 +49,8 @@ jobs:
       - name: Build Sanity Studio
         working-directory: studio
         run: npx sanity build dist
+        env:
+          SANITY_STUDIO_BASEPATH: /studio
 
       - name: Fix studio asset paths
         working-directory: studio
