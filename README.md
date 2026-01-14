@@ -131,8 +131,10 @@ abhishek1337chatterjee.github.io/
 │   ├── index.css          # Global styles and Tailwind imports
 │   └── vite-env.d.ts      # Vite environment types
 ├── studio/                # Sanity Studio (CMS admin interface)
-│   ├── schemas/           # Content schema definitions
-│   └── sanity.config.ts   # Sanity Studio configuration
+│   ├── schemaTypes/       # Content schema definitions
+│   ├── migrations/        # Data migration scripts
+│   ├── sanity.config.ts   # Sanity Studio configuration
+│   └── sanity.cli.ts      # Sanity CLI configuration
 ├── biome.json             # Biome linter configuration
 ├── index.html             # HTML entry with SEO meta tags
 ├── package.json           # Dependencies and scripts
@@ -237,6 +239,34 @@ VITE_CHAT_API_URL=https://your-api-endpoint.com/api/chat
 - **Colors**: Tailwind theme configuration in Tailwind CSS 4 format
 - **Fonts**: Update `index.css` for custom font imports
 - **Animations**: Framer Motion variants in component files
+
+### Sanity Studio
+
+The project includes Sanity Studio for content management, deployed alongside the main site.
+
+**Live Studio:** [abhishek1337chatterjee.github.io/studio/](https://abhishek1337chatterjee.github.io/studio/)
+
+#### Local Development
+```bash
+cd studio
+npm install
+npm run dev    # Opens at http://localhost:3333
+```
+
+#### Studio Features
+- **Content Types**: About, Career Phases, Projects, Skills, Social Links, Site Settings
+- **Singleton Documents**: About and Site Settings are single-instance documents
+- **Custom Structure**: Organized sidebar with dividers and grouped content
+- **Vision Tool**: GROQ query playground for testing queries
+
+#### Deployment
+Sanity Studio is automatically built and deployed with the main site via GitHub Actions:
+- Built with `SANITY_STUDIO_BASEPATH=/studio` for subpath routing
+- Deployed to `/studio/` path on GitHub Pages
+- Includes 404.html fallback for SPA routing and OAuth callbacks
+
+#### Known Issues
+- **Double path bug**: URLs may show `/studio/studio/...` instead of `/studio/...` due to basePath configuration overlap. This is cosmetic and doesn't affect functionality.
 
 ## Performance Features
 
