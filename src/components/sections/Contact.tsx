@@ -15,6 +15,10 @@ export default function Contact() {
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,15 +36,17 @@ export default function Contact() {
       });
 
       if (response.ok) {
-        alert('Message sent successfully!');
+        setSubmitStatus({ type: 'success', message: 'Message sent successfully!' });
         setFormData({ name: '', email: '', message: '' });
       } else {
-        alert('Failed to send message. Please try again.');
+        setSubmitStatus({ type: 'error', message: 'Failed to send message. Please try again.' });
       }
     } catch {
-      alert('Failed to send message. Please try again.');
+      setSubmitStatus({ type: 'error', message: 'Failed to send message. Please try again.' });
     } finally {
       setIsSubmitting(false);
+      // Clear status after 5 seconds
+      setTimeout(() => setSubmitStatus(null), 5000);
     }
   };
 
@@ -108,26 +114,30 @@ export default function Contact() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-              <label className="text-[#8892b0] text-sm">Name</label>
+              <label htmlFor="contact-name" className="text-[#8892b0] text-sm">Name</label>
               <input
+                id="contact-name"
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Your name"
+                autoComplete="name"
                 className="input input-bordered bg-[#112240] border-[#8892b0]/20 focus:border-[#db2777] text-[#ccd6f6] placeholder:text-[#8892b0]/50 w-full"
                 required
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-[#8892b0] text-sm">Email</label>
+              <label htmlFor="contact-email" className="text-[#8892b0] text-sm">Email</label>
               <input
+                id="contact-email"
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Your email"
+                autoComplete="email"
                 className="input input-bordered bg-[#112240] border-[#8892b0]/20 focus:border-[#db2777] text-[#ccd6f6] placeholder:text-[#8892b0]/50 w-full"
                 required
               />
@@ -135,8 +145,9 @@ export default function Contact() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[#8892b0] text-sm">Message</label>
+            <label htmlFor="contact-message" className="text-[#8892b0] text-sm">Message</label>
             <textarea
+              id="contact-message"
               name="message"
               value={formData.message}
               onChange={handleChange}
@@ -146,12 +157,12 @@ export default function Contact() {
             />
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-4">
             <button type="submit" disabled={isSubmitting} className="btn btn-primary gap-2">
               {isSubmitting ? (
                 <>
                   <span className="loading loading-spinner loading-sm" />
-                  Sending...
+                  Sending…
                 </>
               ) : (
                 <>
@@ -160,6 +171,22 @@ export default function Contact() {
                 </>
               )}
             </button>
+
+            {/* Accessible status message */}
+            <div aria-live="polite" aria-atomic="true" className="min-h-[24px]">
+              {submitStatus && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className={`text-sm font-medium ${
+                    submitStatus.type === 'success' ? 'text-green-400' : 'text-red-400'
+                  }`}
+                >
+                  {submitStatus.message}
+                </motion.p>
+              )}
+            </div>
           </div>
         </motion.form>
       </div>

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { FileText, Linkedin, Mail } from 'lucide-react';
 import { type FC, useEffect, useState } from 'react';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { getSiteSettings, type SanitySiteSettings } from '../../lib/sanity';
 import { handleResumeClick } from '../../utils/resume';
 
@@ -113,6 +114,7 @@ const itemVariants = {
 
 function SocialIcon({ social }: { social: SocialLink }) {
   const [isHovered, setIsHovered] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const Icon = social.icon;
 
   return (
@@ -151,6 +153,7 @@ function SocialIcon({ social }: { social: SocialLink }) {
         target={social.url.startsWith('http') && social.name !== 'Resume' ? '_blank' : undefined}
         rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
         onClick={social.name === 'Resume' ? (e) => handleResumeClick(e, social.url) : undefined}
+        aria-label={`${social.name}${social.url.startsWith('http') && social.name !== 'Resume' ? ' (opens in new tab)' : ''}`}
         className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-[#112240]/80 backdrop-blur-sm border border-[#8892b0]/10 transition-all duration-300 hover:border-transparent"
         whileHover={{
           scale: 1.15,
@@ -178,8 +181,8 @@ function SocialIcon({ social }: { social: SocialLink }) {
         />
       </motion.a>
 
-      {/* Pulse ring effect */}
-      {isHovered && (
+      {/* Pulse ring effect - skip if user prefers reduced motion */}
+      {isHovered && !prefersReducedMotion && (
         <motion.div
           className="absolute inset-0 rounded-xl pointer-events-none"
           initial={{ scale: 1, opacity: 0.5 }}
@@ -195,6 +198,7 @@ function SocialIcon({ social }: { social: SocialLink }) {
 // Mobile FAB Component with vertical stack animation
 function MobileSocialFAB({ socials }: { socials: SocialLink[] }) {
   const [isOpen, setIsOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div className="fixed bottom-6 left-6 z-40 lg:hidden">
@@ -217,6 +221,7 @@ function MobileSocialFAB({ socials }: { socials: SocialLink[] }) {
                 onClick={
                   social.name === 'Resume' ? (e) => handleResumeClick(e, social.url) : undefined
                 }
+                aria-label={`${social.name}${social.url.startsWith('http') && social.name !== 'Resume' ? ' (opens in new tab)' : ''}`}
                 initial={{ scale: 0, y: 0, opacity: 0 }}
                 animate={{
                   scale: 1,
@@ -236,7 +241,7 @@ function MobileSocialFAB({ socials }: { socials: SocialLink[] }) {
                 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Icon size={20} className="text-white" />
+                <Icon size={20} className="text-white" aria-hidden="true" />
               </motion.a>
             );
           })}
@@ -245,6 +250,8 @@ function MobileSocialFAB({ socials }: { socials: SocialLink[] }) {
       {/* Main FAB Toggle Button */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-label={isOpen ? 'Close social links menu' : 'Open social links menu'}
         className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#db2777] to-[#9333ea] shadow-xl z-10"
         whileTap={{ scale: 0.95 }}
         initial={{ y: 100, opacity: 0 }}
@@ -266,8 +273,8 @@ function MobileSocialFAB({ socials }: { socials: SocialLink[] }) {
           <motion.span className="absolute top-0 left-1/2 h-full w-0.5 bg-white rounded-full -translate-x-1/2" />
         </motion.div>
 
-        {/* Pulse ring when closed */}
-        {!isOpen && (
+        {/* Pulse ring when closed - skip if user prefers reduced motion */}
+        {!isOpen && !prefersReducedMotion && (
           <motion.div
             className="absolute inset-0 rounded-full border-2 border-[#db2777]"
             initial={{ scale: 1, opacity: 0.5 }}

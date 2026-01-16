@@ -158,6 +158,8 @@ function CommitCard({ project, isLast }: { project: SanityProject; isLast: boole
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${project.title}`}
             className="w-full text-left group"
           >
             <div className="bg-[#112240] rounded-lg p-4 border border-[#8892b0]/20 hover:border-[#06b6d4]/40 transition-colors">

@@ -3,6 +3,7 @@ import { ArrowDown, Download } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-scroll';
 import { Typewriter } from 'react-simple-typewriter';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import {
   getAbout,
   getSiteSettings,
@@ -289,6 +290,8 @@ function ParticleShape({ shape, size, color }: { shape: string; size: number; co
 
 // Seasonal Particle Field background component
 function AnimatedBackground() {
+  const prefersReducedMotion = useReducedMotion();
+
   // Memoize season config and particles to prevent recalculation on re-renders
   const seasonConfig = useMemo(() => getSeasonConfig(), []);
   const particles = useMemo(() => generateSeasonalParticles(seasonConfig), [seasonConfig]);
@@ -330,37 +333,38 @@ function AnimatedBackground() {
       {/* Subtle gradient base */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a192f] via-[#0a192f] to-[#0d1f3c]" />
 
-      {/* Seasonal particles */}
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute flex items-center justify-center"
-          style={{
-            left: `${particle.x}%`,
-            top: seasonConfig.direction === 'down' ? `${particle.y - 30}%` : undefined,
-            bottom: seasonConfig.direction !== 'down' ? `${100 - particle.y}%` : undefined,
-            width: particle.shape === 'circle' ? particle.size : 'auto',
-            height: particle.shape === 'circle' ? particle.size : 'auto',
-            ...(particle.shape === 'circle' && {
-              background: `radial-gradient(circle, ${particle.color} 0%, transparent 70%)`,
-              boxShadow: `0 0 4px 1px ${particle.color}30`,
-              borderRadius: '50%',
-            }),
-          }}
-          animate={getAnimation(particle)}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: seasonConfig.direction === 'down' ? 'easeIn' : 'linear',
-            times: seasonConfig.direction === 'float' ? [0, 0.5, 1] : [0, 0.1, 0.9, 1],
-          }}
-        >
-          {particle.shape !== 'circle' && (
-            <ParticleShape shape={particle.shape} size={particle.size} color={particle.color} />
-          )}
-        </motion.div>
-      ))}
+      {/* Seasonal particles - skip animations if user prefers reduced motion */}
+      {!prefersReducedMotion &&
+        particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute flex items-center justify-center"
+            style={{
+              left: `${particle.x}%`,
+              top: seasonConfig.direction === 'down' ? `${particle.y - 30}%` : undefined,
+              bottom: seasonConfig.direction !== 'down' ? `${100 - particle.y}%` : undefined,
+              width: particle.shape === 'circle' ? particle.size : 'auto',
+              height: particle.shape === 'circle' ? particle.size : 'auto',
+              ...(particle.shape === 'circle' && {
+                background: `radial-gradient(circle, ${particle.color} 0%, transparent 70%)`,
+                boxShadow: `0 0 4px 1px ${particle.color}30`,
+                borderRadius: '50%',
+              }),
+            }}
+            animate={getAnimation(particle)}
+            transition={{
+              duration: particle.duration,
+              delay: particle.delay,
+              repeat: Infinity,
+              ease: seasonConfig.direction === 'down' ? 'easeIn' : 'linear',
+              times: seasonConfig.direction === 'float' ? [0, 0.5, 1] : [0, 0.1, 0.9, 1],
+            }}
+          >
+            {particle.shape !== 'circle' && (
+              <ParticleShape shape={particle.shape} size={particle.size} color={particle.color} />
+            )}
+          </motion.div>
+        ))}
 
       {/* Subtle ambient glow at bottom - uses seasonal colors */}
       <div
@@ -786,6 +790,9 @@ export default function Hero() {
                 <img
                   src={about.profileImage}
                   alt={about.name || 'Profile'}
+                  width={384}
+                  height={384}
+                  loading="eager"
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{
                     clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',

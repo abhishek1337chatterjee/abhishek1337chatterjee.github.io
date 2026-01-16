@@ -70,6 +70,7 @@ function MessageContent({ content }: { content: string }) {
               onClick={() => handleCopy(part)}
               className="p-0.5 rounded hover:bg-[#1e3a5f] transition-colors"
               title="Copy phone number"
+              aria-label={copiedText === part ? 'Phone number copied' : 'Copy phone number'}
               type="button"
             >
               {copiedText === part ? (
@@ -506,10 +507,10 @@ export default function ChatBot() {
                   {/* Initial suggestions */}
                   <div className="ml-11">
                     {loadingSuggestions ? (
-                      <div className="flex items-center gap-2 mt-3 text-xs text-[#8892b0]">
-                        <Loader2 size={12} className="animate-spin" />
-                        Loading suggestions...
-                      </div>
+                      <output className="flex items-center gap-2 mt-3 text-xs text-[#8892b0]">
+                        <Loader2 size={12} className="animate-spin" aria-hidden="true" />
+                        Loading suggestions…
+                      </output>
                     ) : (
                       <SuggestionChips
                         suggestions={suggestions}
@@ -599,7 +600,15 @@ export default function ChatBot() {
               )}
 
               {/* Error message */}
-              {error && <div className="text-center text-red-400 text-sm py-2">{error}</div>}
+              {error && (
+                <div
+                  role="alert"
+                  aria-live="polite"
+                  className="text-center text-red-400 text-sm py-2"
+                >
+                  {error}
+                </div>
+              )}
 
               <div ref={messagesEndRef} />
             </div>
