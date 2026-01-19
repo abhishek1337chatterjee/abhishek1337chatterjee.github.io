@@ -61,6 +61,7 @@ export const queries = {
     responsibilities,
     githubUrl,
     deployedUrl,
+    additionalUrls[]{title, url},
     teamSize,
     duration,
     projectType,
@@ -90,6 +91,7 @@ export const queries = {
       responsibilities,
       githubUrl,
       deployedUrl,
+      additionalUrls[]{title, url},
       projectType,
       isDiscontinued,
       hasDemo,
@@ -162,6 +164,11 @@ export interface SanitySkill {
   category: 'frontend' | 'backend' | 'cloud' | 'tools';
 }
 
+export interface AdditionalUrl {
+  title: string;
+  url: string;
+}
+
 export interface SanityProject {
   _id: string;
   title: string;
@@ -173,6 +180,7 @@ export interface SanityProject {
   responsibilities?: string[];
   githubUrl?: string;
   deployedUrl?: string;
+  additionalUrls?: AdditionalUrl[];
   teamSize?: number;
   duration?: string;
   projectType: 'showcase' | 'experience' | 'personal';

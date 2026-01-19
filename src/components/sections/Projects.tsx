@@ -201,7 +201,7 @@ function CommitCard({ project, isLast }: { project: SanityProject; isLast: boole
 
               {/* Action buttons row */}
               <div className="flex items-center justify-between">
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   {project.hasCode && project.githubUrl && (
                     <a
                       href={project.githubUrl}
@@ -226,6 +226,19 @@ function CommitCard({ project, isLast }: { project: SanityProject; isLast: boole
                       Live
                     </a>
                   )}
+                  {project.additionalUrls?.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="btn btn-xs btn-ghost gap-1 text-[#8892b0] hover:text-[#10b981]"
+                    >
+                      <ExternalLink size={14} />
+                      {link.title}
+                    </a>
+                  ))}
                 </div>
 
                 <motion.div
@@ -299,7 +312,7 @@ function CommitCard({ project, isLast }: { project: SanityProject; isLast: boole
                   )}
 
                   {/* Full action buttons */}
-                  <div className="flex gap-3 mt-4 pt-4 border-t border-[#8892b0]/20">
+                  <div className="flex gap-3 mt-4 pt-4 border-t border-[#8892b0]/20 flex-wrap">
                     {project.hasCode && project.githubUrl && (
                       <a
                         href={project.githubUrl}
@@ -322,6 +335,18 @@ function CommitCard({ project, isLast }: { project: SanityProject; isLast: boole
                         Live Demo
                       </a>
                     )}
+                    {project.additionalUrls?.map((link) => (
+                      <a
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-sm btn-outline gap-2 border-[#10b981] text-[#10b981] hover:bg-[#10b981] hover:text-white"
+                      >
+                        <ExternalLink size={16} />
+                        {link.title}
+                      </a>
+                    ))}
                   </div>
                 </div>
               </motion.div>

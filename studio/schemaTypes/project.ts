@@ -62,8 +62,40 @@ export default defineType({
     }),
     defineField({
       name: 'deployedUrl',
-      title: 'Live Demo URL',
+      title: 'Live Demo URL (Primary)',
       type: 'url',
+      description: 'Main deployed URL for the project',
+    }),
+    defineField({
+      name: 'additionalUrls',
+      title: 'Additional URLs',
+      type: 'array',
+      description: 'Additional deployed URLs (e.g., sub-services, dashboards)',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'title',
+              title: 'Link Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'url',
+              title: 'URL',
+              type: 'url',
+              validation: (Rule) => Rule.required(),
+            },
+          ],
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'url',
+            },
+          },
+        },
+      ],
     }),
     defineField({
       name: 'teamSize',
