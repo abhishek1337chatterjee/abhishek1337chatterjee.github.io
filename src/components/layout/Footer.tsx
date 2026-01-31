@@ -8,11 +8,11 @@ export default function Footer() {
           Made with <Heart size={16} className="text-[#db2777] fill-[#db2777] animate-pulse" /> by{' '}
           <span className="text-[#ccd6f6] font-semibold">Abhishek Chatterjee</span>
         </p>
-        <p className="text-[#8892b0]/70 text-sm mt-1 tracking-wide">
+        <p className="text-[#8892b0] text-sm mt-1 tracking-wide">
           &copy; 2023 – {new Date().getFullYear()} All rights reserved.
         </p>
         {import.meta.env.VITE_COMMIT_SHA && (
-          <p className="text-[#8892b0]/50 text-xs mt-3 font-mono">
+          <p className="text-[#8892b0] text-xs mt-3 font-mono">
             {import.meta.env.VITE_COMMIT_SHA.slice(0, 7)}
           </p>
         )}
