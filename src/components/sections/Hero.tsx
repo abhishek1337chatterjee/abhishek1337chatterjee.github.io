@@ -793,8 +793,8 @@ export default function Hero() {
               {about?.profileImage && (
                 <img
                   src={getProfileImageUrl(about.profileImage, 384)}
-                  srcSet={`${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 384)} 384w, ${getProfileImageUrl(about.profileImage, 512)} 512w`}
-                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
+                  srcSet={`${getProfileImageUrl(about.profileImage, 192)} 192w, ${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 320)} 320w, ${getProfileImageUrl(about.profileImage, 384)} 384w`}
+                  sizes="(max-width: 480px) 192px, (max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
                   alt={about.name || 'Profile'}
                   width={384}
                   height={384}

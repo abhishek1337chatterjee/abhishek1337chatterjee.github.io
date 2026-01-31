@@ -32,6 +32,10 @@ function SkillCard({ skill }: { skill: SanitySkill }) {
             <motion.img
               src={skill.iconUrl}
               alt={skill.name}
+              width={48}
+              height={48}
+              loading="lazy"
+              decoding="async"
               className="w-10 h-10 sm:w-12 sm:h-12"
               whileHover={{ rotate: 10 }}
               transition={{ type: 'spring', stiffness: 300 }}
