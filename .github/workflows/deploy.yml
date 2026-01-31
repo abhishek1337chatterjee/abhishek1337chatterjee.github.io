@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+    # Skip workflow entirely for docs-only changes
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
 
 permissions:
   contents: read
@@ -15,7 +20,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Detect which parts of the codebase changed
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      studio: ${{ steps.filter.outputs.studio }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Detect changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/**'
+              - 'public/**'
+              - 'index.html'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'vite.config.ts'
+              - 'tsconfig*.json'
+              - 'biome.json'
+              - 'tailwind.config.*'
+            studio:
+              - 'studio/**'
+
   build:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.studio == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,6 +65,7 @@ jobs:
             package-lock.json
             studio/package-lock.json
 
+      # Always build frontend (fast, ~30s)
       - name: Install dependencies
         run: npm ci
 
@@ -42,26 +78,63 @@ jobs:
           VITE_COMMIT_SHA: ${{ github.sha }}
           VITE_CHAT_API_URL: ${{ secrets.VITE_CHAT_API_URL }}
 
+      # Try to restore cached studio build (for frontend-only changes)
+      - name: Restore studio cache
+        if: needs.changes.outputs.studio == 'false'
+        id: studio-cache
+        uses: actions/cache/restore@v5
+        with:
+          path: studio-dist-cache
+          key: studio-dist-${{ hashFiles('studio/**') }}
+          restore-keys: |
+            studio-dist-
+
+      # Use cached studio if available
+      - name: Use cached studio
+        if: needs.changes.outputs.studio == 'false' && steps.studio-cache.outputs.cache-hit == 'true'
+        run: cp -r studio-dist-cache dist/studio
+
+      # Build studio if changed OR cache miss
       - name: Install studio dependencies
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         working-directory: studio
         run: npm ci
 
       - name: Build Sanity Studio
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         working-directory: studio
         run: npx sanity build dist
         env:
           SANITY_STUDIO_BASEPATH: /studio
 
       - name: Fix studio asset paths
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         working-directory: studio
         run: sed -i 's|href="/static/|href="/studio/static/|g; s|src="/static/|src="/studio/static/|g' dist/index.html
 
       - name: Add studio 404.html for SPA routing
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         working-directory: studio
         run: cp dist/index.html dist/404.html
 
       - name: Copy studio to dist
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         run: cp -r studio/dist dist/studio
+
+      # Save studio build to cache for future runs
+      - name: Save studio cache
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: studio-dist-cache
+          key: studio-dist-${{ hashFiles('studio/**') }}
+
+      # Prepare cache for next run
+      - name: Prepare studio cache
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
+        run: |
+          rm -rf studio-dist-cache
+          cp -r dist/studio studio-dist-cache
 
       - name: Create root 404.html for SPA routing
         run: |
