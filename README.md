@@ -21,7 +21,7 @@ This portfolio serves as both a professional showcase and a technical demonstrat
   - **Hint Text**: "Click to send • Tab to edit" displayed below suggestion chips
 - **Sanity CMS Integration** - Headless CMS backend via external API (abhishek-api) for all portfolio and chatbot content
 - **Responsive Design** - Fully responsive from mobile (320px) to ultra-wide displays (1920px+)
-- **Performance Optimized** - Code splitting with manual chunks for vendor libraries (React, Framer Motion, AI SDK, Markdown)
+- **Performance Optimized** - PageSpeed 100/100 on mobile with HTML-first LCP pattern, code splitting, and mobile-specific optimizations
 - **React Compiler** - Babel plugin integration for React 19's experimental compiler
 - **Smooth Animations** - Framer Motion for all transitions, entrance effects, and micro-interactions
 - **Dynamic Typewriter** - Rotating role display on hero section
@@ -121,6 +121,8 @@ abhishek1337chatterjee.github.io/
 │   │   └── ChatBot.tsx              # AI chatbot with suggestions
 │   ├── hooks/
 │   │   ├── useGitHubStats.ts  # GitHub API integration hook
+│   │   ├── useIsMobile.ts     # Mobile device detection hook
+│   │   ├── useReducedMotion.ts # Reduced motion preference hook
 │   │   └── useSanityData.ts   # Sanity CMS data fetching hooks
 │   ├── lib/
 │   │   └── sanity.ts      # Sanity client, queries, and types
@@ -270,17 +272,50 @@ Sanity Studio is automatically built and deployed with the main site via GitHub 
 
 ## Performance Features
 
+### PageSpeed Insights Scores (Mobile)
+| Metric | Score |
+|--------|-------|
+| **Performance** | 100 |
+| **Accessibility** | 100 |
+| **Best Practices** | 100 |
+| **SEO** | 100 |
+
+### Core Web Vitals
+| Metric | Value | Status |
+|--------|-------|--------|
+| **LCP** (Largest Contentful Paint) | 1.7s | ✅ Good |
+| **FCP** (First Contentful Paint) | 1.1s | ✅ Good |
+| **TBT** (Total Blocking Time) | 30ms | ✅ Excellent |
+| **CLS** (Cumulative Layout Shift) | 0.001 | ✅ Excellent |
+| **SI** (Speed Index) | 2.2s | ✅ Good |
+
+### LCP Optimization - HTML-First Pattern
+The biggest performance win comes from rendering the LCP image (profile photo) directly in HTML:
+- **Problem**: Traditional React apps wait for JS → React mount → API fetch → render, causing ~1-2s LCP delay
+- **Solution**: The profile image is rendered directly in `index.html` with inline styles, allowing immediate paint
+- **Hydration**: React removes the static HTML container on mount and takes over rendering seamlessly
+- **Result**: LCP improved from 3.9s to 1.7s (56% faster)
+
+### Mobile-Specific Optimizations
+- **Deferred Particles**: Seasonal particle animations delayed by 2.5s on mobile to prioritize LCP
+- **Reduced Particle Count**: 8 particles on mobile vs 20 on desktop
+- **Simplified Animations**: SVG stroke-dashoffset animations (non-GPU-compositable) replaced with simple opacity fades on mobile
+- **Content Visibility**: Below-fold sections use `content-visibility: auto` to skip rendering until scrolled into view
+
 ### Code Splitting Strategy
 Manual chunks defined in `vite.config.ts` optimize bundle size:
 - Initial bundle: ~50KB (gzipped)
 - Vendor chunks: Lazy loaded based on route/interaction
 - Markdown renderer: Loaded only when chatbot opens
+- ChatBot component: Lazy loaded with `React.lazy`/`Suspense`
 
 ### Build Optimizations
 - **React Compiler**: Experimental compiler reduces re-renders
 - **Tree Shaking**: Unused code elimination
 - **Asset Optimization**: Image compression and lazy loading
 - **CSS Purging**: Tailwind CSS removes unused styles
+- **Preconnect**: DNS prefetch for Sanity CDN and GitHub assets
+- **LCP Preload**: Profile image preloaded with correct srcset sizes
 
 ### SEO Optimizations
 - Semantic HTML structure
