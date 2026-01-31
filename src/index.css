@@ -200,3 +200,19 @@ body {
     opacity: 0.6;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   content-visibility for below-fold content to reduce initial render work
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Defer rendering of below-fold sections until they're near viewport */
+.content-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
+/* Ensure composited animations for better performance */
+.will-change-transform {
+  will-change: transform, opacity;
+}

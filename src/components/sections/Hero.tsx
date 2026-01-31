@@ -3,6 +3,7 @@ import { ArrowDown, Download } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-scroll';
 import { Typewriter } from 'react-simple-typewriter';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import {
   getAbout,
@@ -292,10 +293,30 @@ function ParticleShape({ shape, size, color }: { shape: string; size: number; co
 // Seasonal Particle Field background component
 function AnimatedBackground() {
   const prefersReducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+  const [isLcpDone, setIsLcpDone] = useState(false);
+
+  // Defer particle animations until after LCP on mobile
+  useEffect(() => {
+    if (isMobile) {
+      // Wait for LCP (profile image) to complete before starting animations
+      const timer = setTimeout(() => setIsLcpDone(true), 2500);
+      return () => clearTimeout(timer);
+    }
+    setIsLcpDone(true);
+  }, [isMobile]);
 
   // Memoize season config and particles to prevent recalculation on re-renders
   const seasonConfig = useMemo(() => getSeasonConfig(), []);
-  const particles = useMemo(() => generateSeasonalParticles(seasonConfig), [seasonConfig]);
+  // Reduce particle count significantly on mobile for performance
+  const mobileConfig = useMemo(
+    () => ({ ...seasonConfig, particleCount: Math.min(8, seasonConfig.particleCount) }),
+    [seasonConfig],
+  );
+  const particles = useMemo(
+    () => generateSeasonalParticles(isMobile ? mobileConfig : seasonConfig),
+    [isMobile, mobileConfig, seasonConfig],
+  );
 
   // Determine animation based on direction
   const getAnimation = (particle: ReturnType<typeof generateSeasonalParticles>[0]) => {
@@ -334,8 +355,9 @@ function AnimatedBackground() {
       {/* Subtle gradient base */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a192f] via-[#0a192f] to-[#0d1f3c]" />
 
-      {/* Seasonal particles - skip animations if user prefers reduced motion */}
+      {/* Seasonal particles - skip on reduced motion, defer on mobile until LCP */}
       {!prefersReducedMotion &&
+        isLcpDone &&
         particles.map((particle) => (
           <motion.div
             key={particle.id}
@@ -346,6 +368,7 @@ function AnimatedBackground() {
               bottom: seasonConfig.direction !== 'down' ? `${100 - particle.y}%` : undefined,
               width: particle.shape === 'circle' ? particle.size : 'auto',
               height: particle.shape === 'circle' ? particle.size : 'auto',
+              willChange: 'transform, opacity',
               ...(particle.shape === 'circle' && {
                 background: `radial-gradient(circle, ${particle.color} 0%, transparent 70%)`,
                 boxShadow: `0 0 4px 1px ${particle.color}30`,

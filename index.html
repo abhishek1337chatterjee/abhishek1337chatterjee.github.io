@@ -19,6 +19,16 @@
     <link rel="preconnect" href="https://user-images.githubusercontent.com" crossorigin />
     <link rel="dns-prefetch" href="https://user-images.githubusercontent.com" />
 
+    <!-- Preload LCP image (profile image from Sanity CDN) -->
+    <!-- Using smallest mobile size (192px) for fastest LCP on mobile -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=192&h=192&fm=webp&q=85"
+      fetchpriority="high"
+    />
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
