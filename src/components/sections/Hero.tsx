@@ -421,6 +421,16 @@ export default function Hero() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [about, setAbout] = useState<SanityAbout | null>(null);
   const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
+  const isMobile = useIsMobile();
+
+  // Remove the HTML-inlined LCP container after React mounts
+  // This ensures a clean handoff from the static HTML to React
+  useEffect(() => {
+    const lcpContainer = document.getElementById('lcp-hero-container');
+    if (lcpContainer) {
+      lcpContainer.remove();
+    }
+  }, []);
 
   // Fetch data from Sanity
   useEffect(() => {
@@ -436,7 +446,7 @@ export default function Hero() {
     const hexFill = svgRef.current.querySelector('.hex-fill');
     const lines = svgRef.current.querySelectorAll('.hex-line');
 
-    // Animate hexagon fill
+    // Animate hexagon fill (works fine on all devices)
     if (hexFill) {
       (hexFill as SVGElement).animate([{ opacity: 0 }, { opacity: 1 }], {
         duration: 600,
@@ -446,7 +456,23 @@ export default function Hero() {
       });
     }
 
-    // Animate lines with staggered line-drawing effect
+    // Skip stroke-dashoffset line animations on mobile
+    // stroke-dashoffset cannot be GPU-composited and blocks main thread
+    if (isMobile) {
+      // On mobile, just fade in the lines without the drawing effect
+      lines.forEach((line, index) => {
+        const svgLine = line as SVGLineElement;
+        svgLine.animate([{ opacity: 0 }, { opacity: 0.6 }], {
+          duration: 400,
+          delay: 600 + index * 50,
+          fill: 'forwards',
+          easing: 'ease-out',
+        });
+      });
+      return;
+    }
+
+    // Desktop: Full line-drawing animation with stagger effect
     lines.forEach((line, index) => {
       const svgLine = line as SVGLineElement;
       const length = svgLine.getTotalLength();
@@ -475,7 +501,7 @@ export default function Hero() {
         });
       };
     });
-  }, []);
+  }, [isMobile]);
 
   return (
     <section
