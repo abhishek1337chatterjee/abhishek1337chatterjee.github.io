@@ -6,6 +6,7 @@ import { Typewriter } from 'react-simple-typewriter';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import {
   getAbout,
+  getProfileImageUrl,
   getSiteSettings,
   type SanityAbout,
   type SanitySiteSettings,
@@ -541,6 +542,7 @@ export default function Hero() {
               {/* Option 4: Border animation - Traveling border */}
               <Link
                 to="projects"
+                href="#projects"
                 smooth={true}
                 duration={500}
                 offset={-80}
@@ -586,6 +588,7 @@ export default function Hero() {
                   href="https://github.com/abhishek1337chatterjee"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="GitHub profile (opens in new tab)"
                   className="btn btn-ghost btn-square text-[#ccd6f6] hover:text-[#06b6d4] transition-colors"
                 >
                   <GithubIcon size={20} />
@@ -594,6 +597,7 @@ export default function Hero() {
                   href="https://www.linkedin.com/in/abhishekchatterjee-saheb1337/"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="LinkedIn profile (opens in new tab)"
                   className="btn btn-ghost btn-square text-[#ccd6f6] hover:text-[#06b6d4] transition-colors"
                 >
                   <LinkedinIcon size={20} />
@@ -785,14 +789,17 @@ export default function Hero() {
                 />
               </svg>
 
-              {/* Profile image */}
+              {/* Profile image - optimized WebP at displayed size */}
               {about?.profileImage && (
                 <img
-                  src={about.profileImage}
+                  src={getProfileImageUrl(about.profileImage, 384)}
+                  srcSet={`${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 384)} 384w, ${getProfileImageUrl(about.profileImage, 512)} 512w`}
+                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
                   alt={about.name || 'Profile'}
                   width={384}
                   height={384}
                   loading="eager"
+                  fetchPriority="high"
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{
                     clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',

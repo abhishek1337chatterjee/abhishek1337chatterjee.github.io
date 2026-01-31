@@ -28,7 +28,7 @@ export const queries = {
     highlightedPhrases[]{text, color},
     highlights,
     interests,
-    "profileImage": profileImage.asset->url
+    profileImage
   }`,
 
   siteSettings: `*[_type == "siteSettings"][0]{
@@ -142,7 +142,16 @@ export interface SanityAbout {
   highlightedPhrases?: HighlightedPhrase[];
   highlights?: string[];
   interests?: string[];
-  profileImage?: string;
+  profileImage?: SanityImageSource;
+}
+
+// Helper to get optimized profile image URL with responsive sizes
+export function getProfileImageUrl(
+  image: SanityImageSource | undefined,
+  width: number = 384,
+): string | undefined {
+  if (!image) return undefined;
+  return urlFor(image).width(width).height(width).format('webp').quality(85).url();
 }
 
 export interface SanitySiteSettings {

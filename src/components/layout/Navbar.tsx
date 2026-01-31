@@ -72,7 +72,7 @@ export default function Navbar() {
   return (
     <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-[#0a192f]/95 backdrop-blur-md border-b border-[#8892b0]/10 px-4 lg:px-8">
       <div className="navbar-start">
-        <Link to="home" smooth={true} duration={500} className="cursor-pointer">
+        <Link to="home" href="#home" smooth={true} duration={500} className="cursor-pointer">
           <motion.div className="text-2xl font-bold" whileHover={{ scale: 1.05 }}>
             <span className="text-[#ccd6f6]">&lt;</span>
             <span className="text-[#db2777]">AC</span>
@@ -88,6 +88,7 @@ export default function Navbar() {
             <li key={link.to}>
               <Link
                 to={link.to}
+                href={`#${link.to}`}
                 smooth={true}
                 duration={500}
                 offset={-80}
@@ -138,6 +139,7 @@ export default function Navbar() {
                 >
                   <Link
                     to={link.to}
+                    href={`#${link.to}`}
                     smooth={true}
                     duration={500}
                     offset={-80}
