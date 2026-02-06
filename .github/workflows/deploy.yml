@@ -121,20 +121,19 @@ jobs:
         if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         run: cp -r studio/dist dist/studio
 
-      # Save studio build to cache for future runs
+      # Prepare and save studio build to cache for future runs
+      - name: Prepare studio cache
+        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
+        run: |
+          rm -rf studio-dist-cache
+          cp -r dist/studio studio-dist-cache
+
       - name: Save studio cache
         if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v5
         with:
           path: studio-dist-cache
           key: studio-dist-${{ hashFiles('studio/**') }}
-
-      # Prepare cache for next run
-      - name: Prepare studio cache
-        if: needs.changes.outputs.studio == 'true' || steps.studio-cache.outputs.cache-hit != 'true'
-        run: |
-          rm -rf studio-dist-cache
-          cp -r dist/studio studio-dist-cache
 
       - name: Create root 404.html for SPA routing
         run: |
