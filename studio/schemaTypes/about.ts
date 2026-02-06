@@ -84,6 +84,71 @@ export default defineType({
       description: 'Key highlights to showcase',
     }),
     defineField({
+      name: 'currentlyExploring',
+      title: 'Currently Exploring',
+      type: 'array',
+      description: 'Technologies, concepts, and tools you are currently learning or exploring',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'name',
+              title: 'Name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'category',
+              title: 'Category',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Technology', value: 'technology'},
+                  {title: 'Concept', value: 'concept'},
+                  {title: 'Tool', value: 'tool'},
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'description',
+              title: 'Description',
+              type: 'string',
+              description: 'Brief note, e.g., "Building CLI tools"',
+            },
+            {
+              name: 'color',
+              title: 'Color',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Cyan (Primary)', value: 'cyan'},
+                  {title: 'Pink (Accent)', value: 'pink'},
+                  {title: 'Green', value: 'green'},
+                  {title: 'Orange', value: 'orange'},
+                  {title: 'Purple', value: 'purple'},
+                ],
+              },
+              initialValue: 'cyan',
+            },
+            {
+              name: 'order',
+              title: 'Order',
+              type: 'number',
+              description: 'Display order (lower = first)',
+            },
+          ],
+          preview: {
+            select: {
+              title: 'name',
+              subtitle: 'category',
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
       name: 'interests',
       title: 'Interests & Hobbies',
       type: 'array',

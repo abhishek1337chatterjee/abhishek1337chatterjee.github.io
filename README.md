@@ -19,6 +19,8 @@ This portfolio serves as both a professional showcase and a technical demonstrat
   - **Word-by-Word Streaming**: Smooth 15ms delay animation for natural conversation flow
   - **Markdown Support**: Custom renderer with phone number detection, copy button, and external links
   - **Hint Text**: "Click to send • Tab to edit" displayed below suggestion chips
+- **Currently Exploring Section** - CMS-driven subsection in About showing technologies/concepts being actively learned, with color-coded cards and animated pulse indicator
+- **Custom Scrollbar** - Theme-matched scrollbar with pink-to-cyan gradient thumb matching site accent colors
 - **Sanity CMS Integration** - Headless CMS backend via external API (abhishek-api) for all portfolio and chatbot content
 - **Responsive Design** - Fully responsive from mobile (320px) to ultra-wide displays (1920px+)
 - **Performance Optimized** - PageSpeed 100/100 on mobile with HTML-first LCP pattern, code splitting, and mobile-specific optimizations
@@ -124,6 +126,8 @@ abhishek1337chatterjee.github.io/
 │   │   ├── useIsMobile.ts     # Mobile device detection hook
 │   │   ├── useReducedMotion.ts # Reduced motion preference hook
 │   │   └── useSanityData.ts   # Sanity CMS data fetching hooks
+│   ├── types/
+│   │   └── index.ts       # Shared types (ExploringItem, ExploringColor)
 │   ├── lib/
 │   │   └── sanity.ts      # Sanity client, queries, and types
 │   ├── utils/
@@ -256,7 +260,7 @@ npm run dev    # Opens at http://localhost:3333
 ```
 
 #### Studio Features
-- **Content Types**: About, Career Phases, Projects, Skills, Social Links, Site Settings
+- **Content Types**: About (with Currently Exploring), Career Phases, Projects, Skills, Social Links, Site Settings
 - **Singleton Documents**: About and Site Settings are single-instance documents
 - **Custom Structure**: Organized sidebar with dividers and grouped content
 - **Vision Tool**: GROQ query playground for testing queries

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import {
   Briefcase,
   Cloud,
+  Compass,
   Download,
   Heart,
   Loader2,
@@ -16,6 +17,7 @@ import {
   type SanityAbout,
   type SanitySiteSettings,
 } from '../../lib/sanity';
+import type { ExploringItem } from '../../types';
 import { handleResumeClick } from '../../utils/resume';
 
 // Icon mapping based on highlight text keywords
@@ -33,6 +35,15 @@ const highlightColorMap: Record<string, string> = {
   green: 'text-[#22c55e]',
   orange: 'text-[#f59e0b]',
   purple: 'text-[#a855f7]',
+};
+
+// Color mapping for exploring items (keyed by Sanity color field)
+const exploringColorMap: Record<string, { border: string; text: string; bg: string }> = {
+  cyan: { border: 'border-l-[#06b6d4]', text: 'text-[#06b6d4]', bg: 'bg-[#06b6d4]/10' },
+  pink: { border: 'border-l-[#db2777]', text: 'text-[#db2777]', bg: 'bg-[#db2777]/10' },
+  green: { border: 'border-l-[#22c55e]', text: 'text-[#22c55e]', bg: 'bg-[#22c55e]/10' },
+  orange: { border: 'border-l-[#f59e0b]', text: 'text-[#f59e0b]', bg: 'bg-[#f59e0b]/10' },
+  purple: { border: 'border-l-[#a855f7]', text: 'text-[#a855f7]', bg: 'bg-[#a855f7]/10' },
 };
 
 // Function to render text with highlighted phrases
@@ -172,6 +183,54 @@ export default function About() {
                   <p key={index}>{renderHighlightedText(paragraph, about.highlightedPhrases)}</p>
                 ))}
               </motion.div>
+
+              {/* Currently Exploring */}
+              {about.currentlyExploring && about.currentlyExploring.length > 0 && (
+                <motion.div
+                  className="mb-10"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <Compass className="w-5 h-5 text-[#06b6d4]" />
+                    <h3 className="text-lg font-semibold text-[#ccd6f6]">
+                      Currently Exploring
+                    </h3>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#06b6d4] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#06b6d4]" />
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {about.currentlyExploring.map((item: ExploringItem, index: number) => {
+                      const colors = exploringColorMap[item.color] || exploringColorMap.cyan;
+                      return (
+                        <motion.div
+                          key={item.name}
+                          className={`${colors.bg} border-l-3 ${colors.border} rounded-r-lg px-4 py-3 backdrop-blur-sm`}
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.1 * index + 0.5 }}
+                          whileHover={{ x: 4 }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-[#ccd6f6] font-medium text-sm">{item.name}</span>
+                            <span className={`text-[10px] uppercase tracking-wider ${colors.text} opacity-70`}>
+                              {item.category}
+                            </span>
+                          </div>
+                          {item.description && (
+                            <p className="text-[#8892b0] text-xs mt-1">{item.description}</p>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
 
               {/* Download Resume Button */}
               {settings?.resumeUrl && (

@@ -1,5 +1,6 @@
 import { createClient } from '@sanity/client';
 import imageUrlBuilder, { type SanityImageSource } from '@sanity/image-url';
+import type { ExploringItem } from '../types';
 
 // Sanity client configuration
 // Project ID and dataset are public (read-only via CDN) - no need for env vars
@@ -28,7 +29,8 @@ export const queries = {
     highlightedPhrases[]{text, color},
     highlights,
     interests,
-    profileImage
+    profileImage,
+    "currentlyExploring": currentlyExploring[] | order(order asc){name, category, description, color}
   }`,
 
   siteSettings: `*[_type == "siteSettings"][0]{
@@ -110,7 +112,8 @@ export const queries = {
   // Combined query for chatbot context (all data in one request)
   allContent: `{
     "about": *[_type == "about"][0]{
-      name, title, location, experience, bio, highlights, interests
+      name, title, location, experience, bio, highlights, interests,
+      "currentlyExploring": currentlyExploring[] | order(order asc){name, category, description}
     },
     "settings": *[_type == "siteSettings"][0]{
       email, phone, whatsappUrl, githubUsername,
@@ -142,6 +145,7 @@ export interface SanityAbout {
   highlightedPhrases?: HighlightedPhrase[];
   highlights?: string[];
   interests?: string[];
+  currentlyExploring?: ExploringItem[];
   profileImage?: SanityImageSource;
 }
 
