@@ -419,19 +419,28 @@ function AnimatedBackground() {
 
 export default function Hero() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const [about, setAbout] = useState<SanityAbout | null>(null);
   const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
   const isMobile = useIsMobile();
 
-  // Remove the HTML-inlined LCP container after Sanity data loads
-  // Delay removal until React image is ready to avoid LCP regression
+  // Adopt the static HTML LCP image into the React tree instead of creating a new one.
+  // Moving a DOM node doesn't trigger a new paint, so the static image remains the LCP element.
   useEffect(() => {
-    if (!about) return;
     const lcpContainer = document.getElementById('lcp-hero-container');
+    const lcpImage = document.getElementById('lcp-profile-image');
+    const target = imageContainerRef.current;
+
+    if (lcpImage && target) {
+      // Apply React component's styling to the adopted image
+      lcpImage.className = 'absolute inset-0 w-full h-full object-cover';
+      lcpImage.removeAttribute('id');
+      target.appendChild(lcpImage);
+    }
     if (lcpContainer) {
       lcpContainer.remove();
     }
-  }, [about]);
+  }, []);
 
   // Fetch data from Sanity
   useEffect(() => {
@@ -839,24 +848,27 @@ export default function Hero() {
                 />
               </svg>
 
-              {/* Profile image - renders immediately with hardcoded fallback URL
-                   to avoid LCP waiting on Sanity API. Swaps to dynamic URL when data loads. */}
-              <img
-                src={about?.profileImage ? getProfileImageUrl(about.profileImage, 384) : 'https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=384&h=384&fm=webp&q=85'}
-                srcSet={about?.profileImage
-                  ? `${getProfileImageUrl(about.profileImage, 192)} 192w, ${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 320)} 320w, ${getProfileImageUrl(about.profileImage, 384)} 384w`
-                  : 'https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=192&h=192&fm=webp&q=85 192w, https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=256&h=256&fm=webp&q=85 256w, https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=320&h=320&fm=webp&q=85 320w, https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=384&h=384&fm=webp&q=85 384w'}
-                sizes="(max-width: 480px) 192px, (max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
-                alt={about?.name || 'Abhishek Chatterjee'}
-                width={384}
-                height={384}
-                loading="eager"
-                fetchPriority="high"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{
-                  clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
-                }}
-              />
+              {/* Profile image container - adopts the static HTML LCP image on mount.
+                   The static image from index.html is moved here to avoid a new LCP paint event.
+                   Falls back to a React-rendered image if the static one isn't found (dev mode). */}
+              <div ref={imageContainerRef}>
+                {about?.profileImage && !imageContainerRef.current?.querySelector('img') && (
+                  <img
+                    src={getProfileImageUrl(about.profileImage, 384)}
+                    srcSet={`${getProfileImageUrl(about.profileImage, 192)} 192w, ${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 320)} 320w, ${getProfileImageUrl(about.profileImage, 384)} 384w`}
+                    sizes="(max-width: 480px) 192px, (max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
+                    alt={about.name || 'Abhishek Chatterjee'}
+                    width={384}
+                    height={384}
+                    loading="eager"
+                    fetchPriority="high"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{
+                      clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
+                    }}
+                  />
+                )}
+              </div>
 
               {/* Hexagon border overlay */}
               <motion.div
