@@ -419,24 +419,13 @@ function AnimatedBackground() {
 
 export default function Hero() {
   const svgRef = useRef<SVGSVGElement>(null);
-  const imageContainerRef = useRef<HTMLDivElement>(null);
   const [about, setAbout] = useState<SanityAbout | null>(null);
   const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
   const isMobile = useIsMobile();
 
-  // Adopt the static HTML LCP image into the React tree instead of creating a new one.
-  // Moving a DOM node doesn't trigger a new paint, so the static image remains the LCP element.
+  // Remove the HTML-inlined LCP container after React mounts
   useEffect(() => {
     const lcpContainer = document.getElementById('lcp-hero-container');
-    const lcpImage = document.getElementById('lcp-profile-image');
-    const target = imageContainerRef.current;
-
-    if (lcpImage && target) {
-      // Apply React component's styling to the adopted image
-      lcpImage.className = 'absolute inset-0 w-full h-full object-cover';
-      lcpImage.removeAttribute('id');
-      target.appendChild(lcpImage);
-    }
     if (lcpContainer) {
       lcpContainer.remove();
     }
@@ -848,27 +837,23 @@ export default function Hero() {
                 />
               </svg>
 
-              {/* Profile image container - adopts the static HTML LCP image on mount.
-                   The static image from index.html is moved here to avoid a new LCP paint event.
-                   Falls back to a React-rendered image if the static one isn't found (dev mode). */}
-              <div ref={imageContainerRef}>
-                {about?.profileImage && !imageContainerRef.current?.querySelector('img') && (
-                  <img
-                    src={getProfileImageUrl(about.profileImage, 384)}
-                    srcSet={`${getProfileImageUrl(about.profileImage, 192)} 192w, ${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 320)} 320w, ${getProfileImageUrl(about.profileImage, 384)} 384w`}
-                    sizes="(max-width: 480px) 192px, (max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
-                    alt={about.name || 'Abhishek Chatterjee'}
-                    width={384}
-                    height={384}
-                    loading="eager"
-                    fetchPriority="high"
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{
-                      clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
-                    }}
-                  />
-                )}
-              </div>
+              {/* Profile image */}
+              {about?.profileImage && (
+                <img
+                  src={getProfileImageUrl(about.profileImage, 384)}
+                  srcSet={`${getProfileImageUrl(about.profileImage, 192)} 192w, ${getProfileImageUrl(about.profileImage, 256)} 256w, ${getProfileImageUrl(about.profileImage, 320)} 320w, ${getProfileImageUrl(about.profileImage, 384)} 384w`}
+                  sizes="(max-width: 480px) 192px, (max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
+                  alt={about.name || 'Abhishek Chatterjee'}
+                  width={384}
+                  height={384}
+                  loading="eager"
+                  fetchPriority="high"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{
+                    clipPath: 'polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%)',
+                  }}
+                />
+              )}
 
               {/* Hexagon border overlay */}
               <motion.div

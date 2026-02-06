@@ -2,15 +2,16 @@ import { Suspense, lazy } from 'react';
 import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
 import SocialSidebar from './components/layout/SocialSidebar';
-import About from './components/sections/About';
-import Contact from './components/sections/Contact';
-import GitHubStats from './components/sections/GitHubStats';
 import Hero from './components/sections/Hero';
-import Projects from './components/sections/Projects';
-import Skills from './components/sections/Skills';
 import SectionDivider from './components/ui/SectionDivider';
 
-// Lazy load ChatBot - not needed for initial render and has heavy dependencies
+// Lazy load below-fold sections to reduce critical JS bundle size
+// This keeps them out of the main chunk, improving LCP on slow connections
+const About = lazy(() => import('./components/sections/About'));
+const Skills = lazy(() => import('./components/sections/Skills'));
+const Projects = lazy(() => import('./components/sections/Projects'));
+const GitHubStats = lazy(() => import('./components/sections/GitHubStats'));
+const Contact = lazy(() => import('./components/sections/Contact'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
 function App() {
@@ -25,26 +26,28 @@ function App() {
       <main className="lg:ml-16">
         <Hero />
         <SectionDivider variant="gradient" />
-        {/* Below-fold sections use content-visibility for deferred rendering */}
-        <div className="content-defer">
-          <About />
-        </div>
-        <SectionDivider variant="gradient" />
-        <div className="content-defer">
-          <Skills />
-        </div>
-        <SectionDivider variant="gradient" />
-        <div className="content-defer">
-          <Projects />
-        </div>
-        <SectionDivider variant="gradient" />
-        <div className="content-defer">
-          <GitHubStats />
-        </div>
-        <SectionDivider variant="gradient" />
-        <div className="content-defer">
-          <Contact />
-        </div>
+        {/* Below-fold sections: lazy-loaded + content-visibility for deferred rendering */}
+        <Suspense fallback={null}>
+          <div className="content-defer">
+            <About />
+          </div>
+          <SectionDivider variant="gradient" />
+          <div className="content-defer">
+            <Skills />
+          </div>
+          <SectionDivider variant="gradient" />
+          <div className="content-defer">
+            <Projects />
+          </div>
+          <SectionDivider variant="gradient" />
+          <div className="content-defer">
+            <GitHubStats />
+          </div>
+          <SectionDivider variant="gradient" />
+          <div className="content-defer">
+            <Contact />
+          </div>
+        </Suspense>
       </main>
       <Footer />
     </div>
