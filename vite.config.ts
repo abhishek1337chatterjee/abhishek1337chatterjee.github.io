@@ -5,28 +5,19 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        plugins: [['babel-plugin-react-compiler', {}]],
-      },
-    }),
+    react(),
     tailwindcss(),
   ],
   base: '/',
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          // React core
-          'vendor-react': ['react', 'react-dom'],
-          // Animation library (large)
-          'vendor-motion': ['framer-motion'],
-          // Markdown rendering
-          'vendor-markdown': ['react-markdown', 'remark-gfm'],
-          // AI SDK
-          'vendor-ai': ['ai', '@ai-sdk/react'],
-          // Icons
-          'vendor-icons': ['lucide-react'],
+        manualChunks(id) {
+          if (id.includes('react-dom') || id.includes('react/')) return 'vendor-react'
+          if (id.includes('framer-motion')) return 'vendor-motion'
+          if (id.includes('react-markdown') || id.includes('remark-gfm')) return 'vendor-markdown'
+          if (id.includes('/ai/') || id.includes('@ai-sdk/react')) return 'vendor-ai'
+          if (id.includes('lucide-react')) return 'vendor-icons'
         },
       },
     },

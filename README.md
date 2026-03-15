@@ -1,6 +1,6 @@
 # Abhishek Chatterjee - Portfolio
 
-A modern, responsive portfolio website showcasing professional experience as a Serverless Engineer and React Developer. Built with cutting-edge technologies including React 19, Vite 7, and Tailwind CSS 4, featuring an AI-powered chatbot for interactive visitor engagement.
+A modern, responsive portfolio website showcasing professional experience as a Serverless Engineer and React Developer. Built with cutting-edge technologies including React 19, Vite 8 (Rolldown + Oxc), and Tailwind CSS 4, featuring an AI-powered chatbot for interactive visitor engagement.
 
 **Live Site:** [abhishek1337chatterjee.github.io](https://abhishek1337chatterjee.github.io)
 
@@ -24,7 +24,6 @@ This portfolio serves as both a professional showcase and a technical demonstrat
 - **Sanity CMS Integration** - Headless CMS backend via external API (abhishek-api) for all portfolio and chatbot content
 - **Responsive Design** - Fully responsive from mobile (320px) to ultra-wide displays (1920px+)
 - **Performance Optimized** - PageSpeed 100/100 on mobile with HTML-first LCP pattern, code splitting, and mobile-specific optimizations
-- **React Compiler** - Babel plugin integration for React 19's experimental compiler
 - **Smooth Animations** - Framer Motion for all transitions, entrance effects, and micro-interactions
 - **Dynamic Typewriter** - Rotating role display on hero section
 - **GitHub Integration** - Live stats via GitHub API with contribution calendar and language distribution
@@ -36,7 +35,7 @@ This portfolio serves as both a professional showcase and a technical demonstrat
 ## Architecture Highlights
 
 ### Build Optimization
-The project uses Vite's `rollupOptions` to implement strategic code splitting:
+The project uses Vite 8's Rolldown bundler with `rolldownOptions` to implement strategic code splitting:
 - **vendor-react**: Core React libraries isolated
 - **vendor-motion**: Framer Motion (large library) separated
 - **vendor-markdown**: Markdown rendering isolated
@@ -79,17 +78,17 @@ The application follows a clear separation of concerns:
 
 | Technology | Purpose | Version |
 |------------|---------|---------|
-| **React** | UI Framework | 19.2.0 |
+| **React** | UI Framework | 19.2.4 |
 | **TypeScript** | Type Safety | 5.9.3 |
-| **Vite** | Build Tool | 7.3.1 |
-| **Tailwind CSS** | Styling Framework | 4.1.18 |
-| **DaisyUI** | Component Library | 5.5.14 |
-| **Framer Motion** | Animation Library | 12.25.0 |
-| **AI SDK** | Chatbot Integration | 6.0.27 |
-| **Sanity CMS** | Headless CMS | 7.14.0 |
+| **Vite** | Build Tool (Rolldown + Oxc) | 8.0.0 |
+| **Tailwind CSS** | Styling Framework | 4.2.1 |
+| **DaisyUI** | Component Library | 5.5.19 |
+| **Framer Motion** | Animation Library | 12.36.0 |
+| **AI SDK** | Chatbot Integration | 6.0.116 |
+| **Sanity CMS** | Headless CMS | 7.17.0 |
 | **React Markdown** | Markdown Rendering | 10.1.0 |
-| **Lucide React** | Icon System | 0.562.0 |
-| **Biome** | Linting & Formatting | 2.3.10 |
+| **Lucide React** | Icon System | 0.577.0 |
+| **Biome** | Linting & Formatting | 2.4.7 |
 
 ## Project Structure
 
@@ -147,7 +146,7 @@ abhishek1337chatterjee.github.io/
 ├── tsconfig.json          # TypeScript configuration (project references)
 ├── tsconfig.app.json      # App-specific TypeScript config
 ├── tsconfig.node.json     # Node environment TypeScript config
-└── vite.config.ts         # Vite configuration with React compiler
+└── vite.config.ts         # Vite 8 configuration with Rolldown bundler
 ```
 
 ## Getting Started
@@ -314,7 +313,8 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 - ChatBot component: Lazy loaded with `React.lazy`/`Suspense`
 
 ### Build Optimizations
-- **React Compiler**: Experimental compiler reduces re-renders
+- **Rolldown Bundler**: Rust-based bundler (Vite 8) for ~5x faster builds
+- **Oxc Transforms**: Rust-based JSX transforms (no Babel in pipeline)
 - **Tree Shaking**: Unused code elimination
 - **Asset Optimization**: Image compression and lazy loading
 - **CSS Purging**: Tailwind CSS removes unused styles
