@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
+// Vite 8: Rolldown bundler + Oxc transforms (no Babel)
 export default defineConfig({
   plugins: [
     react(),
