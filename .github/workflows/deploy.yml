@@ -45,12 +45,14 @@ jobs:
               - 'tsconfig*.json'
               - 'biome.json'
               - 'tailwind.config.*'
+            workflow:
+              - '.github/workflows/**'
             studio:
               - 'studio/**'
 
   build:
     needs: changes
-    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.studio == 'true'
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.studio == 'true' || needs.changes.outputs.workflow == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
