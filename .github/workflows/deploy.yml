@@ -26,6 +26,7 @@ jobs:
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
       studio: ${{ steps.filter.outputs.studio }}
+      workflow: ${{ steps.filter.outputs.workflow }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
