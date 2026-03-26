@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { Code2, FolderGit2, GitFork, Github, Star, Users } from 'lucide-react';
+import { Code2, FolderGit2, GitFork, Star, Users } from 'lucide-react';
 import { GitHubCalendar } from 'react-github-calendar';
 import { useGitHubStats } from '../../hooks/useGitHubStats';
+import { GitHubIcon } from '../icons/BrandIcons';
 
 const GITHUB_USERNAME = 'abhishek1337chatterjee';
 
@@ -132,7 +133,7 @@ export default function GitHubStats() {
           className="text-center mb-12"
         >
           <div className="flex items-center justify-center gap-3 mb-2">
-            <Github size={36} className="text-[#ccd6f6]" />
+            <GitHubIcon size={36} className="text-[#ccd6f6]" />
             <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6]">GitHub Statistics</h2>
           </div>
           <div className="w-20 h-1 bg-gradient-to-r from-[#db2777] to-[#06b6d4] mx-auto rounded-full" />
@@ -231,7 +232,7 @@ export default function GitHubStats() {
             >
               <span className="absolute -inset-2 bg-gradient-to-r from-[#db2777] to-[#06b6d4] rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-500" />
               <span className="relative btn btn-outline border-[#8892b0]/30 hover:border-[#db2777] hover:bg-[#db2777]/10 gap-2 text-[#ccd6f6]">
-                <Github size={18} />
+                <GitHubIcon size={18} />
                 View Full Profile
               </span>
             </a>

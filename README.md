@@ -87,7 +87,7 @@ The application follows a clear separation of concerns:
 | **AI SDK** | Chatbot Integration | 6.0.116 |
 | **Sanity CMS** | Headless CMS | 7.17.0 |
 | **React Markdown** | Markdown Rendering | 10.1.0 |
-| **Lucide React** | Icon System | 0.577.0 |
+| **Lucide React** | Icon System | 1.x |
 | **Biome** | Linting & Formatting | 2.4.7 |
 
 ## Project Structure

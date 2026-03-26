@@ -114,7 +114,9 @@ export default function Contact() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-2">
-              <label htmlFor="contact-name" className="text-[#8892b0] text-sm">Name</label>
+              <label htmlFor="contact-name" className="text-[#8892b0] text-sm">
+                Name
+              </label>
               <input
                 id="contact-name"
                 type="text"
@@ -129,7 +131,9 @@ export default function Contact() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="contact-email" className="text-[#8892b0] text-sm">Email</label>
+              <label htmlFor="contact-email" className="text-[#8892b0] text-sm">
+                Email
+              </label>
               <input
                 id="contact-email"
                 type="email"
@@ -145,7 +149,9 @@ export default function Contact() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="contact-message" className="text-[#8892b0] text-sm">Message</label>
+            <label htmlFor="contact-message" className="text-[#8892b0] text-sm">
+              Message
+            </label>
             <textarea
               id="contact-message"
               name="message"

@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
 import SocialSidebar from './components/layout/SocialSidebar';

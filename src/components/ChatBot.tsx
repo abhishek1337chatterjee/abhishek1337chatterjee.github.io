@@ -225,7 +225,9 @@ function SuggestionChips({
           {suggestion}
         </motion.button>
       ))}
-      <span className="text-[10px] text-[#8892b0]/50 self-center ml-1">Click to send • Tab to edit</span>
+      <span className="text-[10px] text-[#8892b0]/50 self-center ml-1">
+        Click to send • Tab to edit
+      </span>
     </motion.div>
   );
 }
