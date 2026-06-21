@@ -180,6 +180,8 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
     .filter(Boolean);
   const tokens = [surname, ...titleTokens.filter((t) => t !== surname)];
   const typed = useTypedSuffix(!reduce, tokens);
+  // longest token → invisible sizer reserves the h1 height so cycling can't reflow (CLS)
+  const longestToken = tokens.reduce((a, b) => (b.length > a.length ? b : a), '');
   const github = findSocial(socials, 'GitHub');
   const linkedin = findSocial(socials, 'LinkedIn');
   const resume = settings?.resumeUrl ?? '/Abhishek-Chatterjee-Resume.pdf';
@@ -233,14 +235,21 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
               so the longest token ("serverless.engineer") fits one desktop line;
               a zero-width space after every dot gives the browser wrap points
               (dots alone aren't breakable, so a long token would overflow/clip). */}
-          <h1 className="font-display text-5xl font-bold leading-[1.02] tracking-tight text-ink [overflow-wrap:anywhere] sm:text-6xl lg:text-7xl">
-            {firstName}
-            <span style={{ color: 'var(--primary)' }}>.</span>
-            {`\u200b${typed.replace(/\./g, '.\u200b')}`}
-            <span
-              className="ml-1 inline-block h-[0.78em] w-[0.5ch] translate-y-[0.06em] animate-pulse align-baseline"
-              style={{ background: 'var(--primary)' }}
-            />
+          <h1 className="grid font-display text-5xl font-bold leading-[1.02] tracking-tight text-ink [overflow-wrap:anywhere] sm:text-6xl lg:text-7xl">
+            {/* invisible sizer: reserves height for the longest token so the cycling
+                typewriter never re-wraps the block and shifts the page (CLS) */}
+            <span aria-hidden className="invisible [grid-area:1/1]">
+              {firstName}.{`\u200b${longestToken.replace(/\./g, '.\u200b')}`}
+            </span>
+            <span className="[grid-area:1/1]">
+              {firstName}
+              <span style={{ color: 'var(--primary)' }}>.</span>
+              {`\u200b${typed.replace(/\./g, '.\u200b')}`}
+              <span
+                className="ml-1 inline-block h-[0.78em] w-[0.5ch] translate-y-[0.06em] animate-pulse align-baseline"
+                style={{ background: 'var(--primary)' }}
+              />
+            </span>
           </h1>
 
           {/* tagline */}
