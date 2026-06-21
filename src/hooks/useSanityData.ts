@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import {
   getAbout,
   getCareerPhases,
+  getHomelab,
+  getLearning,
   getProjects,
   getSiteSettings,
   getSkills,
   getSocials,
   type SanityAbout,
   type SanityCareerPhase,
+  type SanityHomelab,
+  type SanityLearning,
   type SanityProject,
   type SanitySiteSettings,
   type SanitySkill,
@@ -139,4 +143,43 @@ export function useSocials() {
   }, []);
 
   return { socials, loading };
+}
+
+export function useSiteSettings() {
+  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getSiteSettings()
+      .then(setSettings)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { settings, loading };
+}
+
+export function useHomelab() {
+  const [homelab, setHomelab] = useState<SanityHomelab | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getHomelab()
+      .then(setHomelab)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { homelab, loading };
+}
+
+export function useLearning() {
+  const [learning, setLearning] = useState<SanityLearning[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getLearning()
+      .then(setLearning)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { learning, loading };
 }

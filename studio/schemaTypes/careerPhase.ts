@@ -49,6 +49,27 @@ export default defineType({
       description: 'Key technologies or achievements',
     }),
     defineField({
+      name: 'nonConfidentialImpact',
+      title: 'What I Built (public-safe)',
+      type: 'text',
+      rows: 3,
+      description: 'Public-safe depth — what was built/shipped. No confidential company internals.',
+    }),
+    defineField({
+      name: 'keyTechnologies',
+      title: 'Key Technologies',
+      type: 'array',
+      of: [{type: 'string'}],
+      description: 'Primary stack for this phase',
+    }),
+    defineField({
+      name: 'tags',
+      title: 'Waterfall Tags',
+      type: 'array',
+      of: [{type: 'string'}],
+      description: 'Short tags shown on the trace-waterfall span',
+    }),
+    defineField({
       name: 'projects',
       title: 'Projects',
       type: 'array',

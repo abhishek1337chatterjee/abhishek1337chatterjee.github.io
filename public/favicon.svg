@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="12" fill="#0a192f"/>
-  <text x="50" y="38" font-family="monospace" font-size="28" font-weight="bold" text-anchor="middle" fill="#db2777">&lt;</text>
-  <text x="50" y="62" font-family="monospace" font-size="24" font-weight="bold" text-anchor="middle" fill="#06b6d4">AC</text>
-  <text x="50" y="86" font-family="monospace" font-size="28" font-weight="bold" text-anchor="middle" fill="#db2777">/&gt;</text>
+  <rect width="100" height="100" rx="22" fill="#0E0F13"/>
+  <rect x="2.5" y="2.5" width="95" height="95" rx="20" fill="none" stroke="#3ddc97" stroke-opacity="0.22" stroke-width="2"/>
+  <!-- terminal prompt caret (the "ac❯" / "trace ❯" motif) -->
+  <path d="M34 32 L58 50 L34 68" fill="none" stroke="#3ddc97" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="62" y="62" width="20" height="8" rx="4" fill="#edeff3"/>
 </svg>

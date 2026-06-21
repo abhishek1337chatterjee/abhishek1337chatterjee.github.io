@@ -7,3 +7,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+// Build-time CalVer injected via vite define (see vite.config.ts)
+declare const __APP_VERSION__: string;

@@ -1,250 +1,195 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* Tailwind 4 custom theme */
+/* ════════════════════════════════════════════════════════════════════════
+   TRACE — DaisyUI semantic theme (teal + amber, dark)
+   ════════════════════════════════════════════════════════════════════════ */
+@plugin "daisyui/theme" {
+  name: "trace";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: #0e0f13;
+  --color-base-200: #13151a;
+  --color-base-300: #17191f;
+  --color-base-content: #edeff3;
+
+  --color-primary: #3ddc97;
+  --color-primary-content: #07140d;
+  --color-secondary: #f5a623;
+  --color-secondary-content: #1a1205;
+  --color-accent: #3ddc97;
+  --color-accent-content: #07140d;
+  --color-neutral: #262a33;
+  --color-neutral-content: #8a91a0;
+
+  --color-info: #34e5ff;
+  --color-info-content: #04161b;
+  --color-success: #3ddc97;
+  --color-success-content: #07140d;
+  --color-warning: #f5a623;
+  --color-warning-content: #1a1205;
+  --color-error: #ff6b6b;
+  --color-error-content: #1a0606;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* ── Tailwind v4 design tokens: fonts + neutral aliases ── */
 @theme {
-  --color-navy: #0a192f;
-  --color-navy-light: #112240;
-  --color-slate: #8892b0;
-  --color-slate-light: #ccd6f6;
-  --color-cyan: #06b6d4;
-  --color-pink: #db2777;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-line: #262a33;
+  --color-muted: #8a91a0;
+  --color-ink: #edeff3;
 }
 
-/* DaisyUI theme */
-:root {
-  --p: 330 81% 60%;
-  --s: 188 94% 43%;
-  --a: 38 92% 50%;
-  --n: 217 54% 11%;
-  --b1: 217 54% 11%;
-  --b2: 217 44% 16%;
-  --b3: 217 34% 21%;
-  --bc: 214 32% 91%;
+/* ════════════════════════════════════════════════════════════════════════
+   COLOR SCHEMES — CSS-var swap. teal+amber is the locked default.
+   Custom primitives read var(--primary)/var(--secondary) (+ -deep).
+   Switch by setting data-scheme on a wrapper element.
+   ════════════════════════════════════════════════════════════════════════ */
+:root,
+[data-scheme="teal+amber"] {
+  --primary: #3ddc97;
+  --primary-deep: #2faf78;
+  --secondary: #f5a623;
+  --secondary-deep: #c5811a;
+}
+[data-scheme="cyan+pink"] {
+  --primary: #34e5ff;
+  --primary-deep: #29e7ff;
+  --secondary: #ff7ac6;
+  --secondary-deep: #db2777;
+}
+[data-scheme="cyan-only"] {
+  --primary: #34e5ff;
+  --primary-deep: #29e7ff;
+  --secondary: #1fb6d6;
+  --secondary-deep: #1689a8;
 }
 
+/* ── Global base ── */
 html {
   scroll-behavior: smooth;
-  /* Firefox scrollbar */
-  scrollbar-width: auto;
-  scrollbar-color: #db2777 #0a192f;
+  scroll-padding-top: 4rem; /* offset anchor jumps for the sticky navbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) #0e0f13;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CUSTOM SCROLLBAR
-   Theme-matched scrollbar with gradient thumb
-   ═══════════════════════════════════════════════════════════════════════════ */
+body {
+  background-color: #0e0f13;
+  color: #edeff3;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* dual radial aurora driven by the active scheme */
+  background-image:
+    radial-gradient(1200px 700px at 78% -8%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 60%),
+    radial-gradient(900px 600px at 5% 12%, color-mix(in srgb, var(--secondary) 5%, transparent), transparent 55%);
+  background-attachment: fixed;
+}
 
-/* WebKit (Chrome, Edge, Safari) */
+/* selection + focus follow the scheme */
+::selection {
+  background: color-mix(in srgb, var(--primary) 28%, transparent);
+  color: #edeff3;
+}
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Custom scrollbar (gradient thumb in scheme colors) ── */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #0a192f;
+  background: #0e0f13;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #db2777, #06b6d4);
+  background: linear-gradient(180deg, var(--primary-deep), var(--primary));
   border-radius: 5px;
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ec4899, #22d3ee);
-}
-
 ::-webkit-scrollbar-corner {
-  background: #0a192f;
+  background: #0e0f13;
 }
 
-body {
-  background-color: #0a192f;
-  color: #ccd6f6;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   UNIFIED BUTTON HOVER EFFECTS
-   Modern glow + lift effect for all buttons
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Base button transition override */
-.btn {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Primary button (pink) - solid and outline */
-.btn-primary {
-  --glow-color: rgba(219, 39, 119, 0.5);
-  --glow-spread: rgba(219, 39, 119, 0.25);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 20px var(--glow-color),
-    0 0 40px var(--glow-spread),
-    0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.btn-outline.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 20px var(--glow-color),
-    0 0 40px var(--glow-spread),
-    0 4px 15px rgba(0, 0, 0, 0.3);
-  background-color: #db2777;
-  border-color: #db2777;
-}
-
-/* Secondary button (cyan) */
-.btn-secondary {
-  --glow-color: rgba(6, 182, 212, 0.5);
-  --glow-spread: rgba(6, 182, 212, 0.25);
-}
-
-.btn-secondary:hover,
-.btn-outline.btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 20px var(--glow-color),
-    0 0 40px var(--glow-spread),
-    0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.btn-outline.btn-secondary:hover {
-  background-color: #06b6d4;
-  border-color: #06b6d4;
-}
-
-/* Accent button (teal/gold) */
-.btn-accent {
-  --glow-color: rgba(6, 182, 212, 0.5);
-  --glow-spread: rgba(6, 182, 212, 0.25);
-}
-
-.btn-accent:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 20px var(--glow-color),
-    0 0 40px var(--glow-spread),
-    0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Ghost button - subtle glow effect */
-.btn-ghost {
-  --glow-color: rgba(204, 214, 246, 0.2);
-}
-
-.btn-ghost:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 15px var(--glow-color);
-  background-color: rgba(136, 146, 176, 0.1);
-}
-
-/* Ghost button with square shape (icon buttons) */
-.btn-ghost.btn-square:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow:
-    0 0 15px rgba(219, 39, 119, 0.3),
-    0 0 30px rgba(219, 39, 119, 0.15);
-  background-color: rgba(219, 39, 119, 0.1);
-  color: #db2777;
-}
-
-/* Active/pressed state */
-.btn:active {
-  transform: translateY(0) scale(0.98);
-}
-
-/* Shimmer effect on hover for solid buttons */
-.btn-primary:not(.btn-outline)::before,
-.btn-secondary:not(.btn-outline)::before,
-.btn-accent::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-
-.btn-primary:not(.btn-outline):hover::before,
-.btn-secondary:not(.btn-outline):hover::before,
-.btn-accent:hover::before {
-  left: 100%;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   GIT TIMELINE STYLES
-   Career timeline with commit-style project cards
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Commit hash monospace styling */
-.commit-hash {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-}
-
-/* Git node pulse animation */
-.git-node {
-  animation: git-pulse 2s ease-in-out infinite;
-}
-
-@keyframes git-pulse {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(219, 39, 119, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(219, 39, 119, 0.8), 0 0 30px rgba(219, 39, 119, 0.4);
-  }
-}
-
-/* Commit card hover effect */
-.commit-card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.commit-card-hover:hover {
-  transform: translateX(4px);
-  box-shadow: -4px 0 0 0 #06b6d4;
-}
-
-/* Discontinued badge animation */
-.discontinued-badge {
-  animation: discontinued-blink 3s ease-in-out infinite;
-}
-
-@keyframes discontinued-blink {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   PERFORMANCE OPTIMIZATIONS
-   content-visibility for below-fold content to reduce initial render work
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Defer rendering of below-fold sections until they're near viewport */
+/* ── Performance: defer below-fold sections ── */
 .content-defer {
   content-visibility: auto;
   contain-intrinsic-size: auto 800px;
 }
 
-/* Ensure composited animations for better performance */
-.will-change-transform {
-  will-change: transform, opacity;
+/* ── Telemetry animations ── */
+/* line "draws" itself in via stroke-dashoffset; --len = path length */
+@keyframes traceDraw {
+  from {
+    stroke-dashoffset: var(--len);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+/* a sheen that sweeps across (boot reveal flourish) */
+@keyframes sheen {
+  0% {
+    transform: translateX(-120%);
+  }
+  60%,
+  100% {
+    transform: translateX(320%);
+  }
+}
+/* terminal caret blink (chat console streaming + loader) */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+/* live telemetry graph — line draws in left→right (--len), holds, then vanishes */
+@keyframes liveDraw {
+  0% {
+    stroke-dashoffset: var(--len);
+  }
+  66%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes liveFade {
+  0%,
+  83% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── Respect reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

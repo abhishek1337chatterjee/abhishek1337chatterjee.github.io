@@ -1,266 +1,180 @@
-import { motion } from 'framer-motion';
-import {
-  Briefcase,
-  Cloud,
-  Compass,
-  Download,
-  Heart,
-  Loader2,
-  type LucideIcon,
-  Terminal,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import {
-  getAbout,
-  getSiteSettings,
-  type HighlightedPhrase,
-  type SanityAbout,
-  type SanitySiteSettings,
-} from '../../lib/sanity';
+import { useAbout } from '../../hooks/useSanityData';
+import type { HighlightedPhrase } from '../../lib/sanity';
 import type { ExploringItem } from '../../types';
-import { handleResumeClick } from '../../utils/resume';
+import Reveal from '../ui/Reveal';
+import SectionHeader from '../ui/SectionHeader';
+import Tag from '../ui/Tag';
 
-// Icon mapping based on highlight text keywords
-const iconMapping: Record<string, { icon: LucideIcon; color: string }> = {
-  experience: { icon: Briefcase, color: 'text-[#db2777]' },
-  serverless: { icon: Cloud, color: 'text-[#06b6d4]' },
-  linux: { icon: Terminal, color: 'text-[#22c55e]' },
-  'open source': { icon: Heart, color: 'text-[#f59e0b]' },
+// Sanity color names → theme-friendly hexes (green=teal, orange=amber match the scheme).
+const COLOR_HEX: Record<string, string> = {
+  cyan: '#34e5ff',
+  pink: '#ff7ac6',
+  green: '#3ddc97',
+  orange: '#f5a623',
+  purple: '#a78bfa',
 };
 
-// Color mapping for highlighted phrases
-const highlightColorMap: Record<string, string> = {
-  cyan: 'text-[#06b6d4]',
-  pink: 'text-[#db2777]',
-  green: 'text-[#22c55e]',
-  orange: 'text-[#f59e0b]',
-  purple: 'text-[#a855f7]',
-};
-
-// Color mapping for exploring items (keyed by Sanity color field)
-const exploringColorMap: Record<string, { border: string; text: string; bg: string }> = {
-  cyan: { border: 'border-l-[#06b6d4]', text: 'text-[#06b6d4]', bg: 'bg-[#06b6d4]/10' },
-  pink: { border: 'border-l-[#db2777]', text: 'text-[#db2777]', bg: 'bg-[#db2777]/10' },
-  green: { border: 'border-l-[#22c55e]', text: 'text-[#22c55e]', bg: 'bg-[#22c55e]/10' },
-  orange: { border: 'border-l-[#f59e0b]', text: 'text-[#f59e0b]', bg: 'bg-[#f59e0b]/10' },
-  purple: { border: 'border-l-[#a855f7]', text: 'text-[#a855f7]', bg: 'bg-[#a855f7]/10' },
-};
-
-// Function to render text with highlighted phrases
-function renderHighlightedText(
-  text: string,
-  highlights: HighlightedPhrase[] = [],
-): React.ReactNode {
-  if (!highlights || highlights.length === 0) {
-    return text;
-  }
-
-  // Sort highlights by length (longest first) to avoid partial matches
-  const sortedHighlights = [...highlights].sort((a, b) => b.text.length - a.text.length);
-
-  // Create a regex pattern that matches any of the highlight phrases
-  const pattern = sortedHighlights
-    .map((h) => h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .join('|');
-
+// Tint the highlighted phrases inside the bio (longest-first to avoid partial matches).
+function highlightBio(text: string, phrases: HighlightedPhrase[] = []) {
+  if (!phrases.length) return text;
+  const sorted = [...phrases].sort((a, b) => b.text.length - a.text.length);
+  const pattern = sorted.map((p) => p.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
   if (!pattern) return text;
-
   const regex = new RegExp(`(${pattern})`, 'g');
-  const parts = text.split(regex);
-
-  return parts.map((part, index) => {
-    const highlight = sortedHighlights.find((h) => h.text === part);
-    if (highlight) {
-      const colorClass = highlightColorMap[highlight.color] || highlightColorMap.cyan;
-      return (
-        <span key={index} className={`${colorClass} font-medium`}>
-          {part}
-        </span>
-      );
-    }
-    return part;
+  return text.split(regex).map((part, i) => {
+    const hit = sorted.find((p) => p.text === part);
+    if (!hit) return part;
+    return (
+      <span
+        key={`${part}-${i}`}
+        className="font-medium"
+        style={{ color: COLOR_HEX[hit.color] ?? 'var(--primary)' }}
+      >
+        {part}
+      </span>
+    );
   });
 }
 
-function getIconForHighlight(text: string): { icon: LucideIcon; color: string } {
-  const lowerText = text.toLowerCase();
-  for (const [keyword, config] of Object.entries(iconMapping)) {
-    if (lowerText.includes(keyword)) {
-      return config;
-    }
-  }
-  // Default fallback
-  return { icon: Briefcase, color: 'text-[#8892b0]' };
-}
-
-// Loading skeleton
-function AboutSkeleton() {
-  return (
-    <div className="flex items-center justify-center py-20">
-      <Loader2 className="w-8 h-8 animate-spin text-[#06b6d4]" />
-      <span className="ml-3 text-[#8892b0]">Loading...</span>
-    </div>
-  );
-}
-
 export default function About() {
-  const [about, setAbout] = useState<SanityAbout | null>(null);
-  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { about } = useAbout();
+  if (!about) return null;
 
-  useEffect(() => {
-    Promise.all([getAbout(), getSiteSettings()])
-      .then(([aboutData, settingsData]) => {
-        setAbout(aboutData);
-        setSettings(settingsData);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-  // Parse bio into paragraphs
-  const bioParagraphs = about?.bio?.split('\n\n').filter(Boolean) || [];
+  const bioParagraphs = about.bio?.split('\n\n').filter(Boolean) ?? [];
+
+  // service.manifest — operational descriptor (status colored teal = available)
+  const role = about.title?.split('|')[0]?.trim() || 'Serverless Engineer';
+  const manifest: { k: string; v: string; live?: boolean }[] = [
+    { k: 'name', v: about.name },
+    { k: 'role', v: role },
+    { k: 'based', v: about.location ?? 'India' },
+    { k: 'region', v: 'ap-south-1' },
+    { k: 'runtime', v: 'node24 · python' },
+    { k: 'status', v: 'available', live: true },
+  ];
 
   return (
-    <section id="about" className="py-20 bg-[#0a192f] px-4 lg:px-8 relative overflow-hidden">
-      {/* Subtle gradient accent */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[#06b6d4]/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#db2777]/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
-      </div>
-      <div className="max-w-4xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6] mb-2 text-center">
-            About Me
-          </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#db2777] to-[#06b6d4] mx-auto mb-8 rounded-full" />
+    <section id="about" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
+      <div className="mx-auto w-full max-w-6xl">
+        <Reveal>
+          <SectionHeader num="02" label="whoami" title="About" />
+        </Reveal>
 
-          {loading ? (
-            <AboutSkeleton />
-          ) : about ? (
-            <>
-              {/* Highlight Cards */}
-              {about.highlights && about.highlights.length > 0 && (
-                <motion.div
-                  className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2, duration: 0.6 }}
-                >
-                  {about.highlights.map((text, index) => {
-                    const { icon: Icon, color } = getIconForHighlight(text);
-                    return (
-                      <motion.div
-                        key={text}
-                        className="bg-[#112240] rounded-lg p-4 text-center border border-[#8892b0]/10"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 * index }}
-                        whileHover={{ scale: 1.05, y: -3 }}
-                      >
-                        <Icon className={`w-6 h-6 mx-auto mb-2 ${color}`} />
-                        <p className="text-[#ccd6f6] text-sm font-medium">{text}</p>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
-              )}
+        {/* service.manifest — full-width operational spec bar */}
+        <Reveal delay={0.05}>
+          <div className="mt-8 rounded-xl border border-line bg-base-200/40 px-5 py-4">
+            <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
+              service.manifest
+            </div>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-[13px] sm:grid-cols-3 lg:grid-cols-6">
+              {manifest.map(({ k, v, live }) => (
+                <div key={k} className="flex flex-col gap-0.5">
+                  <dt className="text-[10px] uppercase tracking-wider text-muted/70">{k}</dt>
+                  <dd
+                    className="flex items-center gap-1.5 text-ink/90"
+                    style={live ? { color: 'var(--primary)' } : undefined}
+                  >
+                    {live && (
+                      <span
+                        className="size-1.5 rounded-full"
+                        style={{ background: 'var(--primary)' }}
+                      />
+                    )}
+                    {v}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </Reveal>
 
-              {/* Bio */}
-              <motion.div
-                className="space-y-4 text-[#8892b0] leading-relaxed mb-8"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-              >
-                {bioParagraphs.map((paragraph, index) => (
-                  <p key={index}>{renderHighlightedText(paragraph, about.highlightedPhrases)}</p>
+        <div className="mt-6 grid items-start gap-6 lg:grid-cols-3">
+          {/* bio + highlight tags */}
+          <Reveal className="lg:col-span-2">
+            <div className="rounded-xl border border-line bg-base-200/40 p-6 sm:p-8">
+              <div className="space-y-4 leading-relaxed text-muted">
+                {bioParagraphs.map((p) => (
+                  <p key={p.slice(0, 32)}>{highlightBio(p, about.highlightedPhrases)}</p>
                 ))}
-              </motion.div>
+              </div>
+              {about.highlights && about.highlights.length > 0 && (
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {about.highlights.map((h) => (
+                    <Tag key={h}>{h}</Tag>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Reveal>
 
-              {/* Currently Exploring */}
+          {/* currently exploring + interests */}
+          <Reveal delay={0.1}>
+            <div className="flex flex-col gap-6">
               {about.currentlyExploring && about.currentlyExploring.length > 0 && (
-                <motion.div
-                  className="mb-10"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <Compass className="w-5 h-5 text-[#06b6d4]" />
-                    <h3 className="text-lg font-semibold text-[#ccd6f6]">Currently Exploring</h3>
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#06b6d4] opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#06b6d4]" />
+                <div className="rounded-xl border border-line bg-base-200/40 p-5">
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="relative flex size-2">
+                      <span
+                        className="absolute inline-flex size-full animate-ping rounded-full opacity-75"
+                        style={{ background: 'var(--primary)' }}
+                      />
+                      <span
+                        className="relative inline-flex size-2 rounded-full"
+                        style={{ background: 'var(--primary)' }}
+                      />
                     </span>
+                    <h3 className="font-mono text-xs uppercase tracking-[0.15em] text-muted">
+                      currently exploring
+                    </h3>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {about.currentlyExploring.map((item: ExploringItem, index: number) => {
-                      const colors = exploringColorMap[item.color] || exploringColorMap.cyan;
+                  <div className="space-y-2.5">
+                    {about.currentlyExploring.map((item: ExploringItem) => {
+                      const c = COLOR_HEX[item.color] ?? '#34e5ff';
                       return (
-                        <motion.div
+                        <div
                           key={item.name}
-                          className={`${colors.bg} border-l-3 ${colors.border} rounded-r-lg px-4 py-3 backdrop-blur-sm`}
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.1 * index + 0.5 }}
-                          whileHover={{ x: 4 }}
+                          className="rounded-lg border-l-2 bg-base-300/40 px-3 py-2"
+                          style={{ borderColor: c }}
                         >
-                          <div className="flex items-center justify-between">
-                            <span className="text-[#ccd6f6] font-medium text-sm">{item.name}</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-medium text-ink">{item.name}</span>
                             <span
-                              className={`text-[10px] uppercase tracking-wider ${colors.text} opacity-70`}
+                              className="font-mono text-[10px] uppercase tracking-wider"
+                              style={{ color: c, opacity: 0.8 }}
                             >
                               {item.category}
                             </span>
                           </div>
                           {item.description && (
-                            <p className="text-[#8892b0] text-xs mt-1">{item.description}</p>
+                            <p className="mt-0.5 text-xs text-muted">{item.description}</p>
                           )}
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>
-                </motion.div>
+                </div>
               )}
 
-              {/* Download Resume Button */}
-              {settings?.resumeUrl && (
-                <motion.div
-                  className="flex justify-center"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.5, duration: 0.6 }}
-                >
-                  <motion.a
-                    href={settings.resumeUrl}
-                    onClick={(e) => handleResumeClick(e, settings.resumeUrl!)}
-                    className="group relative inline-flex items-center gap-2"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="absolute -inset-2 bg-gradient-to-r from-[#db2777] to-[#06b6d4] rounded-lg blur opacity-0 group-hover:opacity-50 transition duration-500" />
-                    <span className="relative btn btn-accent gap-2">
-                      <Download size={18} />
-                      Download Resume
-                    </span>
-                  </motion.a>
-                </motion.div>
+              {about.interests && about.interests.length > 0 && (
+                <div className="rounded-xl border border-line bg-base-200/40 p-5">
+                  <h3 className="mb-3 font-mono text-xs uppercase tracking-[0.15em] text-muted">
+                    interests
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {about.interests.map((it) => (
+                      <span
+                        key={it}
+                        className="rounded-md bg-base-300/50 px-2.5 py-1 font-mono text-xs text-muted"
+                      >
+                        {it}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               )}
-            </>
-          ) : (
-            <p className="text-center text-[#8892b0]">No content available.</p>
-          )}
-        </motion.div>
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

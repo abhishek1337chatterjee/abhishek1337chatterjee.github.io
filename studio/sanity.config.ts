@@ -4,7 +4,7 @@ import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 
 // Singleton document types
-const singletonTypes = new Set(['about', 'siteSettings'])
+const singletonTypes = new Set(['about', 'siteSettings', 'homelab'])
 
 // Custom structure for organizing the studio
 const structure = (S: any) =>
@@ -20,6 +20,10 @@ const structure = (S: any) =>
         .title('Site Settings')
         .id('siteSettings')
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+      S.listItem()
+        .title('Homelab')
+        .id('homelab')
+        .child(S.document().schemaType('homelab').documentId('homelab')),
       S.divider(),
       // Content sections
       S.listItem()
@@ -38,6 +42,10 @@ const structure = (S: any) =>
         .title('Social Links')
         .schemaType('social')
         .child(S.documentTypeList('social').title('Social Links')),
+      S.listItem()
+        .title('Learning Explorations')
+        .schemaType('learningExploration')
+        .child(S.documentTypeList('learningExploration').title('Learning Explorations')),
     ])
 
 export default defineConfig({

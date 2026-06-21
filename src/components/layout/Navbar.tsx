@@ -1,175 +1,201 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-scroll';
-import { getSiteSettings, type SanitySiteSettings } from '../../lib/sanity';
-import { handleResumeClick } from '../../utils/resume';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useAbout, useSiteSettings } from '../../hooks/useSanityData';
 
-// Modern animated hamburger component
-function AnimatedHamburger({ isOpen, onClick }: { isOpen: boolean; onClick: () => void }) {
+const LINKS = ['about', 'skills', 'journey', 'homelab', 'github'];
+const teal = 'var(--primary)';
+
+// Brand — static "ac❯" prompt with a live terminal caret that loops:
+// types the name, holds, erases, pauses, retypes. Starts after `start` (loader
+// done) so the first pass isn't hidden behind the boot screen; loops forever
+// after so it's always visibly "alive". Reduced-motion → static full name.
+const TYPE_MS = 80; // per-char while typing
+const ERASE_MS = 40; // per-char while erasing
+const HOLD_MS = 3000; // pause at the full name
+const PAUSE_MS = 800; // pause at the empty prompt
+
+function NavBrand({ name, start }: { name: string; start: boolean }) {
+  const reduced = useReducedMotion();
+  const [n, setN] = useState(0);
+  const len = name.length;
+
+  useEffect(() => {
+    if (reduced) {
+      setN(len);
+      return;
+    }
+    if (!start) {
+      setN(0);
+      return;
+    }
+    let timer = 0;
+    let i = 0;
+    let dir = 1; // 1 = typing, -1 = erasing
+    const tick = () => {
+      i += dir;
+      setN(i);
+      let delay: number;
+      if (dir === 1 && i >= len) {
+        dir = -1;
+        delay = HOLD_MS;
+      } else if (dir === -1 && i <= 0) {
+        dir = 1;
+        delay = PAUSE_MS;
+      } else {
+        delay = dir === 1 ? TYPE_MS : ERASE_MS;
+      }
+      timer = window.setTimeout(tick, delay);
+    };
+    timer = window.setTimeout(tick, TYPE_MS);
+    return () => window.clearTimeout(timer);
+  }, [reduced, start, len]);
+
   return (
-    <button
-      className="relative w-10 h-10 flex items-center justify-center lg:hidden focus:outline-none"
-      onClick={onClick}
-      aria-label="Toggle menu"
-    >
-      <div className="relative w-6 h-5 flex flex-col justify-between">
-        {/* Top line */}
-        <motion.span
-          className="absolute h-0.5 w-full bg-[#ccd6f6] rounded-full origin-left"
-          style={{ top: 0 }}
-          animate={{
-            rotate: isOpen ? 45 : 0,
-            y: isOpen ? 0 : 0,
-            width: isOpen ? '100%' : '100%',
-          }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-        />
-        {/* Middle line */}
-        <motion.span
-          className="absolute h-0.5 bg-[#db2777] rounded-full"
-          style={{ top: '50%', translateY: '-50%' }}
-          animate={{
-            opacity: isOpen ? 0 : 1,
-            scaleX: isOpen ? 0 : 1,
-            width: '75%',
-          }}
-          transition={{ duration: 0.2 }}
-        />
-        {/* Bottom line */}
-        <motion.span
-          className="absolute h-0.5 w-full bg-[#ccd6f6] rounded-full origin-left"
-          style={{ bottom: 0 }}
-          animate={{
-            rotate: isOpen ? -45 : 0,
-            y: isOpen ? -2 : 0,
-            width: isOpen ? '100%' : '50%',
-          }}
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-        />
-      </div>
-    </button>
+    <span className="inline-flex items-center font-mono text-[14px] tracking-tight text-ink">
+      <span className="font-bold">ac</span>
+      <span className="font-bold" style={{ color: teal }}>
+        ❯
+      </span>
+      <span className="ml-1">{name.slice(0, n)}</span>
+      <span
+        className="ml-0.5 inline-block h-[0.9em] w-[0.4ch] align-[-0.1em]"
+        style={{ background: teal, animation: 'blink 1s step-end infinite' }}
+      />
+    </span>
   );
 }
 
-const navLinks = [
-  { name: 'Home', to: 'home' },
-  { name: 'About', to: 'about' },
-  { name: 'Skills', to: 'skills' },
-  { name: 'Projects', to: 'projects' },
-  { name: 'GitHub', to: 'github' },
-  { name: 'Contact', to: 'contact' },
-];
+export default function Navbar({ booted }: { booted: boolean }) {
+  const { about } = useAbout();
+  const { settings } = useSiteSettings();
+  const name = (about?.name ?? 'Abhishek Chatterjee').toLowerCase().replace(/\s+/g, '.');
+  const resume = settings?.resumeUrl ?? '/Abhishek-Chatterjee-Resume.pdf';
+  const [menuOpen, setMenuOpen] = useState(false);
 
-export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
-
+  // close the mobile menu on Escape or on any in-page navigation (hash change)
   useEffect(() => {
-    getSiteSettings().then(setSettings);
+    const close = () => setMenuOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('hashchange', close);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('hashchange', close);
+    };
   }, []);
 
   return (
-    <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-[#0a192f]/95 backdrop-blur-md border-b border-[#8892b0]/10 px-4 lg:px-8">
-      <div className="navbar-start">
-        <Link to="home" href="#home" smooth={true} duration={500} className="cursor-pointer">
-          <motion.div className="text-2xl font-bold" whileHover={{ scale: 1.05 }}>
-            <span className="text-[#ccd6f6]">&lt;</span>
-            <span className="text-[#db2777]">AC</span>
-            <span className="text-[#ccd6f6]">/&gt;</span>
-          </motion.div>
-        </Link>
-      </div>
+    <header
+      className="sticky top-0 z-40 border-b border-line/70 px-5 backdrop-blur-md sm:px-8 lg:px-16"
+      style={{ background: 'rgba(14,15,19,0.72)' }}
+    >
+      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 py-2.5">
+        {/* brand — typed terminal command */}
+        <a href="#top" className="flex flex-none items-center">
+          <NavBrand name={name} start={booted} />
+        </a>
 
-      {/* Desktop Navigation */}
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-1">
-          {navLinks.map((link) => (
-            <li key={link.to}>
-              <Link
-                to={link.to}
-                href={`#${link.to}`}
-                smooth={true}
-                duration={500}
-                offset={-80}
-                spy={true}
-                activeClass="!text-[#db2777]"
-                className="text-[#ccd6f6] hover:text-[#db2777] transition-colors cursor-pointer font-medium"
-              >
-                {link.name}
-              </Link>
-            </li>
+        {/* desktop links */}
+        <div className="hidden items-center gap-1 font-mono text-[12.5px] sm:flex">
+          {LINKS.map((l) => (
+            <a
+              key={l}
+              href={`#${l}`}
+              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+            >
+              {l}
+            </a>
           ))}
-        </ul>
-      </div>
-
-      <div className="navbar-end gap-2">
-        {settings?.resumeUrl && (
           <a
-            href={settings.resumeUrl}
-            onClick={(e) => handleResumeClick(e, settings.resumeUrl!)}
-            className="btn btn-accent btn-sm gap-2 hidden sm:flex"
+            href={resume}
+            target="_blank"
+            rel="noreferrer"
+            className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
           >
-            <Download size={16} />
-            Resume
+            resume
           </a>
-        )}
-
-        {/* Mobile menu button - Modern animated hamburger */}
-        <AnimatedHamburger isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
-      </div>
-
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 bg-[#112240] border-b border-[#8892b0]/10 lg:hidden"
+          <a
+            href="#contact"
+            className="ml-1 whitespace-nowrap rounded-md border px-3 py-1.5 font-medium transition-colors hover:bg-[color:var(--primary)]/10"
+            style={{
+              color: 'var(--primary)',
+              borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
+            }}
           >
-            <ul className="menu p-4">
-              {navLinks.map((link, index) => (
-                <motion.li
-                  key={link.to}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
+            contact
+          </a>
+        </div>
+
+        {/* mobile menu toggle — hamburger that morphs to ✕ */}
+        <button
+          type="button"
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+          className="flex flex-none items-center justify-center rounded-md border border-line p-2 text-ink transition-colors hover:border-[color:var(--primary)]/50 sm:hidden"
+        >
+          <span className="relative flex h-3.5 w-4 flex-col justify-between">
+            <span
+              className="h-[1.5px] w-full origin-center bg-current transition-transform duration-200"
+              style={{ transform: menuOpen ? 'translateY(6px) rotate(45deg)' : 'none' }}
+            />
+            <span
+              className="h-[1.5px] w-full bg-current transition-opacity duration-200"
+              style={{ opacity: menuOpen ? 0 : 1 }}
+            />
+            <span
+              className="h-[1.5px] w-full origin-center bg-current transition-transform duration-200"
+              style={{ transform: menuOpen ? 'translateY(-6px) rotate(-45deg)' : 'none' }}
+            />
+          </span>
+        </button>
+      </nav>
+
+      {/* mobile dropdown — in-flow accordion */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }}
+            className="overflow-hidden sm:hidden"
+          >
+            <div className="flex flex-col gap-1 border-t border-line/70 py-3 font-mono text-sm">
+              {LINKS.map((l) => (
+                <a
+                  key={l}
+                  href={`#${l}`}
+                  className="flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
                 >
-                  <Link
-                    to={link.to}
-                    href={`#${link.to}`}
-                    smooth={true}
-                    duration={500}
-                    offset={-80}
-                    onClick={() => setIsOpen(false)}
-                    className="text-[#ccd6f6] hover:text-[#db2777] transition-colors cursor-pointer"
-                  >
-                    {link.name}
-                  </Link>
-                </motion.li>
+                  <span style={{ color: teal }}>›</span> {l}
+                </a>
               ))}
-              {settings?.resumeUrl && (
-                <motion.li
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: navLinks.length * 0.05 }}
-                >
-                  <a
-                    href={settings.resumeUrl}
-                    onClick={(e) => handleResumeClick(e, settings.resumeUrl!)}
-                    className="btn btn-accent btn-sm gap-2 mt-2"
-                  >
-                    <Download size={16} />
-                    Resume
-                  </a>
-                </motion.li>
-              )}
-            </ul>
+              <a
+                href={resume}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+              >
+                <span style={{ color: teal }}>›</span> resume
+              </a>
+              <a
+                href="#contact"
+                className="mt-1 flex items-center gap-2 rounded-md border px-2 py-2 font-medium"
+                style={{
+                  color: 'var(--primary)',
+                  borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
+                }}
+              >
+                <span>›</span> contact
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 }

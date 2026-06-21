@@ -1,21 +1,32 @@
-import { Heart } from 'lucide-react';
+const sha = import.meta.env.VITE_COMMIT_SHA?.slice(0, 7) ?? 'local';
 
 export default function Footer() {
   return (
-    <footer className="py-8 bg-[#112240] border-t border-[#8892b0]/10">
-      <div className="max-w-6xl mx-auto px-4 text-center">
-        <p className="text-[#8892b0] flex items-center justify-center gap-2">
-          Made with <Heart size={16} className="text-[#db2777] fill-[#db2777] animate-pulse" /> by{' '}
-          <span className="text-[#ccd6f6] font-semibold">Abhishek Chatterjee</span>
-        </p>
-        <p className="text-[#8892b0] text-sm mt-1 tracking-wide">
-          &copy; 2023 – {new Date().getFullYear()} All rights reserved.
-        </p>
-        {import.meta.env.VITE_COMMIT_SHA && (
-          <p className="text-[#8892b0] text-xs mt-3 font-mono">
-            {import.meta.env.VITE_COMMIT_SHA.slice(0, 7)}
-          </p>
-        )}
+    <footer className="border-t border-line px-5 py-8 sm:px-8 lg:px-16">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 font-mono text-xs text-muted">
+        <span>
+          built by <span className="text-ink">Abhishek Chatterjee</span>
+        </span>
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="flex items-center gap-1.5" style={{ color: 'var(--primary)' }}>
+            <span
+              className="size-[7px] rounded-full"
+              style={{
+                background: 'var(--primary)',
+                boxShadow: '0 0 8px color-mix(in srgb, var(--primary) 70%, transparent)',
+              }}
+            />
+            200 OK
+          </span>
+          <span>· region ap-south-1</span>
+          {/* commit ref — invisible by default, fades in on hover (a quiet build stamp) */}
+          <span
+            className="cursor-default opacity-0 transition-opacity duration-300 hover:opacity-100"
+            title="build commit"
+          >
+            · {sha}
+          </span>
+        </span>
       </div>
     </footer>
   );

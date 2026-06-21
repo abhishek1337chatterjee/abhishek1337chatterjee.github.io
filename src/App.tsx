@@ -1,56 +1,67 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
-import SocialSidebar from './components/layout/SocialSidebar';
 import Hero from './components/sections/Hero';
-import SectionDivider from './components/ui/SectionDivider';
+import Loader from './components/ui/Loader';
+import { useAnchorScrollFix } from './hooks/useAnchorScrollFix';
 
-// Lazy load below-fold sections to reduce critical JS bundle size
-// This keeps them out of the main chunk, improving LCP on slow connections
 const About = lazy(() => import('./components/sections/About'));
 const Skills = lazy(() => import('./components/sections/Skills'));
-const Projects = lazy(() => import('./components/sections/Projects'));
+const Journey = lazy(() => import('./components/sections/Projects'));
+const Homelab = lazy(() => import('./components/sections/Homelab'));
 const GitHubStats = lazy(() => import('./components/sections/GitHubStats'));
 const Contact = lazy(() => import('./components/sections/Contact'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
 function App() {
+  const [booted, setBooted] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const handleDone = useCallback(() => setBooted(true), []);
+  // correct in-page anchor landings (content-visibility:auto offsets are off)
+  useAnchorScrollFix();
+
+  // Reveal the trace console only after the user scrolls past the hero, so it
+  // doesn't cover the first view ("available on scroll").
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.6) {
+        setShowChat(true);
+        window.removeEventListener('scroll', onScroll);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#0a192f] text-[#ccd6f6] overflow-x-hidden">
-      <Navbar />
-      <SocialSidebar />
-      {/* Lazy load ChatBot - deferred to reduce initial JS bundle */}
-      <Suspense fallback={null}>
-        <ChatBot />
-      </Suspense>
-      <main className="lg:ml-16">
-        <Hero />
-        <SectionDivider variant="gradient" />
-        {/* Below-fold sections: lazy-loaded + content-visibility for deferred rendering */}
-        <Suspense fallback={null}>
-          <div className="content-defer">
+    <>
+      <Loader onDone={handleDone} />
+      {/* padding clears the fixed trace console (height published as --console-h);
+          overflow-x-clip (not hidden) so it doesn't break the navbar's sticky */}
+      <div
+        className="min-h-screen overflow-x-clip"
+        style={{ paddingBottom: showChat ? 'calc(var(--console-h, 6rem) + 1rem)' : undefined }}
+      >
+        <Navbar booted={booted} />
+        <main>
+          <Hero booted={booted} />
+          <Suspense fallback={null}>
             <About />
-          </div>
-          <SectionDivider variant="gradient" />
-          <div className="content-defer">
             <Skills />
-          </div>
-          <SectionDivider variant="gradient" />
-          <div className="content-defer">
-            <Projects />
-          </div>
-          <SectionDivider variant="gradient" />
-          <div className="content-defer">
+            <Journey />
+            <Homelab />
             <GitHubStats />
-          </div>
-          <SectionDivider variant="gradient" />
-          <div className="content-defer">
             <Contact />
-          </div>
+          </Suspense>
+        </main>
+        <Footer />
+      </div>
+      {showChat && (
+        <Suspense fallback={null}>
+          <ChatBot />
         </Suspense>
-      </main>
-      <Footer />
-    </div>
+      )}
+    </>
   );
 }
 

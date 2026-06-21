@@ -19,14 +19,12 @@
     <link rel="preconnect" href="https://user-images.githubusercontent.com" crossorigin />
     <link rel="dns-prefetch" href="https://user-images.githubusercontent.com" />
 
-    <!-- Preload LCP image (profile image from Sanity CDN) -->
-    <!-- Using smallest mobile size (192px) for fastest LCP on mobile -->
+    <!-- Fonts: Space Grotesk (display) + IBM Plex Mono (labels) + Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="preload"
-      as="image"
-      type="image/webp"
-      href="https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=192&h=192&fm=webp&q=85"
-      fetchpriority="high"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
     />
 
     <!-- Favicon -->
@@ -34,8 +32,8 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
 
     <!-- Theme Color -->
-    <meta name="theme-color" content="#0a192f" />
-    <meta name="msapplication-TileColor" content="#0a192f" />
+    <meta name="theme-color" content="#0e0f13" />
+    <meta name="msapplication-TileColor" content="#0e0f13" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -127,30 +125,6 @@
     <meta name="format-detection" content="telephone=no" />
   </head>
   <body>
-    <!-- LCP Profile Image - Rendered immediately for fast LCP, React hydrates over this -->
-    <div id="lcp-hero-container" style="position:fixed;top:0;left:0;right:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0a192f;padding-top:5rem;z-index:0;">
-      <div style="width:100%;max-width:80rem;margin:0 auto;padding:0 1rem;">
-        <div style="display:flex;flex-direction:column-reverse;align-items:center;gap:2rem;">
-          <!-- Profile image container - matches Hero.tsx layout -->
-          <div style="flex:1;display:flex;justify-content:center;">
-            <div style="position:relative;width:16rem;height:16rem;">
-              <img
-                id="lcp-profile-image"
-                src="https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=256&h=256&fm=webp&q=85"
-                srcset="https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=192&h=192&fm=webp&q=85 192w, https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=256&h=256&fm=webp&q=85 256w, https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=320&h=320&fm=webp&q=85 320w, https://cdn.sanity.io/images/1ewtvnrz/production/f190b2d83b576b1fe4e0ce35a3ff8f272c9572a9-612x612.png?w=384&h=384&fm=webp&q=85 384w"
-                sizes="(max-width: 480px) 192px, (max-width: 640px) 256px, (max-width: 1024px) 320px, 384px"
-                alt="Abhishek Chatterjee"
-                width="256"
-                height="256"
-                fetchpriority="high"
-                decoding="sync"
-                style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:polygon(50% 5%, 90% 25%, 90% 75%, 50% 95%, 10% 75%, 10% 25%);"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

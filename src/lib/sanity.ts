@@ -40,7 +40,10 @@ export const queries = {
     "resumeUrl": resumeFile.asset->url,
     openSourceDescription,
     openSourceActivities,
-    githubUsername
+    githubUsername,
+    telemetryStats[]{label, value, sublabel},
+    colorScheme,
+    version
   }`,
 
   skills: `*[_type == "skill"] | order(category asc, order asc){
@@ -82,6 +85,9 @@ export const queries = {
     period,
     description,
     highlights,
+    nonConfidentialImpact,
+    keyTechnologies,
+    tags,
     isEducation,
     "projects": projects[]->{
       _id,
@@ -107,6 +113,43 @@ export const queries = {
     url,
     icon,
     color
+  }`,
+
+  // Homelab section — anchored by the centerpiece project (Glance Dashboard),
+  // dereferenced inline so it arrives in one request.
+  homelab: `*[_type == "homelab"][0]{
+    heading,
+    status,
+    lastSeen,
+    node,
+    homeUrl,
+    emergencyUrl,
+    "services": services[] | order(order asc){label, metric, category, note, order},
+    "centerpiece": centerpieceProject->{
+      title,
+      description,
+      "image": image.asset->url,
+      techStack,
+      features,
+      responsibilities,
+      githubUrl,
+      deployedUrl
+    },
+    "secondary": secondaryProject->{
+      title,
+      description,
+      "image": image.asset->url,
+      techStack,
+      githubUrl,
+      deployedUrl
+    }
+  }`,
+
+  learning: `*[_type == "learningExploration"] | order(order asc){
+    _id,
+    name,
+    status,
+    motivation
   }`,
 
   // Combined query for chatbot context (all data in one request)
@@ -158,6 +201,14 @@ export function getProfileImageUrl(
   return urlFor(image).width(width).height(width).format('webp').quality(85).url();
 }
 
+export type ColorScheme = 'teal+amber' | 'cyan+pink' | 'cyan-only';
+
+export interface TelemetryStat {
+  label: string;
+  value: string;
+  sublabel?: string;
+}
+
 export interface SanitySiteSettings {
   email: string;
   phone?: string;
@@ -166,6 +217,9 @@ export interface SanitySiteSettings {
   openSourceDescription?: string;
   openSourceActivities?: string[];
   githubUsername?: string;
+  telemetryStats?: TelemetryStat[];
+  colorScheme?: ColorScheme;
+  version?: string;
 }
 
 export interface SanitySkill {
@@ -212,6 +266,9 @@ export interface SanityCareerPhase {
   period: string;
   description?: string;
   highlights?: string[];
+  nonConfidentialImpact?: string;
+  keyTechnologies?: string[];
+  tags?: string[];
   isEducation?: boolean;
   projects?: SanityProject[];
 }
@@ -222,6 +279,44 @@ export interface SanitySocial {
   url: string;
   icon: string;
   color?: string;
+}
+
+export interface HomelabService {
+  label: string;
+  metric?: string;
+  category?: string;
+  note?: string;
+  order?: number;
+}
+
+export interface HomelabFeature {
+  title: string;
+  description?: string;
+  image?: string;
+  techStack?: string[];
+  features?: string[];
+  responsibilities?: string[];
+  githubUrl?: string;
+  deployedUrl?: string;
+}
+
+export interface SanityHomelab {
+  heading?: string;
+  status?: 'OFFLINE' | 'HEALTHY' | 'STANDBY';
+  lastSeen?: string;
+  node?: string;
+  homeUrl?: string;
+  emergencyUrl?: string;
+  services?: HomelabService[];
+  centerpiece?: HomelabFeature;
+  secondary?: HomelabFeature;
+}
+
+export interface SanityLearning {
+  _id: string;
+  name: string;
+  status?: string;
+  motivation?: string;
 }
 
 // Fetch functions
@@ -247,6 +342,14 @@ export async function getCareerPhases(): Promise<SanityCareerPhase[]> {
 
 export async function getSocials(): Promise<SanitySocial[]> {
   return sanityClient.fetch(queries.socials);
+}
+
+export async function getHomelab(): Promise<SanityHomelab | null> {
+  return sanityClient.fetch(queries.homelab);
+}
+
+export async function getLearning(): Promise<SanityLearning[]> {
+  return sanityClient.fetch(queries.learning);
 }
 
 // For chatbot API - get all content in one request

@@ -1,200 +1,197 @@
-import { motion } from 'framer-motion';
-import { Mail, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
+import { useSiteSettings } from '../../hooks/useSanityData';
+import SectionHeader from '../ui/SectionHeader';
 
-const contactInfo = {
-  email: 'abhishek1337chatterjee@gmail.com',
-  phone: '+91 8420739602',
-  whatsappUrl: 'https://wa.me/918420739602',
-};
+const GETFORM = 'https://getform.io/f/8775dab5-b30d-48fc-9d52-4900b095464c';
+
+const inputCls =
+  'rounded-lg border border-line bg-base-100 px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/50 outline-none transition-colors focus:border-[color:var(--primary)]';
+const labelCls = 'font-mono text-[11px] uppercase tracking-[0.08em] text-muted';
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
+  const { settings } = useSiteSettings();
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [phoneCopied, setPhoneCopied] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // contact details come from Sanity (siteSettings) — not hardcoded
+  const email = settings?.email ?? '';
+  const phone = settings?.phone ?? '';
+  const phoneTel = phone.replace(/[^\d+]/g, '');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
+    setSending(true);
+    setStatus(null);
     try {
-      const response = await fetch('https://getform.io/f/8775dab5-b30d-48fc-9d52-4900b095464c', {
+      const res = await fetch(GETFORM, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(form),
       });
-
-      if (response.ok) {
-        setSubmitStatus({ type: 'success', message: 'Message sent successfully!' });
-        setFormData({ name: '', email: '', message: '' });
+      if (res.ok) {
+        setStatus({ ok: true, msg: '202 accepted · alert delivered' });
+        setForm({ name: '', email: '', message: '' });
       } else {
-        setSubmitStatus({ type: 'error', message: 'Failed to send message. Please try again.' });
+        setStatus({ ok: false, msg: '500 · delivery failed, retry' });
       }
     } catch {
-      setSubmitStatus({ type: 'error', message: 'Failed to send message. Please try again.' });
+      setStatus({ ok: false, msg: '500 · delivery failed, retry' });
     } finally {
-      setIsSubmitting(false);
-      // Clear status after 5 seconds
-      setTimeout(() => setSubmitStatus(null), 5000);
+      setSending(false);
+      setTimeout(() => setStatus(null), 6000);
+    }
+  };
+
+  const copyTo = async (text: string, flag: (v: boolean) => void) => {
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      flag(true);
+      setTimeout(() => flag(false), 1800);
+    } catch {
+      /* clipboard blocked — no-op */
     }
   };
 
   return (
-    <section id="contact" className="py-20 bg-[#0a192f] px-4 lg:px-8 relative overflow-hidden">
-      {/* Gradient accent for contact - slightly more prominent as CTA section */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-[#db2777]/8 via-transparent to-transparent rounded-full blur-2xl" />
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#06b6d4]/5 to-transparent" />
-      </div>
-      <div className="max-w-4xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6] mb-2">Contact</h2>
-          <div className="w-20 h-1 bg-[#db2777] mx-auto mb-4" />
-          <p className="text-[#8892b0]">
-            Submit the form below or{' '}
-            <a href={`mailto:${contactInfo.email}`} className="text-[#db2777] hover:underline">
-              Email
-            </a>{' '}
-            me at
-          </p>
-          <div className="flex items-center justify-center gap-2 text-[#06b6d4]">
-            <Mail size={18} />
-            <span>{contactInfo.email}</span>
-          </div>
-        </motion.div>
+    <section id="contact" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
+      <div className="mx-auto w-full max-w-6xl">
+        <SectionHeader num="07" label="open an alert" title="Send a span" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center mb-8"
-        >
-          <p className="text-[#8892b0]">
-            Connect me via{' '}
-            <a
-              href={contactInfo.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#db2777] hover:underline"
-            >
-              WhatsApp or call
-            </a>
-          </p>
-          <div className="flex items-center justify-center gap-2 text-[#06b6d4]">
-            <Phone size={18} />
-            <span>{contactInfo.phone}</span>
-          </div>
-        </motion.div>
-
-        <motion.form
-          onSubmit={handleSubmit}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="space-y-6"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col gap-2">
-              <label htmlFor="contact-name" className="text-[#8892b0] text-sm">
-                Name
-              </label>
+        <div className="mt-6 grid items-start gap-5 md:grid-cols-2">
+          {/* form */}
+          <form
+            onSubmit={submit}
+            className="flex flex-col gap-3.5 rounded-2xl border border-line bg-base-200/40 p-5 sm:p-6"
+          >
+            <label className="flex flex-col gap-1.5">
+              <span className={labelCls}>name</span>
               <input
-                id="contact-name"
-                type="text"
                 name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Your name"
+                type="text"
+                required
                 autoComplete="name"
-                className="input input-bordered bg-[#112240] border-[#8892b0]/20 focus:border-[#db2777] text-[#ccd6f6] placeholder:text-[#8892b0]/50 w-full"
-                required
+                placeholder="your name"
+                value={form.name}
+                onChange={onChange}
+                className={inputCls}
               />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label htmlFor="contact-email" className="text-[#8892b0] text-sm">
-                Email
-              </label>
-              <input
-                id="contact-email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Your email"
-                autoComplete="email"
-                className="input input-bordered bg-[#112240] border-[#8892b0]/20 focus:border-[#db2777] text-[#ccd6f6] placeholder:text-[#8892b0]/50 w-full"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="contact-message" className="text-[#8892b0] text-sm">
-              Message
             </label>
-            <textarea
-              id="contact-message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder="Your message"
-              className="textarea textarea-bordered bg-[#112240] border-[#8892b0]/20 focus:border-[#db2777] text-[#ccd6f6] placeholder:text-[#8892b0]/50 h-40 w-full"
-              required
-            />
-          </div>
-
-          <div className="flex flex-col items-center gap-4">
-            <button type="submit" disabled={isSubmitting} className="btn btn-primary gap-2">
-              {isSubmitting ? (
-                <>
-                  <span className="loading loading-spinner loading-sm" />
-                  Sending…
-                </>
-              ) : (
-                <>
-                  <Send size={18} />
-                  Send Message
-                </>
-              )}
+            <label className="flex flex-col gap-1.5">
+              <span className={labelCls}>email</span>
+              <input
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@domain.com"
+                value={form.email}
+                onChange={onChange}
+                className={inputCls}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className={labelCls}>message</span>
+              <textarea
+                name="message"
+                rows={4}
+                required
+                placeholder="payload…"
+                value={form.message}
+                onChange={onChange}
+                className={`${inputCls} resize-y`}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={sending}
+              className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 font-mono text-sm font-semibold text-[#07140d] transition-transform hover:-translate-y-0.5 disabled:opacity-60"
+              style={{ background: 'linear-gradient(180deg, var(--primary), var(--primary-deep))' }}
+            >
+              {sending ? 'sending…' : 'POST /contact'}
             </button>
-
-            {/* Accessible status message */}
-            <div aria-live="polite" aria-atomic="true" className="min-h-[24px]">
-              {submitStatus && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className={`text-sm font-medium ${
-                    submitStatus.type === 'success' ? 'text-green-400' : 'text-red-400'
-                  }`}
-                >
-                  {submitStatus.message}
-                </motion.p>
+            <div aria-live="polite" className="min-h-[18px] font-mono text-xs">
+              {status && (
+                <span style={{ color: status.ok ? 'var(--primary)' : '#ff6b6b' }}>
+                  {status.ok ? '● ' : '× '}
+                  {status.msg}
+                </span>
               )}
             </div>
+          </form>
+
+          {/* contact manifest — details from Sanity */}
+          <div className="flex flex-col gap-4">
+            {email && (
+              <div className="rounded-2xl border border-line bg-base-200/40 p-5 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <span className={labelCls}>email</span>
+                  <button
+                    type="button"
+                    onClick={() => copyTo(email, setCopied)}
+                    className="font-mono text-[11px] transition-colors hover:text-ink"
+                    style={{ color: copied ? 'var(--primary)' : '#8a91a0' }}
+                  >
+                    {copied ? 'copied ✓' : 'copy'}
+                  </button>
+                </div>
+                <a
+                  href={`mailto:${email}`}
+                  className="mt-2 block break-all font-mono text-sm text-ink transition-colors hover:text-[color:var(--primary)]"
+                >
+                  {email}
+                </a>
+              </div>
+            )}
+
+            {phone && (
+              <div className="rounded-2xl border border-line bg-base-200/40 p-5 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <span className={labelCls}>phone</span>
+                  <button
+                    type="button"
+                    onClick={() => copyTo(phone, setPhoneCopied)}
+                    className="font-mono text-[11px] transition-colors hover:text-ink"
+                    style={{ color: phoneCopied ? 'var(--primary)' : '#8a91a0' }}
+                  >
+                    {phoneCopied ? 'copied ✓' : 'copy'}
+                  </button>
+                </div>
+                <a
+                  href={`tel:${phoneTel}`}
+                  className="mt-2 block font-mono text-sm text-ink transition-colors hover:text-[color:var(--primary)]"
+                >
+                  {phone}
+                </a>
+              </div>
+            )}
+
+            <div className="rounded-2xl border border-line bg-base-200/40 p-5 font-mono text-[13px] sm:p-6">
+              <div className="space-y-2 text-muted">
+                <div>
+                  region <span className="text-ink">ap-south-1</span>
+                </div>
+                <div>
+                  timezone <span className="text-ink">IST · UTC+5:30</span>
+                </div>
+                <div>
+                  response <span style={{ color: 'var(--primary)' }}>friendly &amp; fast</span>
+                </div>
+              </div>
+              <div className="my-4 h-px bg-line" />
+              <p className="text-xs text-muted/80">
+                Or ask the <span style={{ color: 'var(--primary)' }}>trace ›</span> console below —
+                it queries my telemetry.
+              </p>
+            </div>
           </div>
-        </motion.form>
+        </div>
       </div>
     </section>
   );

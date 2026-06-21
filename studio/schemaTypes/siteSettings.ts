@@ -47,6 +47,43 @@ export default defineType({
       type: 'string',
       description: 'Used for GitHub stats and contribution graph',
     }),
+    defineField({
+      name: 'telemetryStats',
+      title: 'Hero Telemetry Stats',
+      type: 'array',
+      description: 'Stats shown in the hero, e.g. p99 latency / 1.24k rpm',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required()},
+            {name: 'value', title: 'Value', type: 'string', validation: (Rule) => Rule.required()},
+            {name: 'sublabel', title: 'Sublabel', type: 'string'},
+          ],
+          preview: {select: {title: 'value', subtitle: 'sublabel'}},
+        },
+      ],
+    }),
+    defineField({
+      name: 'colorScheme',
+      title: 'Default Color Scheme',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Teal + Amber', value: 'teal+amber'},
+          {title: 'Cyan + Pink', value: 'cyan+pink'},
+          {title: 'Cyan Only', value: 'cyan-only'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'teal+amber',
+    }),
+    defineField({
+      name: 'version',
+      title: 'Telemetry Version',
+      type: 'string',
+      description: 'Shown in the hero breadcrumb, e.g. "v2026.6"',
+    }),
   ],
   preview: {
     prepare() {

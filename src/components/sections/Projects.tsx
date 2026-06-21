@@ -1,641 +1,306 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AlertTriangle,
-  Beaker,
-  Building2,
-  ChevronDown,
-  ExternalLink,
-  Loader2,
-  Lock,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import {
-  getCareerPhases,
-  getProjects,
-  type SanityCareerPhase,
-  type SanityProject,
-} from '../../lib/sanity';
-import { GitHubIcon } from '../icons/BrandIcons';
+import { useCallback, useState } from 'react';
+import { useCareerPhases, useProjects } from '../../hooks/useSanityData';
+import type { SanityCareerPhase } from '../../lib/sanity';
+import SectionHeader from '../ui/SectionHeader';
 
-// Git Branch icon
-function GitBranchIcon({ size = 20 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="6" x2="6" y1="3" y2="15" />
-      <circle cx="18" cy="6" r="3" />
-      <circle cx="6" cy="18" r="3" />
-      <path d="M18 9a9 9 0 0 1-9 9" />
-    </svg>
-  );
+type Span = { start: number; end: number; ongoing: boolean };
+type Child = { name: string; sub: string };
+
+const COLS = { gridTemplateColumns: 'clamp(108px,25vw,228px) 1fr' } as const;
+
+// Non-confidential architecture patterns for the active role (from bio: event-driven,
+// orchestration, idempotency, retries, replay). Swappable / seedable later.
+const ACTIVE_CHILDREN: Child[] = [
+  { name: 'event-orchestration', sub: 'Step Functions' },
+  { name: 'idempotency-layer', sub: 'dedupe + retries' },
+  { name: 'eventbridge-bus', sub: 'fan-out + replay' },
+];
+
+function parsePeriod(period: string, now: number): Span {
+  const [a, b] = period.split(/[–-]/).map((s) => s.trim());
+  const start = Number.parseInt(a, 10);
+  const ongoing = /present|now|current/i.test(b ?? '');
+  const parsedEnd = Number.parseInt(b ?? '', 10);
+  const safeStart = Number.isNaN(start) ? now : start;
+  const end = ongoing ? now : Number.isNaN(parsedEnd) ? safeStart + 1 : parsedEnd;
+  return { start: safeStart, end: Math.max(end, safeStart + 1), ongoing };
 }
 
-// Company Badge with Website Link
-function CompanyBadge({
-  companyName,
-  companyWebsite,
-}: {
-  companyName: string;
-  companyWebsite?: string;
-}) {
-  if (!companyWebsite) {
-    return (
-      <span className="inline-flex items-baseline">
-        <span className="mx-2 text-[#8892b0]">•</span>
-        <span className="inline-flex items-baseline gap-1.5 text-[#8892b0]">
-          <Building2 size={13} className="text-[#db2777] translate-y-[1px]" />
-          <span>{companyName}</span>
-        </span>
-      </span>
+export default function Journey() {
+  const { careerPhases } = useCareerPhases();
+  const { projects } = useProjects();
+  const [seen, setSeen] = useState(false);
+  // callback ref: fires when the node actually mounts (i.e. after Sanity data loads),
+  // so the bars' grow-in reliably triggers on scroll into view.
+  const observeRef = useCallback((el: HTMLDivElement | null) => {
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setSeen(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12 },
     );
-  }
-
-  return (
-    <span className="inline-flex items-baseline">
-      <span className="mx-2 text-[#8892b0]">•</span>
-      <a
-        href={companyWebsite}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-baseline gap-1.5 text-[#8892b0] hover:text-[#06b6d4] transition-colors"
-      >
-        <Building2 size={13} className="text-[#db2777] translate-y-[1px]" />
-        <span>{companyName}</span>
-      </a>
-    </span>
-  );
-}
-
-// Phase Header Component
-function PhaseHeader({ phase }: { phase: SanityCareerPhase }) {
-  return (
-    <div className="mb-6">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="git-node w-4 h-4 rounded-full bg-[#db2777] border-2 border-[#0a192f] shadow-[0_0_10px_rgba(219,39,119,0.5)] z-10" />
-        <h3 className="text-xl sm:text-2xl font-bold text-[#ccd6f6]">{phase.title}</h3>
-      </div>
-
-      <div className="ml-7 pl-4 border-l-2 border-[#8892b0]/30">
-        <p className="text-[#06b6d4] text-sm font-mono mb-1">
-          {phase.role}
-          {phase.companyName && (
-            <CompanyBadge companyName={phase.companyName} companyWebsite={phase.companyWebsite} />
-          )}
-        </p>
-        <p className="text-[#8892b0] text-xs mb-3">{phase.period}</p>
-        {phase.description && <p className="text-[#8892b0] text-sm mb-3">{phase.description}</p>}
-
-        {/* Highlight badges */}
-        {phase.highlights && phase.highlights.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {phase.highlights.map((highlight) => (
-              <span
-                key={highlight}
-                className="px-2 py-0.5 text-xs rounded bg-[#112240] text-[#06b6d4] border border-[#06b6d4]/30"
-              >
-                {highlight}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Expandable Commit Card Component
-function CommitCard({ project, isLast }: { project: SanityProject; isLast: boolean }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    <div className="relative">
-      {/* Git line connector */}
-      {!isLast && <div className="absolute left-[7px] top-4 bottom-0 w-0.5 bg-[#8892b0]/30" />}
-
-      <div className="flex gap-3">
-        {/* Commit node */}
-        <div className="relative z-10 flex-shrink-0">
-          <div
-            className={`w-4 h-4 rounded-full border-2 ${
-              project.projectType === 'showcase'
-                ? 'bg-[#06b6d4] border-[#06b6d4]'
-                : project.projectType === 'personal'
-                  ? 'bg-[#10b981] border-[#10b981]'
-                  : 'bg-[#8892b0] border-[#8892b0]'
-            } shadow-[0_0_8px_rgba(6,182,212,0.4)]`}
-          />
-        </div>
-
-        {/* Card content */}
-        <motion.div layout className="flex-1 mb-4">
-          {/* Collapsed header (always visible) */}
-          <button
-            type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
-            aria-expanded={isExpanded}
-            aria-label={`${isExpanded ? 'Collapse' : 'Expand'} details for ${project.title}`}
-            className="w-full text-left group"
-          >
-            <div className="bg-[#112240] rounded-lg p-4 border border-[#8892b0]/20 hover:border-[#06b6d4]/40 transition-colors">
-              {/* Title row */}
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <h4 className="text-[#ccd6f6] font-semibold group-hover:text-[#06b6d4] transition-colors">
-                  {project.title}
-                </h4>
-                {project.isDiscontinued && (
-                  <span className="flex items-center gap-1 text-xs text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">
-                    <AlertTriangle size={12} />
-                    Discontinued
-                  </span>
-                )}
-                {!project.hasCode && project.projectType === 'personal' && (
-                  <span className="flex items-center gap-1 text-xs text-[#8892b0] bg-[#8892b0]/10 px-2 py-0.5 rounded">
-                    <Lock size={12} />
-                    Protected
-                  </span>
-                )}
-              </div>
-
-              {/* Tech stack badges */}
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {project.techStack.slice(0, 5).map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-2 py-0.5 text-xs rounded bg-[#0a192f] text-[#8892b0] border border-[#8892b0]/20"
-                  >
-                    {tech}
-                  </span>
-                ))}
-                {project.techStack.length > 5 && (
-                  <span className="px-2 py-0.5 text-xs rounded bg-[#0a192f] text-[#8892b0]">
-                    +{project.techStack.length - 5}
-                  </span>
-                )}
-              </div>
-
-              {/* Action buttons row */}
-              <div className="flex items-center justify-between">
-                <div className="flex gap-2 flex-wrap">
-                  {project.hasCode && project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="btn btn-xs btn-ghost gap-1 text-[#8892b0] hover:text-[#db2777]"
-                    >
-                      <GitHubIcon size={14} />
-                      Code
-                    </a>
-                  )}
-                  {project.hasDemo && project.deployedUrl && (
-                    <a
-                      href={project.deployedUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="btn btn-xs btn-ghost gap-1 text-[#8892b0] hover:text-[#06b6d4]"
-                    >
-                      <ExternalLink size={14} />
-                      Live
-                    </a>
-                  )}
-                  {project.additionalUrls?.map((link) => (
-                    <a
-                      key={link.url}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="btn btn-xs btn-ghost gap-1 text-[#8892b0] hover:text-[#10b981]"
-                    >
-                      <ExternalLink size={14} />
-                      {link.title}
-                    </a>
-                  ))}
-                </div>
-
-                <motion.div
-                  animate={{ rotate: isExpanded ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <ChevronDown size={18} className="text-[#8892b0]" />
-                </motion.div>
-              </div>
-            </div>
-          </button>
-
-          {/* Expanded content */}
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="bg-[#0a192f] border border-t-0 border-[#8892b0]/20 rounded-b-lg p-4 -mt-2">
-                  {/* Project image */}
-                  {project.image && (
-                    <div className="mb-4 rounded-lg overflow-hidden border border-[#8892b0]/20">
-                      <img src={project.image} alt={project.title} className="w-full h-auto" />
-                    </div>
-                  )}
-
-                  {/* Description */}
-                  <p className="text-[#8892b0] text-sm mb-4">{project.description}</p>
-
-                  {/* Features */}
-                  {project.features && project.features.length > 0 && (
-                    <div className="mb-4">
-                      <h5 className="text-xs font-semibold text-[#06b6d4] mb-2">Features:</h5>
-                      <div className="flex flex-wrap gap-2">
-                        {project.features.map((feature, i) => (
-                          <span
-                            key={i}
-                            className="text-xs text-[#8892b0] bg-[#112240] px-2 py-1 rounded"
-                          >
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Responsibilities */}
-                  {project.responsibilities && project.responsibilities.length > 0 && (
-                    <div className="mb-4">
-                      <h5 className="text-xs font-semibold text-[#db2777] mb-2">My Role:</h5>
-                      <ul className="text-xs text-[#8892b0] list-disc list-inside space-y-1">
-                        {project.responsibilities.map((resp, i) => (
-                          <li key={i}>{resp}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Team info */}
-                  {project.teamSize && (
-                    <p className="text-xs text-[#8892b0]">
-                      Team of{' '}
-                      <span className="text-[#db2777] font-semibold">{project.teamSize}</span>{' '}
-                      developers
-                      {project.duration && ` • ${project.duration}`}
-                    </p>
-                  )}
-
-                  {/* Full action buttons */}
-                  <div className="flex gap-3 mt-4 pt-4 border-t border-[#8892b0]/20 flex-wrap">
-                    {project.hasCode && project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-sm btn-outline btn-primary gap-2"
-                      >
-                        <GitHubIcon size={16} />
-                        View Code
-                      </a>
-                    )}
-                    {project.hasDemo && project.deployedUrl && (
-                      <a
-                        href={project.deployedUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-sm btn-outline btn-secondary gap-2"
-                      >
-                        <ExternalLink size={16} />
-                        Live Demo
-                      </a>
-                    )}
-                    {project.additionalUrls?.map((link) => (
-                      <a
-                        key={link.url}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-sm btn-outline gap-2 border-[#10b981] text-[#10b981] hover:bg-[#10b981] hover:text-white"
-                      >
-                        <ExternalLink size={16} />
-                        {link.title}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-// Phase Section Component
-function PhaseSection({
-  phase,
-  index,
-  onViewMasaiProjects,
-}: {
-  phase: SanityCareerPhase;
-  index: number;
-  onViewMasaiProjects?: () => void;
-}) {
-  const hasProjects = phase.projects && phase.projects.length > 0;
-  const isMasaiSchool = phase.isEducation;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative"
-    >
-      {/* Phase container */}
-      <div className="bg-[#0a192f]/50 rounded-xl p-4 sm:p-6 border border-[#8892b0]/10">
-        <PhaseHeader phase={phase} />
-
-        {/* Projects list or empty state */}
-        <div className="ml-7 pl-4">
-          {hasProjects ? (
-            phase.projects!.map((project, i) => (
-              <CommitCard
-                key={project._id}
-                project={project}
-                isLast={i === phase.projects!.length - 1}
-              />
-            ))
-          ) : isMasaiSchool && onViewMasaiProjects ? (
-            <div className="py-4 border-l-2 border-[#06b6d4]/30 pl-4">
-              <button
-                type="button"
-                onClick={onViewMasaiProjects}
-                className="group flex items-center gap-2 text-sm text-[#06b6d4] hover:text-[#06b6d4]/80 transition-colors"
-              >
-                <svg
-                  width={16}
-                  height={16}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-[#06b6d4]"
-                >
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                </svg>
-                <span>View my bootcamp projects in Personal tab</span>
-                <svg
-                  width={16}
-                  height={16}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="group-hover:translate-x-1 transition-transform"
-                >
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          ) : (
-            <div className="py-4 text-sm text-[#8892b0] italic border-l-2 border-[#8892b0]/20 pl-4">
-              Company projects are confidential. Check highlights above for technologies used.
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// Tab type
-type TabType = 'career' | 'personal';
-
-// Personal Projects Content
-function PersonalProjectsContent({ projects }: { projects: SanityProject[] }) {
-  // Split projects by source
-  const masaiProjects = projects.filter((p) => p.source === 'masai');
-  const sideProjects = projects.filter((p) => p.source === 'side-project' || !p.source);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      {/* Side Projects Section */}
-      {sideProjects.length > 0 && (
-        <div className="bg-[#0a192f]/50 rounded-xl p-4 sm:p-6 border border-[#10b981]/20">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-[#10b981]/20 flex items-center justify-center">
-              <Beaker size={18} className="text-[#10b981]" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-[#ccd6f6]">Side Projects & Experiments</h3>
-              <p className="text-xs text-[#8892b0]">Things I'm building outside of work</p>
-            </div>
-          </div>
-
-          <div className="ml-2 pl-4 border-l-2 border-[#10b981]/30">
-            {sideProjects.map((project, i) => (
-              <CommitCard
-                key={project._id}
-                project={project}
-                isLast={i === sideProjects.length - 1}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Masai School Projects Section */}
-      {masaiProjects.length > 0 && (
-        <div
-          id="masai-projects"
-          className="bg-[#0a192f]/50 rounded-xl p-4 sm:p-6 border border-[#06b6d4]/20"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-[#06b6d4]/20 flex items-center justify-center">
-              <svg
-                width={18}
-                height={18}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-[#06b6d4]"
-              >
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                <path d="M6 12v5c3 3 9 3 12 0v-5" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-[#ccd6f6]">Masai School Projects</h3>
-              <p className="text-xs text-[#8892b0]">
-                Collaborative projects built during my bootcamp journey
-              </p>
-            </div>
-          </div>
-
-          <div className="ml-2 pl-4 border-l-2 border-[#06b6d4]/30">
-            {masaiProjects.map((project, i) => (
-              <CommitCard
-                key={project._id}
-                project={project}
-                isLast={i === masaiProjects.length - 1}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-// Loading skeleton
-function ProjectsSkeleton() {
-  return (
-    <div className="flex items-center justify-center py-20">
-      <Loader2 className="w-8 h-8 animate-spin text-[#06b6d4]" />
-      <span className="ml-3 text-[#8892b0]">Loading projects...</span>
-    </div>
-  );
-}
-
-// Main Projects Component
-export default function Projects() {
-  const [activeTab, setActiveTab] = useState<TabType>('career');
-  const [careerPhases, setCareerPhases] = useState<SanityCareerPhase[]>([]);
-  const [allProjects, setAllProjects] = useState<SanityProject[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.all([getCareerPhases(), getProjects()])
-      .then(([phases, projects]) => {
-        setCareerPhases(phases);
-        setAllProjects(projects);
-      })
-      .finally(() => setLoading(false));
+    io.observe(el);
   }, []);
 
-  // Filter personal projects (showcase and personal types, not linked to career phases)
-  const personalProjects = allProjects.filter(
-    (p) => p.projectType === 'showcase' || p.projectType === 'personal',
-  );
+  if (!careerPhases.length) return null;
 
-  // Handler to switch to Personal tab and scroll to Masai projects
-  const handleViewMasaiProjects = () => {
-    setActiveTab('personal');
-    // Wait for tab switch animation, then scroll to Masai projects section
-    setTimeout(() => {
-      const masaiSection = document.getElementById('masai-projects');
-      if (masaiSection) {
-        masaiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 350); // Match the animation duration
+  const d = new Date();
+  const now = d.getFullYear() + d.getMonth() / 12; // fractional "now" → longer active bar
+  const nowYear = d.getFullYear();
+  const rows = careerPhases
+    .map((p) => ({ p, span: parsePeriod(p.period, now) }))
+    .sort((a, b) => b.span.start - a.span.start); // newest span on top
+
+  const min = Math.min(...rows.map((r) => r.span.start));
+  const max = Math.max(...rows.map((r) => r.span.end), now);
+  const total = max - min || 1;
+  const gridPct = 100 / total;
+  const pct = (v: number) => ((v - min) / total) * 100;
+
+  // ticks stop before the current year — the teal "now" marker stands in for it
+  // (prevents the last tick colliding with "now" at narrow widths)
+  const tickYears: number[] = [];
+  for (let y = min; y < nowYear; y++) tickYears.push(y);
+
+  const masai = projects.filter((p) => p.source === 'masai');
+
+  const childrenOf = (p: SanityCareerPhase, span: Span): Child[] => {
+    if (p.isEducation)
+      return masai.map((m) => ({ name: m.title, sub: m.techStack?.[0]?.trim() ?? 'showcase' }));
+    if (span.ongoing) return ACTIVE_CHILDREN;
+    return (p.projects ?? []).map((pr) => ({
+      name: pr.title,
+      sub: (pr.techStack ?? []).slice(0, 2).join(' + ') || 'project',
+    }));
   };
 
   return (
-    <section id="projects" className="py-20 bg-[#0a192f] px-4 lg:px-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <GitBranchIcon size={28} />
-            <h2 className="text-3xl sm:text-4xl font-bold text-[#ccd6f6]">My Journey</h2>
-          </div>
-          <div className="w-20 h-1 bg-[#db2777] mx-auto mb-4" />
-          <p className="text-[#8892b0]">Projects & experiences along the way</p>
-        </motion.div>
+    <section id="journey" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
+      <div className="mx-auto w-full max-w-6xl" ref={observeRef}>
+        <SectionHeader
+          num="04"
+          label="distributed trace · career.timeline"
+          title="Trace waterfall"
+        />
 
-        {/* Tab Switcher */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="flex justify-center mb-8"
-        >
-          <div className="inline-flex bg-[#112240] rounded-lg p-1 border border-[#8892b0]/20">
-            <button
-              type="button"
-              onClick={() => setActiveTab('career')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-                activeTab === 'career'
-                  ? 'bg-[#db2777] text-white shadow-[0_0_15px_rgba(219,39,119,0.4)]'
-                  : 'text-[#8892b0] hover:text-[#ccd6f6]'
-              }`}
-            >
-              Career
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('personal')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-                activeTab === 'personal'
-                  ? 'bg-[#10b981] text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]'
-                  : 'text-[#8892b0] hover:text-[#ccd6f6]'
-              }`}
-            >
-              Personal
-            </button>
+        {/* console card */}
+        <div className="mt-6 rounded-2xl border border-line bg-base-300/50 p-4 sm:p-6">
+          {/* meta + legend */}
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 font-mono text-[11.5px] text-muted">
+            <span>
+              trace_id <span className="text-ink">career·{min}→now</span>
+            </span>
+            <div className="flex items-center gap-4">
+              <span className="inline-flex items-center gap-1.5">
+                <span className="size-2.5 rounded-[3px]" style={{ background: 'var(--primary)' }} />
+                active
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className="size-2.5 rounded-[3px]"
+                  style={{ background: 'var(--secondary)' }}
+                />
+                completed
+              </span>
+            </div>
           </div>
-        </motion.div>
 
-        {/* Tab Content */}
-        {loading ? (
-          <ProjectsSkeleton />
-        ) : (
-          <AnimatePresence mode="wait">
-            {activeTab === 'career' ? (
-              <motion.div
-                key="career"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-8"
-              >
-                {careerPhases.map((phase, index) => (
-                  <PhaseSection
-                    key={phase._id}
-                    phase={phase}
-                    index={index}
-                    onViewMasaiProjects={handleViewMasaiProjects}
-                  />
-                ))}
-              </motion.div>
-            ) : (
-              <PersonalProjectsContent key="personal" projects={personalProjects} />
-            )}
-          </AnimatePresence>
-        )}
+          {/* year axis */}
+          <div className="grid gap-3.5" style={COLS}>
+            <div />
+            <div className="relative h-[18px] font-mono text-[10.5px] text-muted">
+              {tickYears.map((y) => (
+                <span key={y} className="absolute" style={{ left: `${pct(y)}%` }}>
+                  {y}
+                </span>
+              ))}
+              <span className="absolute right-0" style={{ color: 'var(--primary)' }}>
+                now
+              </span>
+            </div>
+          </div>
+
+          {/* spans */}
+          {rows.map(({ p, span }, idx) => {
+            const active = span.ongoing;
+            const left = pct(span.start);
+            const rawWidth = pct(span.end) - pct(span.start);
+            const width = Math.min(Math.max(rawWidth, 26), 100 - left); // keep bars "lengthy"
+            const years = Math.round(span.end - span.start);
+            const dur = active ? `${years}y · active` : `${years}y`;
+            const barBg = active
+              ? 'linear-gradient(90deg, var(--primary-deep), var(--primary))'
+              : 'linear-gradient(90deg, var(--secondary-deep), var(--secondary))';
+            const ring = active
+              ? 'color-mix(in srgb, var(--primary) 50%, transparent)'
+              : 'color-mix(in srgb, var(--secondary) 45%, transparent)';
+            const glow = active
+              ? 'color-mix(in srgb, var(--primary) 22%, transparent)'
+              : 'color-mix(in srgb, var(--secondary) 16%, transparent)';
+            const childFill = active
+              ? 'color-mix(in srgb, var(--primary) 34%, #15171d)'
+              : 'color-mix(in srgb, var(--secondary) 34%, #15171d)';
+            const childEdge = active
+              ? 'color-mix(in srgb, var(--primary) 70%, transparent)'
+              : 'color-mix(in srgb, var(--secondary) 70%, transparent)';
+            const tags = p.keyTechnologies?.length ? p.keyTechnologies : (p.highlights ?? []);
+            const kids = childrenOf(p, span);
+
+            return (
+              <div key={p._id}>
+                {/* span row: meta + bar */}
+                <div className="grid items-center gap-3.5 pb-1 pt-2.5" style={COLS}>
+                  <div className="min-w-0">
+                    <div className="mb-0.5 font-mono text-[10.5px] text-muted">{p.period}</div>
+                    <div className="font-display text-[15px] font-semibold tracking-tight text-ink">
+                      {p.role}
+                    </div>
+                    <div className="truncate text-xs text-muted">{p.companyName ?? p.title}</div>
+                  </div>
+                  <div
+                    className="relative h-10 rounded-lg"
+                    style={{
+                      backgroundColor: '#13151A',
+                      backgroundImage:
+                        'linear-gradient(90deg, rgba(38,42,51,0.7) 1px, transparent 1px)',
+                      backgroundSize: `${gridPct}% 100%`,
+                      border: '1px solid rgba(237,239,243,0.05)',
+                    }}
+                  >
+                    <div
+                      className="absolute flex items-center overflow-hidden rounded-md"
+                      style={{
+                        top: 5,
+                        bottom: 5,
+                        left: `${left}%`,
+                        width: seen ? `${width}%` : '0%',
+                        background: barBg,
+                        padding: '0 12px',
+                        transition: 'width 1.15s cubic-bezier(.2,.7,.2,1)',
+                        boxShadow: `0 0 0 1px ${ring}, 0 8px 26px ${glow}`,
+                      }}
+                    >
+                      <span
+                        className="whitespace-nowrap font-mono text-[11.5px] font-semibold"
+                        style={{ color: '#0E0F13' }}
+                      >
+                        {/* compact on mobile (bar is narrow); full label sm+ */}
+                        <span className="sm:hidden">{years}y</span>
+                        <span className="hidden sm:inline">{dur}</span>
+                      </span>
+                      {active && (
+                        <span
+                          className="absolute size-[11px] animate-pulse rounded-full"
+                          style={{
+                            right: -4,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            background: 'var(--primary)',
+                            boxShadow:
+                              '0 0 0 4px color-mix(in srgb, var(--primary) 16%, transparent), 0 0 12px color-mix(in srgb, var(--primary) 80%, transparent)',
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* desc + tags */}
+                <div className="mt-2 grid gap-3.5" style={COLS}>
+                  <div />
+                  <div>
+                    {(p.nonConfidentialImpact || p.description) && (
+                      <div className="mb-2 text-[13.5px] text-muted">
+                        {p.nonConfidentialImpact ?? p.description}
+                      </div>
+                    )}
+                    {tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {tags.map((t) => (
+                          <span
+                            key={t}
+                            className="rounded-full border border-line px-2.5 py-0.5 font-mono text-[11px] text-muted"
+                            style={{ background: 'rgba(237,239,243,0.02)' }}
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* child sub-spans */}
+                {kids.length > 0 && (
+                  <div className="mt-3 flex flex-col gap-1.5">
+                    {kids.map((c, ci) => {
+                      const cw = width * 0.6;
+                      const cl =
+                        left + (width - cw) * (kids.length > 1 ? ci / (kids.length - 1) : 0);
+                      return (
+                        <div key={c.name} className="grid items-center gap-3.5" style={COLS}>
+                          <div className="flex min-w-0 items-center gap-1.5 pl-2.5">
+                            <span className="flex-none font-mono" style={{ color: '#262A33' }}>
+                              └
+                            </span>
+                            <div className="min-w-0">
+                              <div
+                                className="truncate font-mono text-xs"
+                                style={{ color: '#c9cdd6' }}
+                              >
+                                {c.name}
+                              </div>
+                              <div className="truncate text-[11px] text-muted">{c.sub}</div>
+                            </div>
+                          </div>
+                          <div
+                            className="relative h-[22px] rounded-md"
+                            style={{
+                              backgroundColor: '#101217',
+                              backgroundImage:
+                                'linear-gradient(90deg, rgba(38,42,51,0.5) 1px, transparent 1px)',
+                              backgroundSize: `${gridPct}% 100%`,
+                            }}
+                          >
+                            <div
+                              className="absolute rounded-[5px]"
+                              style={{
+                                top: 4,
+                                bottom: 4,
+                                left: `${cl}%`,
+                                width: seen ? `${cw}%` : '0%',
+                                background: childFill,
+                                transition: `width 1.15s cubic-bezier(.2,.7,.2,1) ${0.12 * ci}s`,
+                                boxShadow: `inset 0 0 0 1px ${childEdge}`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {idx < rows.length - 1 && (
+                  <div className="my-3.5 h-px" style={{ background: 'rgba(237,239,243,0.06)' }} />
+                )}
+              </div>
+            );
+          })}
+
+          {/* root footer */}
+          <div className="mt-5 flex items-center gap-2 font-mono text-[11px] text-muted">
+            <span
+              className="size-[7px] animate-pulse rounded-full"
+              style={{ background: 'var(--primary)' }}
+            />
+            root span still emitting · live
+          </div>
+        </div>
       </div>
     </section>
   );
