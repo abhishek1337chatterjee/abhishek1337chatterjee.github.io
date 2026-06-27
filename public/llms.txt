@@ -1,0 +1,32 @@
+# Abhishek Chatterjee — Serverless Engineer
+
+> Personal portfolio of Abhishek Chatterjee, a Serverless Engineer at time.money with 2+ years of experience building event-driven systems on AWS (Lambda, Step Functions, EventBridge) and the React/TypeScript frontends in front of them.
+
+Abhishek specializes in serverless backends (AWS Lambda, AWS SAM, Serverless Framework, Step Functions, EventBridge, DynamoDB), headless CMS work with Sanity, and modern frontends (React 19, Next.js, TypeScript, Tailwind CSS). The portfolio is a single-page React application and includes an AI chatbot that answers questions about his work using content from a Sanity CMS. This file summarizes the site for language models and AI crawlers.
+
+## Sections
+- [Overview](https://abhishek1337chatterjee.github.io/#top): role, live telemetry, and GitHub contribution activity
+- [About](https://abhishek1337chatterjee.github.io/#about): background and what he is currently exploring
+- [Skills](https://abhishek1337chatterjee.github.io/#skills): technical skills and tools
+- [Journey](https://abhishek1337chatterjee.github.io/#journey): professional career timeline and projects
+- [Homelab](https://abhishek1337chatterjee.github.io/#homelab): self-hosted projects (Glance dashboard, Pulse)
+- [GitHub activity](https://abhishek1337chatterjee.github.io/#github): live GitHub stats and contribution calendar
+- [Contact](https://abhishek1337chatterjee.github.io/#contact): email and phone
+
+## Content source (machine-readable)
+All portfolio content is managed in a Sanity CMS and served publicly (read-only) over its CDN. To read the full structured data — about/bio, skills, projects, career timeline, social links, and site settings — as JSON, query:
+
+- [Portfolio content (Sanity CMS, JSON)](https://1ewtvnrz.apicdn.sanity.io/v2024-01-01/data/query/production?query=*%5B_type+in+%5B%22about%22%2C%22skill%22%2C%22project%22%2C%22careerPhase%22%2C%22social%22%2C%22siteSettings%22%5D%5D)
+
+## Links
+- [Portfolio](https://abhishek1337chatterjee.github.io/)
+- [GitHub](https://github.com/abhishek1337chatterjee)
+- [LinkedIn](https://www.linkedin.com/in/abhishekchatterjee-saheb1337/)
+- [X (Twitter)](https://x.com/Abhishek1337C)
+- [Sanity Studio (CMS)](https://abhishek1337chatterjee.github.io/studio/)
+
+## Notes
+- Primary expertise: AWS serverless (Lambda, SAM, Step Functions, EventBridge), Sanity CMS, React, TypeScript, Node.js, Docker.
+- Employer: time.money. Location: India.
+- All site content is sourced from a Sanity CMS (project `1ewtvnrz`, dataset `production`); the JSON link above is the canonical machine-readable source.
+- An interactive AI chatbot on the site answers questions about Abhishek's skills, experience, and projects using the same Sanity content.
