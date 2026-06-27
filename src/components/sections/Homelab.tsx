@@ -37,7 +37,12 @@ function HealthProbe({ offline }: { offline: boolean }) {
 
   return (
     <div ref={observe} className="relative h-9 w-full overflow-hidden">
-      <svg viewBox="0 0 300 36" preserveAspectRatio="none" className="h-9 w-full" aria-hidden="true">
+      <svg
+        viewBox="0 0 300 36"
+        preserveAspectRatio="none"
+        className="h-9 w-full"
+        aria-hidden="true"
+      >
         <defs>
           {/* hard split at x=144 (0.48): beats green, tail whatever the state is */}
           <linearGradient id="probeGrad" x1="0" y1="0" x2="1" y2="0">
@@ -110,9 +115,7 @@ export default function Homelab() {
               />
               <span className="text-muted">home</span>
               <span className="text-ink/80">{offline ? 'offline' : 'online'}</span>
-              {offline && lastSeen && (
-                <span className="text-muted/70">· last seen {lastSeen}</span>
-              )}
+              {offline && lastSeen && <span className="text-muted/70">· last seen {lastSeen}</span>}
             </span>
             {emergencyUrl && (
               <a

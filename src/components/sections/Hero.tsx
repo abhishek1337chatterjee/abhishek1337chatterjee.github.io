@@ -83,7 +83,12 @@ function Sparkline({ weeks, play }: { weeks: number[]; play: boolean }) {
   }
   const L = Math.round(len);
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-16 w-full" aria-hidden="true">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      className="h-16 w-full"
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id="hero-spark" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.25" />
@@ -113,7 +118,17 @@ function Sparkline({ weeks, play }: { weeks: number[]; play: boolean }) {
   );
 }
 
-function StatTile({ label, value, sub, accent }: { label: string; value: string; sub: string; accent?: boolean }) {
+function StatTile({
+  label,
+  value,
+  sub,
+  accent,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  accent?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-line bg-base-200/40 p-4">
       <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted">{label}</span>
@@ -176,7 +191,12 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
   // spaces AND hyphens collapse to "." so tokens match the "abhishek." dot style
   const titleTokens = (about?.title ?? '')
     .split('|')
-    .map((s) => s.trim().toLowerCase().replace(/[\s-]+/g, '.'))
+    .map((s) =>
+      s
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, '.'),
+    )
     .filter(Boolean);
   const tokens = [surname, ...titleTokens.filter((t) => t !== surname)];
   const typed = useTypedSuffix(!reduce, tokens);
@@ -196,7 +216,10 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
     'rounded-lg border border-line bg-base-200/40 px-5 py-2.5 text-ink transition-colors hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]';
 
   return (
-    <section id="top" className="relative flex min-h-[88vh] items-center px-5 py-16 sm:px-8 lg:px-16">
+    <section
+      id="top"
+      className="relative flex min-h-[88vh] items-center px-5 py-16 sm:px-8 lg:px-16"
+    >
       <div className="mx-auto w-full max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 18 }}

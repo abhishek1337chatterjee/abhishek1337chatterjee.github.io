@@ -1,5 +1,5 @@
-import { useGitHubStats } from '../../hooks/useGitHubStats';
 import { useContributions } from '../../hooks/useContributions';
+import { useGitHubStats } from '../../hooks/useGitHubStats';
 import Reveal from '../ui/Reveal';
 import SectionHeader from '../ui/SectionHeader';
 
@@ -110,7 +110,10 @@ export default function GitHubStats() {
                   <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
                     {stats.topLanguages.map((lang, i) => (
                       <span key={lang.name} className="flex items-center gap-2 font-mono text-xs">
-                        <span className="size-2 rounded-full" style={{ background: langColor(i) }} />
+                        <span
+                          className="size-2 rounded-full"
+                          style={{ background: langColor(i) }}
+                        />
                         <span className="text-muted">{lang.name}</span>
                         <span className="text-ink">{lang.percentage}%</span>
                       </span>

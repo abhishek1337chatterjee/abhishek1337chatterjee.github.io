@@ -1,5 +1,5 @@
-import type { SanitySkill } from '../../lib/sanity';
 import { useSkills } from '../../hooks/useSanityData';
+import type { SanitySkill } from '../../lib/sanity';
 import Reveal from '../ui/Reveal';
 import SectionHeader from '../ui/SectionHeader';
 

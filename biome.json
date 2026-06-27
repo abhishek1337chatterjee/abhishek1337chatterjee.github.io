@@ -18,18 +18,15 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
-      "correctness": {
-        "noUnusedImports": "warn",
-        "noUnusedVariables": "warn"
-      },
+      "preset": "recommended",
       "style": {
         "noNonNullAssertion": "off",
-        "useConst": "error"
+        "useConst": "error",
+        "noMultiAssign": "warn"
       },
       "suspicious": {
-        "noExplicitAny": "warn",
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noReturnAssign": "warn"
       },
       "a11y": {
         "useKeyWithClickEvents": "off",
@@ -39,12 +36,7 @@
       },
       "security": {
         "noDangerouslySetInnerHtml": "error",
-        "noDangerouslySetInnerHtmlWithChildren": "error",
-        "noGlobalEval": "error"
-      },
-      "nursery": {
-        "noMultiAssign": "warn",
-        "noReturnAssign": "warn"
+        "noDangerouslySetInnerHtmlWithChildren": "error"
       }
     }
   },
