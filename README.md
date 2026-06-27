@@ -34,6 +34,44 @@ This portfolio serves as both a professional showcase and a technical demonstrat
 
 ## Architecture Highlights
 
+### System Overview
+
+The portfolio is a static React SPA hosted on GitHub Pages. At runtime it talks directly to three external services from the browser (Sanity CMS for content, the GitHub REST API for live stats, Getform for the contact form), plus a separate serverless backend (`abhishek-api` on Vercel) that powers the AI chatbot by combining Sanity content with the Groq LLM. Content is authored in Sanity Studio (deployed at `/studio/`), and AI crawlers can self-serve via `llms.txt`, which points back to the public Sanity content API.
+
+```mermaid
+flowchart LR
+    U(["Visitor / AI crawler"])
+
+    subgraph PAGES["GitHub Pages — static host"]
+        SPA["React 19 SPA<br/>Vite 8 · Rolldown · Oxc"]
+        STU["Sanity Studio<br/>/studio/"]
+        CRAWL["llms.txt · sitemap.xml<br/>robots.txt"]
+    end
+
+    U --> SPA
+    U -. reads .-> CRAWL
+
+    SPA -->|"GROQ — section content"| SAN[("Sanity CMS<br/>CDN · project 1ewtvnrz")]
+    SPA -->|"REST — live stats + calendar"| GHAPI["GitHub REST API"]
+    SPA -->|"POST — contact form"| GF["Getform.io"]
+    SPA -->|"/api/chat (stream)<br/>/api/suggestions (JSON)"| API["abhishek-api<br/>Vercel serverless"]
+
+    API -->|"GROQ allContent<br/>(1h in-memory cache)"| SAN
+    API -->|"streamText"| GROQ["Groq<br/>LLaMA 3.3 70B"]
+    GROQ -. streamed tokens .-> API
+    API -. "word-by-word text/plain" .-> SPA
+
+    STU -->|"authoring writes"| SAN
+    CRAWL -. "points to" .-> SAN
+
+    classDef ext fill:#1f2937,stroke:#f59e0b,color:#fff;
+    classDef cms fill:#0f172a,stroke:#14b8a6,color:#fff;
+    class GHAPI,GF,GROQ ext;
+    class SAN cms;
+```
+
+**Flow:** the SPA renders instantly from static HTML, then hydrates content from Sanity (no backend in the read path). The chatbot is the only feature that needs the backend — it fetches all CMS content once (cached 1h), builds a system prompt, and streams a Groq completion back to the browser word-by-word. Nothing on the read path is server-rendered; the GitHub API and contact form are called straight from the client.
+
 ### Build Optimization
 The project uses Vite 8's Rolldown bundler with `rolldownOptions` to implement strategic code splitting:
 - **vendor-react**: Core React libraries isolated
