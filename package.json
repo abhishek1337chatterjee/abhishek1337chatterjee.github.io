@@ -28,11 +28,11 @@
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.4",
-    "@sanity/client": "^7.23.0",
+    "@sanity/client": "^8.0.0",
     "@sanity/image-url": "^2.1.1",
     "@types/react-scroll": "^1.8.10",
     "ai": "^7.0.3",
-    "framer-motion": "^12.42.0",
+    "framer-motion": "^13.1.0",
     "lucide-react": "^1.21.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
