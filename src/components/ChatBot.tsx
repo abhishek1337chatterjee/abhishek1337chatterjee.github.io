@@ -339,6 +339,20 @@ export default function ChatBot() {
     return () => window.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // "ask the chatbot about this" links (ServiceMap) reopen the console with a
+  // prefilled question; the visitor just hits Enter
+  useEffect(() => {
+    const handleAsk = (e: Event) => {
+      const question = (e as CustomEvent<{ question: string }>).detail?.question;
+      if (!question) return;
+      setOpen(true);
+      setInput(question);
+      requestAnimationFrame(() => inputRef.current?.focus());
+    };
+    window.addEventListener('tm-ask-chat', handleAsk);
+    return () => window.removeEventListener('tm-ask-chat', handleAsk);
+  }, []);
+
   // Reset selected suggestion when suggestions change
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional reset when suggestions change
   useEffect(() => {

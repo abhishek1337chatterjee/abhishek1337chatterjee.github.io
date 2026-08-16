@@ -37,7 +37,7 @@ export default function GitHubStats() {
     <section id="github" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
       <div className="mx-auto w-full max-w-6xl">
         <Reveal>
-          <SectionHeader num="06" label="telemetry dashboard" title="github.metrics" />
+          <SectionHeader num="07" label="telemetry dashboard" title="github.metrics" />
         </Reveal>
 
         <div className="mt-6 grid grid-cols-1 gap-4">

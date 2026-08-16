@@ -62,7 +62,7 @@ export default function Contact() {
   return (
     <section id="contact" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
       <div className="mx-auto w-full max-w-6xl">
-        <SectionHeader num="07" label="open an alert" title="Send a span" />
+        <SectionHeader num="08" label="open an alert" title="Send a span" />
 
         <div className="mt-6 grid items-start gap-5 md:grid-cols-2">
           {/* form */}

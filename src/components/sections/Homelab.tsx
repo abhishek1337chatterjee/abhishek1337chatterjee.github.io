@@ -100,7 +100,7 @@ export default function Homelab() {
     <section id="homelab" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
       <div className="mx-auto w-full max-w-6xl">
         <Reveal>
-          <SectionHeader num="05" label="node" title={homelab.heading ?? 'Homelab'} />
+          <SectionHeader num="06" label="node" title={homelab.heading ?? 'Homelab'} />
           {/* status strip — node + the two Glance instances, no contradiction */}
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-sm">
             {node && (

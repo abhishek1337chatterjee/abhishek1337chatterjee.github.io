@@ -152,6 +152,20 @@ export const queries = {
     motivation
   }`,
 
+  caseStudies: `*[_type == "caseStudy"] | order(order asc){
+    _id,
+    slug,
+    title,
+    oneLiner,
+    domainTags,
+    flagship,
+    timeline,
+    role,
+    highlights,
+    stack,
+    chatPrompt
+  }`,
+
   // Combined query for chatbot context (all data in one request)
   allContent: `{
     "about": *[_type == "about"][0]{
@@ -319,6 +333,20 @@ export interface SanityLearning {
   motivation?: string;
 }
 
+export interface SanityCaseStudy {
+  _id: string;
+  slug: string;
+  title: string;
+  oneLiner: string;
+  domainTags?: string[];
+  flagship?: boolean;
+  timeline: string;
+  role: string;
+  highlights: string[];
+  stack: string[];
+  chatPrompt?: string;
+}
+
 // Fetch functions
 export async function getAbout(): Promise<SanityAbout | null> {
   return sanityClient.fetch(queries.about);
@@ -350,6 +378,10 @@ export async function getHomelab(): Promise<SanityHomelab | null> {
 
 export async function getLearning(): Promise<SanityLearning[]> {
   return sanityClient.fetch(queries.learning);
+}
+
+export async function getCaseStudies(): Promise<SanityCaseStudy[]> {
+  return sanityClient.fetch(queries.caseStudies);
 }
 
 // For chatbot API - get all content in one request

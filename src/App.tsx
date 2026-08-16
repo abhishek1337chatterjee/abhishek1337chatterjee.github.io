@@ -8,6 +8,7 @@ import { useAnchorScrollFix } from './hooks/useAnchorScrollFix';
 const About = lazy(() => import('./components/sections/About'));
 const Skills = lazy(() => import('./components/sections/Skills'));
 const Journey = lazy(() => import('./components/sections/Projects'));
+const ServiceMap = lazy(() => import('./components/sections/ServiceMap'));
 const Homelab = lazy(() => import('./components/sections/Homelab'));
 const GitHubStats = lazy(() => import('./components/sections/GitHubStats'));
 const Contact = lazy(() => import('./components/sections/Contact'));
@@ -49,6 +50,7 @@ function App() {
             <About />
             <Skills />
             <Journey />
+            <ServiceMap />
             <Homelab />
             <GitHubStats />
             <Contact />

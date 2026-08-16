@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useAbout, useSiteSettings } from '../../hooks/useSanityData';
 
-const LINKS = ['about', 'skills', 'journey', 'homelab', 'github'];
+const LINKS = ['about', 'skills', 'journey', 'work', 'homelab', 'github'];
 const teal = 'var(--primary)';
 
 // Brand — static "ac❯" prompt with a live terminal caret that loops:

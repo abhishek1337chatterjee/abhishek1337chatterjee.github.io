@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   getAbout,
   getCareerPhases,
+  getCaseStudies,
   getHomelab,
   getLearning,
   getProjects,
@@ -10,6 +11,7 @@ import {
   getSocials,
   type SanityAbout,
   type SanityCareerPhase,
+  type SanityCaseStudy,
   type SanityHomelab,
   type SanityLearning,
   type SanityProject,
@@ -182,4 +184,17 @@ export function useLearning() {
   }, []);
 
   return { learning, loading };
+}
+
+export function useCaseStudies() {
+  const [caseStudies, setCaseStudies] = useState<SanityCaseStudy[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCaseStudies()
+      .then(setCaseStudies)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { caseStudies, loading };
 }
