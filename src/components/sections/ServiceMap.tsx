@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useCaseStudies } from '../../hooks/useSanityData';
+import { useEffect, useMemo, useState } from 'react';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useCaseStudies } from '../../hooks/useSanityData';
+import type { SanityCaseStudy } from '../../lib/sanity';
 import SectionHeader from '../ui/SectionHeader';
 
 // Fired by the "ask the chatbot about this" link; ChatBot listens and prefills.
@@ -9,12 +11,128 @@ export function askChatAbout(question: string) {
   window.dispatchEvent(new CustomEvent('tm-ask-chat', { detail: { question } }));
 }
 
+function StatusDot() {
+  return (
+    <span
+      className="size-[7px] flex-none rounded-full"
+      style={{
+        background: 'var(--primary)',
+        boxShadow: '0 0 6px color-mix(in srgb, var(--primary) 70%, transparent)',
+      }}
+    />
+  );
+}
+
+function DetailPane({ study }: { study: SanityCaseStudy }) {
+  return (
+    <div
+      className="rounded-xl border bg-base-200 p-5 sm:p-6"
+      style={{
+        borderColor: 'color-mix(in srgb, var(--primary) 40%, var(--color-line))',
+        boxShadow:
+          '0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent), 0 10px 34px -20px color-mix(in srgb, var(--primary) 40%, transparent)',
+      }}
+    >
+      <div className="mb-2.5 flex items-center gap-2 font-mono text-[12.5px]">
+        <StatusDot />
+        <span className="text-ink">
+          <span className="text-muted">svc/</span>
+          {study.slug}
+        </span>
+        {study.flagship && (
+          <span
+            className="ml-auto rounded-full border px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.1em]"
+            style={{
+              color: 'var(--primary)',
+              borderColor: 'color-mix(in srgb, var(--primary) 40%, transparent)',
+            }}
+          >
+            flagship
+          </span>
+        )}
+      </div>
+
+      <h3 className="font-display text-xl font-semibold tracking-tight text-ink">{study.title}</h3>
+      <p className="mt-1.5 max-w-2xl text-sm text-muted">{study.oneLiner}</p>
+
+      {study.domainTags && study.domainTags.length > 0 && (
+        <div className="mt-3.5 flex flex-wrap gap-1.5">
+          {study.domainTags.map((t) => (
+            <span
+              key={t}
+              className="rounded-md border px-1.5 py-0.5 font-mono text-[10.5px]"
+              style={{
+                color: 'var(--secondary)',
+                borderColor: 'color-mix(in srgb, var(--secondary) 35%, transparent)',
+                background: 'color-mix(in srgb, var(--secondary) 8%, transparent)',
+              }}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 grid gap-5 border-t border-line pt-4 lg:grid-cols-[1.5fr_1fr]">
+        <div>
+          <h4 className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted">
+            Engineering highlights
+          </h4>
+          <ul className="flex flex-col gap-2">
+            {study.highlights.map((h) => (
+              <li key={h} className="relative pl-4 text-[13.5px] text-ink">
+                <span className="absolute left-0 font-mono" style={{ color: 'var(--primary)' }}>
+                  ›
+                </span>
+                {h}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4 className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted">
+            Stack
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
+            {study.stack.map((s) => (
+              <span
+                key={s}
+                className="rounded-md border px-1.5 py-0.5 font-mono text-[10.5px]"
+                style={{
+                  color: 'var(--primary)',
+                  borderColor: 'color-mix(in srgb, var(--primary) 30%, transparent)',
+                  background: 'color-mix(in srgb, var(--primary) 7%, transparent)',
+                }}
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() =>
+              askChatAbout(study.chatPrompt ?? `Tell me about the "${study.title}" case study`)
+            }
+            className="mt-3.5 font-mono text-[12.5px] text-muted transition-colors hover:text-ink"
+          >
+            → <span style={{ color: 'var(--primary)' }}>ask the chatbot about this</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap justify-between gap-2 border-t border-line pt-3 font-mono text-[11px] text-muted">
+        <span>{study.timeline}</span>
+        <span>{study.role}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function ServiceMap() {
   const { caseStudies } = useCaseStudies();
   const reducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const detailRef = useRef<HTMLElement>(null);
-  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 819px)').matches;
 
   // Default selection: first flagship, else first study
   const selected = useMemo(() => {
@@ -26,7 +144,7 @@ export default function ServiceMap() {
     );
   }, [caseStudies, selectedId]);
 
-  // ↑↓ browsing while the list has focus
+  // ↑↓ browsing while the list has focus (desktop)
   useEffect(() => {
     if (!caseStudies.length || !selected) return;
     const onKey = (e: KeyboardEvent) => {
@@ -37,9 +155,7 @@ export default function ServiceMap() {
       const next = e.key === 'ArrowDown' ? idx + 1 : idx - 1;
       const target = caseStudies[(next + caseStudies.length) % caseStudies.length];
       setSelectedId(target._id);
-      document
-        .querySelector<HTMLButtonElement>(`[data-svc-row="${target._id}"]`)
-        ?.focus();
+      document.querySelector<HTMLButtonElement>(`[data-svc-row="${target._id}"]`)?.focus();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -47,10 +163,42 @@ export default function ServiceMap() {
 
   if (!caseStudies.length || !selected) return null;
 
-  const select = (id: string) => {
-    setSelectedId(id);
-    if (isMobile) detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  };
+  const row = (c: SanityCaseStudy, active: boolean) => (
+    <button
+      type="button"
+      data-svc-row={c._id}
+      onClick={() => setSelectedId(active && isMobile ? '' : c._id)}
+      aria-current={active}
+      aria-expanded={isMobile ? active : undefined}
+      className={`flex w-full items-center gap-2.5 rounded-[10px] border px-3.5 py-2.5 text-left font-mono text-[12.5px] transition-colors ${
+        active
+          ? 'border-[color-mix(in_srgb,var(--primary)_50%,var(--color-line))] bg-base-200 text-ink'
+          : 'border-transparent text-muted hover:border-line hover:bg-base-200'
+      }`}
+    >
+      {active && (
+        <span
+          className="-ml-1 h-[18px] w-[3px] flex-none rounded-sm"
+          style={{ background: 'linear-gradient(180deg, var(--primary), var(--primary-deep))' }}
+        />
+      )}
+      <StatusDot />
+      <span className="truncate">
+        <span className="opacity-60">svc/</span>
+        {c.slug}
+      </span>
+      <span className="ml-auto flex items-center gap-2">
+        {c.flagship && (
+          <span className="text-[11px]" style={{ color: 'var(--primary)' }}>
+            ⭐
+          </span>
+        )}
+        {isMobile && (
+          <span className="text-[10px] text-muted">{active ? '▴' : '▾'}</span>
+        )}
+      </span>
+    </button>
+  );
 
   return (
     <section id="work" className="content-defer px-5 py-16 sm:px-8 lg:px-16">
@@ -83,180 +231,54 @@ export default function ServiceMap() {
             </div>
           </div>
 
-          {/* master–detail */}
-          <div className="grid items-start gap-4 md:grid-cols-[minmax(250px,320px)_1fr]">
-            {/* service list */}
-            <nav data-svc-list className="flex flex-col gap-1.5" aria-label="Case studies">
+          {isMobile ? (
+            /* mobile: accordion — detail expands inline under the tapped row,
+               so switching services never requires scrolling back up */
+            <div data-svc-list className="flex flex-col gap-1.5">
               {caseStudies.map((c) => {
-                const active = c._id === selected._id;
+                const active = c._id === selected._id && selectedId !== '';
                 return (
-                  <button
-                    key={c._id}
-                    type="button"
-                    data-svc-row={c._id}
-                    onClick={() => select(c._id)}
-                    aria-current={active}
-                    className={`flex items-center gap-2.5 rounded-[10px] border px-3.5 py-2.5 text-left font-mono text-[12.5px] transition-colors ${
-                      active
-                        ? 'border-[color-mix(in_srgb,var(--primary)_50%,var(--color-line))] bg-base-200 text-ink'
-                        : 'border-transparent text-muted hover:border-line hover:bg-base-200'
-                    }`}
-                  >
-                    {active && (
-                      <span
-                        className="-ml-1 h-[18px] w-[3px] flex-none rounded-sm"
-                        style={{
-                          background: 'linear-gradient(180deg, var(--primary), var(--primary-deep))',
-                        }}
-                      />
-                    )}
-                    <span
-                      className="size-[7px] flex-none rounded-full"
-                      style={{
-                        background: 'var(--primary)',
-                        boxShadow: '0 0 6px color-mix(in srgb, var(--primary) 70%, transparent)',
-                      }}
-                    />
-                    <span className="truncate">
-                      <span className="opacity-60">svc/</span>
-                      {c.slug}
-                    </span>
-                    {c.flagship && (
-                      <span className="ml-auto text-[11px]" style={{ color: 'var(--primary)' }}>
-                        ⭐
-                      </span>
-                    )}
-                  </button>
+                  <div key={c._id} className="flex flex-col gap-1.5">
+                    {row(c, active)}
+                    <AnimatePresence initial={false}>
+                      {active && (
+                        <motion.div
+                          initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={reducedMotion ? undefined : { height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <DetailPane study={c} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 );
               })}
-              <div className="hidden px-3.5 pt-2 font-mono text-[10.5px] text-muted/70 md:block">
-                ↑↓ to browse · enter to select
-              </div>
-            </nav>
-
-            {/* detail pane */}
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.article
-                ref={detailRef}
-                key={selected._id}
-                initial={reducedMotion ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reducedMotion ? undefined : { opacity: 0, y: -6 }}
-                transition={{ duration: 0.18 }}
-                className="rounded-xl border bg-base-200 p-5 sm:p-6"
-                style={{
-                  borderColor: 'color-mix(in srgb, var(--primary) 40%, var(--color-line))',
-                  boxShadow:
-                    '0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent), 0 10px 34px -20px color-mix(in srgb, var(--primary) 40%, transparent)',
-                }}
-              >
-                <div className="mb-2.5 flex items-center gap-2 font-mono text-[12.5px]">
-                  <span
-                    className="size-[7px] rounded-full"
-                    style={{
-                      background: 'var(--primary)',
-                      boxShadow: '0 0 6px color-mix(in srgb, var(--primary) 70%, transparent)',
-                    }}
-                  />
-                  <span className="text-ink">
-                    <span className="text-muted">svc/</span>
-                    {selected.slug}
-                  </span>
-                  {selected.flagship && (
-                    <span
-                      className="ml-auto rounded-full border px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.1em]"
-                      style={{
-                        color: 'var(--primary)',
-                        borderColor: 'color-mix(in srgb, var(--primary) 40%, transparent)',
-                      }}
-                    >
-                      flagship
-                    </span>
-                  )}
+            </div>
+          ) : (
+            /* desktop: master–detail — list left, always-filled detail right */
+            <div className="grid items-start gap-4 md:grid-cols-[minmax(250px,320px)_1fr]">
+              <nav data-svc-list className="flex flex-col gap-1.5" aria-label="Case studies">
+                {caseStudies.map((c) => row(c, c._id === selected._id))}
+                <div className="hidden px-3.5 pt-2 font-mono text-[10.5px] text-muted/70 md:block">
+                  ↑↓ to browse · enter to select
                 </div>
-
-                <h3 className="font-display text-xl font-semibold tracking-tight text-ink">
-                  {selected.title}
-                </h3>
-                <p className="mt-1.5 max-w-2xl text-sm text-muted">{selected.oneLiner}</p>
-
-                {selected.domainTags && selected.domainTags.length > 0 && (
-                  <div className="mt-3.5 flex flex-wrap gap-1.5">
-                    {selected.domainTags.map((t) => (
-                      <span
-                        key={t}
-                        className="rounded-md border px-1.5 py-0.5 font-mono text-[10.5px]"
-                        style={{
-                          color: 'var(--secondary)',
-                          borderColor: 'color-mix(in srgb, var(--secondary) 35%, transparent)',
-                          background: 'color-mix(in srgb, var(--secondary) 8%, transparent)',
-                        }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-4 grid gap-5 border-t border-line pt-4 lg:grid-cols-[1.5fr_1fr]">
-                  <div>
-                    <h4 className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted">
-                      Engineering highlights
-                    </h4>
-                    <ul className="flex flex-col gap-2">
-                      {selected.highlights.map((h) => (
-                        <li key={h} className="relative pl-4 text-[13.5px] text-ink">
-                          <span
-                            className="absolute left-0 font-mono"
-                            style={{ color: 'var(--primary)' }}
-                          >
-                            ›
-                          </span>
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-muted">
-                      Stack
-                    </h4>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selected.stack.map((s) => (
-                        <span
-                          key={s}
-                          className="rounded-md border px-1.5 py-0.5 font-mono text-[10.5px]"
-                          style={{
-                            color: 'var(--primary)',
-                            borderColor: 'color-mix(in srgb, var(--primary) 30%, transparent)',
-                            background: 'color-mix(in srgb, var(--primary) 7%, transparent)',
-                          }}
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        askChatAbout(
-                          selected.chatPrompt ?? `Tell me about the "${selected.title}" case study`,
-                        )
-                      }
-                      className="mt-3.5 font-mono text-[12.5px] text-muted transition-colors hover:text-ink"
-                    >
-                      → <span style={{ color: 'var(--primary)' }}>ask the chatbot about this</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap justify-between gap-2 border-t border-line pt-3 font-mono text-[11px] text-muted">
-                  <span>{selected.timeline}</span>
-                  <span>{selected.role}</span>
-                </div>
-              </motion.article>
-            </AnimatePresence>
-          </div>
+              </nav>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.article
+                  key={selected._id}
+                  initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reducedMotion ? undefined : { opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  <DetailPane study={selected} />
+                </motion.article>
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </div>
     </section>
