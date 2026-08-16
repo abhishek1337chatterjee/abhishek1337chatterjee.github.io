@@ -49,7 +49,7 @@ export default function About() {
     { k: 'role', v: role },
     { k: 'based', v: about.location ?? 'India' },
     { k: 'region', v: 'ap-south-1' },
-    { k: 'runtime', v: 'node24 · python' },
+    { k: 'runtime', v: 'node24' },
     { k: 'status', v: 'available', live: true },
   ];
 
