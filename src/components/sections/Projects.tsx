@@ -130,7 +130,9 @@ export default function Journey() {
             const left = pct(span.start);
             const rawWidth = pct(span.end) - pct(span.start);
             const width = Math.min(Math.max(rawWidth, 26), 100 - left); // keep bars "lengthy"
-            const years = Math.round(span.end - span.start);
+            // floor, not round: "2024 - Present" parses as Jan 2024, so rounding
+            // would inflate an in-progress year (2.6y → 3y)
+            const years = Math.floor(span.end - span.start);
             const dur = active ? `${years}y · active` : `${years}y`;
             const barBg = active
               ? 'linear-gradient(90deg, var(--primary-deep), var(--primary))'
