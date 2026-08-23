@@ -1,32 +1,169 @@
-# Abhishek Chatterjee — Serverless Engineer
+# Abhishek Chatterjee — Serverless Engineer | React Developer | Event-Driven
 
-> Personal portfolio of Abhishek Chatterjee, a Serverless Engineer at time.money with 2+ years of experience building event-driven systems on AWS (Lambda, Step Functions, EventBridge) and the React/TypeScript frontends in front of them.
+> I'm a Software Engineer with 2+ years of experience building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
+> My work spans the full stack: streaming APIs, durable cross-account workflows, content architecture with Sanity CMS, and the CI/CD pipelines that ship it all.
 
-Abhishek specializes in serverless backends (AWS Lambda, AWS SAM, Serverless Framework, Step Functions, EventBridge, DynamoDB), headless CMS work with Sanity, and modern frontends (React 19, Next.js, TypeScript, Tailwind CSS). The portfolio is a single-page React application and includes an AI chatbot that answers questions about his work using content from a Sanity CMS. This file summarizes the site for language models and AI crawlers.
+Experience: 2+ years. Location: India. Highlights: 2+ Years Experience, Serverless Engineer, Linux Enthusiast, Open Source Lover. Interests: Custom PC Assembly, Open Source, Linux.
 
-## Sections
-- [Overview](https://abhishek1337chatterjee.github.io/#top): role, live telemetry, and GitHub contribution activity
-- [About](https://abhishek1337chatterjee.github.io/#about): background and what he is currently exploring
-- [Skills](https://abhishek1337chatterjee.github.io/#skills): technical skills and tools
-- [Journey](https://abhishek1337chatterjee.github.io/#journey): professional career timeline and projects
-- [Homelab](https://abhishek1337chatterjee.github.io/#homelab): self-hosted projects (Glance dashboard, Pulse)
-- [GitHub activity](https://abhishek1337chatterjee.github.io/#github): live GitHub stats and contribution calendar
-- [Contact](https://abhishek1337chatterjee.github.io/#contact): email and phone
+## Site sections
+- [Overview: role, live telemetry, GitHub contribution activity](https://abhishek1337chatterjee.github.io/#top)
+- [About: background and current explorations](https://abhishek1337chatterjee.github.io/#about)
+- [Skills: technical skills and tools](https://abhishek1337chatterjee.github.io/#skills)
+- [Journey: professional career timeline and projects](https://abhishek1337chatterjee.github.io/#journey)
+- [Homelab: self-hosted projects](https://abhishek1337chatterjee.github.io/#homelab)
+- [GitHub activity: live stats and contribution calendar](https://abhishek1337chatterjee.github.io/#github)
+- [Contact](https://abhishek1337chatterjee.github.io/#contact)
 
-## Content source (machine-readable)
-All portfolio content is managed in a Sanity CMS and served publicly (read-only) over its CDN. To read the full structured data — about/bio, skills, projects, career timeline, social links, and site settings — as JSON, query:
+## Skills
+- **frontend**: HTML, CSS, JavaScript, TypeScript, React.js, Next.js, Redux, Tailwind
+- **cloud**: Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES, Temporal.io
+- **backend**: Node.js, Express, MongoDB, DynamoDB
+- **tools**: Git, GitHub, Docker, Ubuntu, Linux, VS Code, Sanity, NPM, Vercel, Serverless, AWS SAM, Biome, pnpm, Claude Code
 
-- [Portfolio content (Sanity CMS, JSON)](https://1ewtvnrz.apicdn.sanity.io/v2024-01-01/data/query/production?query=*%5B_type+in+%5B%22about%22%2C%22skill%22%2C%22project%22%2C%22careerPhase%22%2C%22social%22%2C%22siteSettings%22%5D%5D)
+## Projects
+### Face Auth System
+Face-recognition authentication platform. Iterated from browser-side detection (face-api.js, MediaPipe) to an AWS Rekognition compareFaces backend, with a production admin dashboard.
+- Tech: face-api.js, MediaPipe, AWS Rekognition, React, Express
+
+### Fire Calculator (showcase)
+The fire calculator is a calculator that will return the yearly expenses (as of Today), year expenses (as of Retirement) and the fire number is the amount that you need to become financially independent.
+- Tech: React, React-Reducer, CSS
+- Features: Calculate FIRE number; Retirement planning
+- Code: https://github.com/abhishek1337chatterjee/Fire-Calculator
+- Live: https://fire-calculator-zeta.vercel.app/
+
+### Freshly Website (showcase)
+Freshly delivers gourmet ready-made meals, prepared and delivered at the door. It is dedicated to making healthy eating and achieving health and fitness goals easier than ever.
+- Tech: HTML, CSS, JavaScript
+- Features: Login/Signup using local storage; Filtering Sorting; Adding items to chart
+- Scope: team of 5, 5 days
+- Code: https://github.com/abhishek1337chatterjee/freshly.com
+- Live: https://fluffy-croquembouche-14d5f2.netlify.app/
+
+### Glance Dashboard (personal)
+Self-hosted personal dashboard with custom Node.js microservices — GitHub security advisories, kernel.org LTS tracking, and a system-stats panel (power monitoring, disk health, network stats). Deployed via Docker Compose with health checks and auto-start.
+- Tech: Node.js 24, Express.js 5, Docker, Docker Compose, GraphQL, REST APIs, RSS/Atom, SQLite, Chart.js, smartmontools , vnstat
+- Features: GitHub Security Advisory feeds via GraphQL; Kernel.org LTS release tracking; Movie/OTT streaming feeds (TMDb + OMDb); 15+ RSS endpoints across services; 30-60 min in-memory caching; Health checks with dependency chain; System Stats dashboard with power monitoring; Power history with 2-year SQLite persistence; Energy consumption tracking (kWh daily/monthly); Disk health monitoring (SMART + SD card); Network stats via vnstat with graphs; Docker container stats with live updates
+- Live: https://glance-dashboard-u99g.onrender.com
+
+### Jet Prints (experience) [discontinued]
+Advanced eCommerce platform for custom printing on products like mugs and business cards. Integrated PDF upload and payment processing.
+- Tech: React, Redux, TypeScript, Express.js, Node.js, Canvas API
+- Features: Custom product design; PDF upload; Payment processing; Canvas-based editor
+
+### Pear Website (showcase)
+Pear is built with the reference website apple.com. A sleek product showcase website.
+- Tech: React, Redux, Axios, React-Router-Dom, Firebase-Auth, Chakra-UI, Vitejs
+- Features: Login/Signup; Google Authentication; Admin Section; Cart; Place Order
+- Scope: team of 5, 5 days
+- Code: https://github.com/abhishek1337chatterjee/Pear-website
+- Live: https://pear-website.netlify.app/
+
+### Pulse
+Two local analytics CLIs — claude-stats (where my Claude Code spend goes: cost by model, cache hit-rate, top tools / skills / subagents) and battery-stats (real screen-on-time, drain rate, battery health). DuckDB on disk, self-contained HTML dashboards, no cloud or telemetry.
+- Tech: Fish, DuckDB, HTML, JavaScript
+- Code: https://github.com/abhishek1337chatterjee/pulse
+
+### QuoteCheck
+PDF rental-quote matching platform built on the builder.ai Bx scaffold. OCR-parses vendor rate sheets and matches line items against client rate cards, with a document library, bulk upload, keyword highlighting, and an analytics console.
+- Tech: React Native, React, TypeScript, Redux Toolkit, react-pdf, Material UI
+
+### Wearly Website (showcase)
+Wearly is a full-stack online fashion and cosmetic retailer. The project was built in 5 days as a collaborative effort.
+- Tech: React, Redux, React Router, Chakra UI, Node.js, Express, MongoDB
+- Features: Login/Signup; Google Authentication; Admin Section; Cart; Place Order
+- Scope: team of 5, 5 days
+- Code: https://github.com/abhishek1337chatterjee/Wearly-Website
+- Live: https://wearly.vercel.app/
+
+## Career
+### Serverless Engineer @ time.money (2024 - Present)
+Building scalable serverless architectures and event-driven systems for fintech applications.
+- Highlights: AWS Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES
+
+### MERN Stack Developer @ Latitude Technolabs (2023 - 2024)
+Specialized in frontend development and client-focused solutions. Proactive in API development with technologies like Appwrite.
+- Highlights: React, TypeScript, Redux, Appwrite, Canvas API
+
+### Full Stack Web Development @ Masai School (2022 - 2023) [education]
+Intensive 11-month bootcamp transforming into a full-stack developer. Built multiple collaborative projects with teams.
+- Highlights: MERN Stack, React, Node.js, MongoDB, Team Collaboration
+
+## Case studies (time.money)
+### Cross-Account Account-Deletion Saga [flagship]
+Durable orchestration erasing a user across 3 AWS accounts — cancellable, auditable, provable.
+- Role: architect & sole implementer · Timeline: Mar 2026 → Aug 2026 · Domains: durable-execution, cross-account, compliance
+- Stack: Durable Lambda, DynamoDB, S3, Cognito, EventBridge, cross-account IAM
+- Callback-proxy pattern so durable workflows receive cross-account completion signals
+- Two-phase deletion: grace window, transactional cancel, then irreversible execution with lockout
+- Audit-grade trail — per-service records, S3 archive, forensic runbook
+
+### Multi-Agent AI Platform [flagship]
+Bedrock AgentCore orchestrator + domain specialists — streaming chat, guardrails, PII-masked observability.
+- Role: built end-to-end — infra, agents, frontend · Timeline: Feb 2026 → now · Domains: genai, agentcore, streaming
+- Stack: Bedrock AgentCore, MCP, OpenTofu, Next.js SSE, Cognito, CloudWatch
+- Orchestrator routes each message to domain specialist agents over an MCP gateway
+- AI-generated session titles streamed mid-response; deterministic status events for the UI
+- Guardrails with per-agent denied topics and PII masking on runtime logs
+
+### Regulated Financial Data Pipelines
+Credit-bureau + Account Aggregator ingestion, consent-gated end to end.
+- Role: sole backend owner · Timeline: Nov 2024 → now · Domains: event-driven, consent, aa-india
+- Stack: AWS Lambda, DynamoDB, EventBridge Scheduler, SQS, S3, AppConfig
+- Event-driven bureau ingestion with EventBridge fan-out to downstream consumers
+- OTP consent lifecycle: grant, expiry countdown, revocation with correct event ordering
+- Consent-driven scheduling — schedules created and destroyed by consent state
+
+### Assessment & Scoring Platform
+Three scoring engines driven by one CMS content brain — zero-deploy question iteration.
+- Role: built all three engines + content schemas · Timeline: Oct 2024 → now · Domains: sanity-cms, scoring, i18n
+- Stack: AWS Lambda, Sanity CMS, GROQ, DynamoDB, EventBridge, Cognito JWT
+- Risk, behaviour, and wealth engines sharing one pattern: CMS questions → events → scored reports
+- Draft/published content perspectives — product iterates questions with zero deploys
+- Identity from verified Cognito JWTs, never the client; cross-assessment gates via claims
+
+### User Lifecycle & Payments Platform
+Event-driven email, nudges, onboarding state — exactly-once payments, token entitlements.
+- Role: sole owner of every service in the group · Timeline: Feb 2025 → now · Domains: ses-v2, idempotency, entitlements
+- Stack: AWS Lambda, EventBridge, SQS/DLQ, SES v2, React Email, Cognito triggers
+- Exactly-once notification semantics on an at-least-once webhook pipeline
+- Onboarding state machine — single source of truth with optimistic locking
+- Coupon/trial system designed and shipped in a week to unblock a payment-provider limitation
+
+### Platform Engineering & DX
+Fleet template ownership — SAM, Biome, ESM migrations rippled through 30+ services.
+- Role: de-facto owner of fleet conventions · Timeline: Dec 2024 → now · Domains: aws-sam, templates, tooling
+- Stack: AWS SAM, esbuild, Biome, GitHub Actions, SonarQube, TypeScript
+- Owned the fleet-standard Lambda template from its first commit
+- Drove Serverless→SAM, Biome, and ESM migrations across 30+ services
+- Internal CLIs: cross-account deletion verifier, quality dashboard, vendor mock platform
+
+## Homelab
+Node: Radxa Zero 3E · Status: OFFLINE
+- Centerpiece project: Glance Dashboard
+- Secondary project: Pulse
+- Dashboard: https://glance.abhishekmediaserver.online
+
+## Currently exploring
+- Lambda Durable Execution: Lambda Durable Execution 
+- AWS Bedrock Agentcore: Building Chat Agents using Agentcore Runtime and Memory with AWS Bedrock
 
 ## Links
 - [Portfolio](https://abhishek1337chatterjee.github.io/)
-- [GitHub](https://github.com/abhishek1337chatterjee)
 - [LinkedIn](https://www.linkedin.com/in/abhishekchatterjee-saheb1337/)
-- [X (Twitter)](https://x.com/Abhishek1337C)
+- [GitHub](https://github.com/abhishek1337chatterjee)
+- [Email](mailto:abhishek1337chatterjee@gmail.com)
+- [Resume](/Abhishek-Chatterjee-Resume.pdf)
 - [Sanity Studio (CMS)](https://abhishek1337chatterjee.github.io/studio/)
 
+## Content source (machine-readable)
+All portfolio content is managed in a Sanity CMS and served publicly (read-only) over its CDN. Full structured data as JSON:
+- [Portfolio content (Sanity CMS, JSON)](https://1ewtvnrz.apicdn.sanity.io/v2024-01-01/data/query/production?query=*%5B_type+in+%5B%22about%22%2C%22skill%22%2C%22project%22%2C%22careerPhase%22%2C%22caseStudy%22%2C%22social%22%2C%22siteSettings%22%2C%22homelab%22%2C%22learningExploration%22%5D%5D)
+
 ## Notes
-- Primary expertise: AWS serverless (Lambda, SAM, Step Functions, EventBridge), Sanity CMS, React, TypeScript, Node.js, Docker.
-- Employer: time.money. Location: India.
-- All site content is sourced from a Sanity CMS (project `1ewtvnrz`, dataset `production`); the JSON link above is the canonical machine-readable source.
+- Contact: abhishek1337chatterjee@gmail.com
+- GitHub: https://github.com/abhishek1337chatterjee
+- Open source: Active contributor to open source projects
+- All site content is sourced from a Sanity CMS (project 1ewtvnrz, dataset production); the JSON link above is the canonical machine-readable source.
 - An interactive AI chatbot on the site answers questions about Abhishek's skills, experience, and projects using the same Sanity content.
+- This file is regenerated automatically when CMS content changes.
