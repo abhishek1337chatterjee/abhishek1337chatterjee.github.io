@@ -147,6 +147,7 @@ Node: Radxa Zero 3E · Status: OFFLINE
 ## Currently exploring
 - Lambda Durable Execution: Lambda Durable Execution 
 - AWS Bedrock Agentcore: Building Chat Agents using Agentcore Runtime and Memory with AWS Bedrock
+- Rust: Learning Rust
 
 ## Links
 - [Portfolio](https://abhishek1337chatterjee.github.io/)
