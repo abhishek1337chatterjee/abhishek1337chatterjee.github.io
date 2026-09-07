@@ -81,6 +81,18 @@ jobs:
           VITE_COMMIT_SHA: ${{ github.sha }}
           VITE_CHAT_API_URL: ${{ secrets.VITE_CHAT_API_URL }}
 
+      # Prerender: snapshot the rendered SPA into dist/index.html so crawlers
+      # that don't run JS (Bing, AI search bots) get real body content.
+      # Chromium is cached across runs, keyed on the pinned puppeteer version.
+      - name: Cache Puppeteer Chromium
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Prerender index.html
+        run: npm run prerender
+
       # Try to restore cached studio build (for frontend-only changes)
       - name: Restore studio cache
         if: needs.changes.outputs.studio == 'false'

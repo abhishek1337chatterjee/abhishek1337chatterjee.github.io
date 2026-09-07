@@ -149,7 +149,9 @@ function HeroStats({ region, tier, play }: { region: string; tier: string; play:
   const count = total ? total.toLocaleString() : '—';
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    // data-prerender="skip": live GitHub numbers must not be frozen into the
+    // build-time HTML snapshot (scripts/prerender.mjs strips this node).
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-prerender="skip">
       <StatTile label="uptime" value="since 2024" sub="building serverless" />
       <StatTile label="contributions" value={count} sub="last 12 months" />
       <StatTile label="region" value={region} sub={`${tier} tier`} />

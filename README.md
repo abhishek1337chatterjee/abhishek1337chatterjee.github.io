@@ -137,8 +137,8 @@ abhishek1337chatterjee.github.io/
 ├── public/
 │   ├── favicon.svg      # Site favicon
 │   ├── og-image.png     # OpenGraph preview image
-│   ├── robots.txt       # Search engine directives
-│   ├── sitemap.xml      # SEO sitemap
+│   ├── robots.txt       # Crawler policy (explicit allows for AI search bots)
+│   ├── indexnow-key.txt # IndexNow ownership key (public by protocol design)
 │   └── Abhishek_Chatterjee_Resume.pdf
 ├── src/
 │   ├── assets/
@@ -244,7 +244,10 @@ npm run build
 2. Biome lint verification
 3. TypeScript compilation check
 4. Vite production build
-5. Deployment to GitHub Pages
+5. `postbuild`: `sitemap.xml` generated into `dist/` with today's `lastmod`
+6. Prerender: headless Chromium renders the SPA once and writes the full HTML into `dist/index.html` (`scripts/prerender.mjs`)
+7. Deployment to GitHub Pages
+8. IndexNow ping so Bing, Yandex, Naver, Seznam and Yep recrawl the homepage
 6. Commit SHA injection into footer
 
 ## Configuration
@@ -363,7 +366,12 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 - Semantic HTML structure
 - Meta tags for social sharing
 - JSON-LD structured data (Person, WebSite schemas)
-- Sitemap and robots.txt
+- Build-time prerendered `index.html` so crawlers that do not run JavaScript (Bingbot, OAI-SearchBot, ClaudeBot, PerplexityBot) see real body content, not an empty `#root`
+- `sitemap.xml` generated at build time (`scripts/generate-sitemap.mjs`), never hand-edited
+- `robots.txt` with explicit allows for AI search/answer-engine crawlers; `/studio/` disallowed
+- IndexNow ping on every deploy (`public/indexnow-key.txt` + workflow job `indexnow`)
+
+**Prerender details** (`scripts/prerender.mjs`): runs only in CI after `npm run build`. Puppeteer intercepts requests to the production origin and serves them from `dist/`, so the page runs under the real `github.io` origin and Sanity's CORS allowlist applies unchanged. It emulates `prefers-reduced-motion` so the boot loader and entrance animations are skipped, waits for `#about`, `#skills`, `#journey`, `#contact` to mount, strips `#github` and any `[data-prerender="skip"]` node (live GitHub telemetry), and writes the result over `dist/index.html`. React still boots normally on top of the snapshot. No secrets are involved: Sanity project ID/dataset are public read-only values already shipped in the bundle, and `allowScripts` in `package.json` pins the puppeteer postinstall to one exact version.
 - Canonical URLs
 - Open Graph and Twitter Card support
 
@@ -393,8 +401,11 @@ The site is deployed to GitHub Pages via GitHub Actions. The workflow:
 1. **Trigger**: Push to `master` branch
 2. **Lint**: Biome checks code quality
 3. **Build**: TypeScript compilation + Vite bundling
-4. **Deploy**: Artifacts pushed to `gh-pages` branch
-5. **Versioning**: Commit SHA displayed in footer for tracking
+4. **Sitemap**: `dist/sitemap.xml` written by the `postbuild` hook
+5. **Prerender**: `npm run prerender` snapshots the rendered page into `dist/index.html` (Chromium cached between runs)
+6. **Deploy**: Artifacts published via `actions/deploy-pages`
+7. **IndexNow**: `indexnow` job pings `api.indexnow.org` with the homepage URL
+8. **Versioning**: Commit SHA displayed in footer for tracking
 
 **Deploy URL**: [https://abhishek1337chatterjee.github.io/](https://abhishek1337chatterjee.github.io/)
 
