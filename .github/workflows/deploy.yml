@@ -190,3 +190,28 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  # IndexNow: tell Bing, Yandex, Naver, Seznam and Yep the homepage changed.
+  # Key file is public by protocol design (public/indexnow-key.txt); the only
+  # thing it authorises is "please recrawl this host".
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: public/indexnow-key.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Ping IndexNow
+        run: |
+          KEY="$(tr -d '[:space:]' < public/indexnow-key.txt)"
+          HOST="abhishek1337chatterjee.github.io"
+          STATUS="$(curl -sS -o /dev/null -w '%{http_code}' \
+            -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            --data "{\"host\":\"$HOST\",\"key\":\"$KEY\",\"keyLocation\":\"https://$HOST/indexnow-key.txt\",\"urlList\":[\"https://$HOST/\"]}")"
+          echo "IndexNow responded HTTP $STATUS"
+          # 200 = processed, 202 = accepted (key validated later). Anything else is a real failure.
+          case "$STATUS" in 200|202) ;; *) exit 1 ;; esac
