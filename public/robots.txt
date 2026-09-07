@@ -1,8 +1,26 @@
 # robots.txt for https://abhishek1337chatterjee.github.io/
+#
+# One group: the wildcard plus every AI search / answer-engine crawler listed
+# by name, so the allow policy is unambiguous to crawler-policy tools. A bot
+# that finds its own name uses only that group and ignores "*", which is why
+# the named entries share the same rules instead of getting separate blocks.
+# These are the bots that decide whether the site can be *cited* in ChatGPT
+# search, Gemini, Claude, Perplexity and Apple/Siri results.
 
-# Allow all crawlers
 User-agent: *
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: Google-Extended
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot
 Allow: /
+# Sanity Studio is an admin UI, not content
+Disallow: /studio/
 
 # Sitemap location
 Sitemap: https://abhishek1337chatterjee.github.io/sitemap.xml
