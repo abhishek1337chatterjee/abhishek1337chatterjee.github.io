@@ -438,4 +438,4 @@ Abhishek Chatterjee <abhishek1337chatterjee@gmail.com>
 
 - GitHub: [@abhishek1337chatterjee](https://github.com/abhishek1337chatterjee)
 - LinkedIn: [abhishekchatterjee-saheb1337](https://www.linkedin.com/in/abhishekchatterjee-saheb1337/)
-- Twitter: [@Abhishek1337C](https://x.com/Abhishek1337C)
+- Twitter: [@saheb1337](https://x.com/saheb1337)
