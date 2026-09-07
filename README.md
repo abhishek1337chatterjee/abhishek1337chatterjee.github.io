@@ -367,6 +367,7 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 - Meta tags for social sharing
 - JSON-LD structured data (Person, WebSite schemas)
 - Build-time prerendered `index.html` so crawlers that do not run JavaScript (Bingbot, OAI-SearchBot, ClaudeBot, PerplexityBot) see real body content, not an empty `#root`
+- Service map keeps all six time.money case studies in the DOM (non-selected ones `hidden`), so the prerender carries every study, not just the default selection
 - `sitemap.xml` generated at build time (`scripts/generate-sitemap.mjs`), never hand-edited
 - `robots.txt` with explicit allows for AI search/answer-engine crawlers; `/studio/` disallowed
 - IndexNow ping on every deploy (`public/indexnow-key.txt` + workflow job `indexnow`)

@@ -279,6 +279,23 @@ export default function ServiceMap() {
               </AnimatePresence>
             </div>
           )}
+
+          {/* Every non-selected study also lives in the DOM, hidden. The UI is
+              a one-at-a-time master–detail / accordion, so without this the
+              build-time prerender (scripts/prerender.mjs) froze only the
+              default study and crawlers saw the other five as bare names.
+              Tab/accordion content is indexed at full weight under Google's
+              mobile-first indexing; the `hidden` attribute also drops these
+              from the accessibility tree so screen readers don't hear them twice. */}
+          <div hidden data-prerender="crawl-only">
+            {caseStudies
+              .filter((c) => c._id !== selected._id)
+              .map((c) => (
+                <article key={c._id}>
+                  <DetailPane study={c} />
+                </article>
+              ))}
+          </div>
         </div>
       </div>
     </section>
