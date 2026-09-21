@@ -39,6 +39,7 @@ jobs:
             frontend:
               - 'src/**'
               - 'public/**'
+              - 'scripts/**'
               - 'index.html'
               - 'package.json'
               - 'package-lock.json'
