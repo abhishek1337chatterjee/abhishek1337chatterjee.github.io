@@ -31,6 +31,9 @@ const STRIP_SELECTORS = ['#github', '[data-prerender="skip"]'];
 // Each of these sections returns null until its data loads.
 const CONTENT_READY_SELECTORS = ['#about', '#skills', '#journey', '#contact'];
 
+// Cross-origin resource types that contribute nothing to the HTML snapshot.
+const SNAPSHOT_IRRELEVANT_TYPES = new Set(['image', 'font', 'media']);
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -81,6 +84,15 @@ async function main() {
     page.on('request', async (req) => {
       const url = new URL(req.url());
       if (url.origin !== ORIGIN) {
+        // The snapshot is HTML only, so third-party icons, fonts and media
+        // never need to load. Dropping them keeps the run deterministic and
+        // off the hosts that bot-challenge CI runners (e.g. simpleicons'
+        // Cloudflare front returned CORP same-origin to Actions). Sanity is
+        // the one cross-origin dependency that feeds content into the DOM.
+        if (SNAPSHOT_IRRELEVANT_TYPES.has(req.resourceType()) && !url.hostname.endsWith('.sanity.io')) {
+          req.abort('blockedbyclient');
+          return;
+        }
         req.continue();
         return;
       }
@@ -94,7 +106,10 @@ async function main() {
 
     page.on('pageerror', (err) => console.warn('prerender: page error:', err.message));
     page.on('requestfailed', (req) => {
-      console.warn('prerender: request failed:', req.url().slice(0, 120), req.failure()?.errorText ?? '');
+      const errorText = req.failure()?.errorText ?? '';
+      // Our own aborts above surface as ERR_BLOCKED_BY_CLIENT; not a failure.
+      if (errorText.includes('ERR_BLOCKED_BY_CLIENT')) return;
+      console.warn('prerender: request failed:', req.url().slice(0, 120), errorText);
     });
 
     await page.goto(`${ORIGIN}/`, { waitUntil: 'networkidle0', timeout: RENDER_TIMEOUT_MS });
