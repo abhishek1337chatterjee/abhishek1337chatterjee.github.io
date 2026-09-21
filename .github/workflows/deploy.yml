@@ -6,9 +6,9 @@ on:
       - master
     # Skip workflow entirely for docs-only changes
     paths-ignore:
-      - '**.md'
-      - 'LICENSE'
-      - '.gitignore'
+      - "**.md"
+      - "LICENSE"
+      - ".gitignore"
 
 permissions:
   contents: read
