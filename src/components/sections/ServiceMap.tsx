@@ -193,9 +193,7 @@ export default function ServiceMap() {
             ⭐
           </span>
         )}
-        {isMobile && (
-          <span className="text-[10px] text-muted">{active ? '▴' : '▾'}</span>
-        )}
+        {isMobile && <span className="text-[10px] text-muted">{active ? '▴' : '▾'}</span>}
       </span>
     </button>
   );
