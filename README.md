@@ -116,17 +116,17 @@ The application follows a clear separation of concerns:
 
 | Technology | Purpose | Version |
 |------------|---------|---------|
-| **React** | UI Framework | 19.2.4 |
-| **TypeScript** | Type Safety | 5.9.3 |
-| **Vite** | Build Tool (Rolldown + Oxc) | 8.0.0 |
-| **Tailwind CSS** | Styling Framework | 4.2.1 |
-| **DaisyUI** | Component Library | 5.5.19 |
-| **Framer Motion** | Animation Library | 12.36.0 |
-| **AI SDK** | Chatbot Integration | 6.0.116 |
-| **Sanity CMS** | Headless CMS | 7.17.0 |
+| **React** | UI Framework | 19.3.0 |
+| **TypeScript** | Type Safety | 6.0.3 |
+| **Vite** | Build Tool (Rolldown + Oxc) | 8.3.4 |
+| **Tailwind CSS** | Styling Framework | 4.3.3 |
+| **DaisyUI** | Component Library | 5.7.47 |
+| **Framer Motion** | Animation Library | 14.1.0 |
+| **AI SDK** | Chatbot Integration | 7.0.137 |
+| **Sanity CMS** | Headless CMS | client 8.9.0 · studio 6.18.0 |
 | **React Markdown** | Markdown Rendering | 10.1.0 |
 | **Lucide React** | Icon System | 1.x |
-| **Biome** | Linting & Formatting | 2.4.7 |
+| **Biome** | Linting & Formatting | 2.5.15 |
 
 ## Project Structure
 
