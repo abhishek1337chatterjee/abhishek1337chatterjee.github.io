@@ -93,8 +93,16 @@ body {
   text-rendering: optimizeLegibility;
   /* dual radial aurora driven by the active scheme */
   background-image:
-    radial-gradient(1200px 700px at 78% -8%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 60%),
-    radial-gradient(900px 600px at 5% 12%, color-mix(in srgb, var(--secondary) 5%, transparent), transparent 55%);
+    radial-gradient(
+      1200px 700px at 78% -8%,
+      color-mix(in srgb, var(--primary) 6%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 600px at 5% 12%,
+      color-mix(in srgb, var(--secondary) 5%, transparent),
+      transparent 55%
+    );
   background-attachment: fixed;
 }
 
@@ -187,9 +195,11 @@ body {
   *,
   *::before,
   *::after {
+    /* biome-ignore-start lint/complexity/noImportantStyles: reduced motion must beat every component animation */
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+    /* biome-ignore-end lint/complexity/noImportantStyles: reduced motion must beat every component animation */
   }
 }

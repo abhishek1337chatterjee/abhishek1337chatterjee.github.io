@@ -73,6 +73,7 @@ flowchart LR
 **Flow:** the SPA renders instantly from static HTML, then hydrates content from Sanity (no backend in the read path). The chatbot is the only feature that needs the backend — it fetches all CMS content once (cached 1h), builds a system prompt, and streams a Groq completion back to the browser word-by-word. Nothing on the read path is server-rendered; the GitHub API and contact form are called straight from the client.
 
 ### Build Optimization
+
 The project uses Vite 8's Rolldown bundler with `rolldownOptions` to implement strategic code splitting:
 - **vendor-react**: Core React libraries isolated
 - **vendor-motion**: Framer Motion (large library) separated
@@ -82,6 +83,7 @@ The project uses Vite 8's Rolldown bundler with `rolldownOptions` to implement s
 This approach ensures optimal initial load times and efficient caching strategies.
 
 ### AI ChatBot Architecture
+
 The chatbot implementation demonstrates advanced streaming patterns with Sanity CMS integration:
 - **Data Source**: All chatbot knowledge comes from Sanity CMS via external API (abhishek-api)
 - **API Endpoints** (both served by abhishek-api):
@@ -103,6 +105,7 @@ The chatbot implementation demonstrates advanced streaming patterns with Sanity 
 - **Responsive UI**: Mobile-optimized modal with smooth Framer Motion animations
 
 ### Component Architecture
+
 The application follows a clear separation of concerns:
 - **Layout Components**: Persistent UI elements (Navbar, Footer, SocialSidebar)
 - **Section Components**: Page sections (Hero, About, Skills, Projects, GitHubStats, Contact)
@@ -113,18 +116,18 @@ The application follows a clear separation of concerns:
 
 ## Tech Stack
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **React** | UI Framework | 19.3.1 |
-| **TypeScript** | Type Safety | 6.0.3 |
-| **Vite** | Build Tool (Rolldown + Oxc) | 8.3.5 |
-| **Tailwind CSS** | Styling Framework | 4.3.3 |
-| **DaisyUI** | Component Library | 5.7.50 |
-| **Framer Motion** | Animation Library | 14.6.0 |
-| **Sanity CMS** | Headless CMS | client 8.11.0 · studio 6.18.0 |
-| **React Markdown** | Markdown Rendering | 10.1.0 |
-| **Lucide React** | Icon System | 1.x |
-| **Biome** | Linting & Formatting | 2.6.3 |
+| Technology         | Purpose                     | Version                       |
+| ------------------ | --------------------------- | ----------------------------- |
+| **React**          | UI Framework                | 19.3.1                        |
+| **TypeScript**     | Type Safety                 | 6.0.3                         |
+| **Vite**           | Build Tool (Rolldown + Oxc) | 8.3.5                         |
+| **Tailwind CSS**   | Styling Framework           | 4.3.3                         |
+| **DaisyUI**        | Component Library           | 5.7.50                        |
+| **Framer Motion**  | Animation Library           | 14.6.0                        |
+| **Sanity CMS**     | Headless CMS                | client 8.11.0 · studio 6.18.0 |
+| **React Markdown** | Markdown Rendering          | 10.1.0                        |
+| **Lucide React**   | Icon System                 | 1.x                           |
+| **Biome**          | Linting & Formatting        | 2.6.3                         |
 
 ## Project Structure
 
@@ -176,7 +179,7 @@ abhishek1337chatterjee.github.io/
 │   ├── migrations/        # Data migration scripts
 │   ├── sanity.config.ts   # Sanity Studio configuration
 │   └── sanity.cli.ts      # Sanity CLI configuration
-├── biome.json             # Biome linter configuration
+├── biome.json             # Biome lint + format (code, CSS, YAML, Markdown)
 ├── index.html             # HTML entry with SEO meta tags
 ├── package.json           # Dependencies and scripts
 ├── tsconfig.json          # TypeScript configuration (project references)
@@ -246,15 +249,15 @@ npm run build
 6. Prerender: headless Chromium renders the SPA once and writes the full HTML into `dist/index.html` (`scripts/prerender.mjs`)
 7. Deployment to GitHub Pages
 8. IndexNow ping so Bing, Yandex, Naver, Seznam and Yep recrawl the homepage
-6. Commit SHA injection into footer
+9. Commit SHA injection into footer
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Required | Description | Default |
-|----------|----------|-------------|---------|
-| `VITE_CHAT_API_URL` | No | ChatBot API endpoint (streaming chat) | `http://localhost:3000/api/chat` |
+| Variable            | Required | Description                           | Default                          |
+| ------------------- | -------- | ------------------------------------- | -------------------------------- |
+| `VITE_CHAT_API_URL` | No       | ChatBot API endpoint (streaming chat) | `http://localhost:3000/api/chat` |
 
 Create `.env` file in project root:
 ```bash
@@ -271,6 +274,7 @@ VITE_CHAT_API_URL=https://your-api-endpoint.com/api/chat
 ### Customization Guide
 
 #### Update Personal Information
+
 1. **Sanity CMS**: Edit content via Sanity Studio at `https://your-project.sanity.studio`
    - About, Skills, Projects, Career Phases, Social Links, Site Settings
    - Run `cd studio && npm run dev` to start local Sanity Studio
@@ -280,6 +284,7 @@ VITE_CHAT_API_URL=https://your-api-endpoint.com/api/chat
 5. **Contact Form**: Update action URL in `src/components/sections/Contact.tsx`
 
 #### Styling Customization
+
 - **Colors**: Tailwind theme configuration in Tailwind CSS 4 format
 - **Fonts**: Update `index.css` for custom font imports
 - **Animations**: Framer Motion variants in component files
@@ -291,6 +296,7 @@ The project includes Sanity Studio for content management, deployed alongside th
 **Live Studio:** [abhishek1337chatterjee.github.io/studio/](https://abhishek1337chatterjee.github.io/studio/)
 
 #### Local Development
+
 ```bash
 cd studio
 npm install
@@ -298,40 +304,46 @@ npm run dev    # Opens at http://localhost:3333
 ```
 
 #### Studio Features
+
 - **Content Types**: About (with Currently Exploring), Career Phases, Projects, Skills, Social Links, Site Settings
 - **Singleton Documents**: About and Site Settings are single-instance documents
 - **Custom Structure**: Organized sidebar with dividers and grouped content
 - **Vision Tool**: GROQ query playground for testing queries
 
 #### Deployment
+
 Sanity Studio is automatically built and deployed with the main site via GitHub Actions:
 - Built with `SANITY_STUDIO_BASEPATH=/studio` for subpath routing
 - Deployed to `/studio/` path on GitHub Pages
 - Includes 404.html fallback for SPA routing and OAuth callbacks
 
 #### Known Issues
+
 - **Double path bug**: URLs may show `/studio/studio/...` instead of `/studio/...` due to basePath configuration overlap. This is cosmetic and doesn't affect functionality.
 
 ## Performance Features
 
 ### PageSpeed Insights Scores (Mobile)
-| Metric | Score |
-|--------|-------|
-| **Performance** | 100 |
-| **Accessibility** | 100 |
-| **Best Practices** | 100 |
-| **SEO** | 100 |
+
+| Metric             | Score |
+| ------------------ | ----- |
+| **Performance**    | 100   |
+| **Accessibility**  | 100   |
+| **Best Practices** | 100   |
+| **SEO**            | 100   |
 
 ### Core Web Vitals
-| Metric | Value | Status |
-|--------|-------|--------|
-| **LCP** (Largest Contentful Paint) | 1.7s | ✅ Good |
-| **FCP** (First Contentful Paint) | 1.1s | ✅ Good |
-| **TBT** (Total Blocking Time) | 30ms | ✅ Excellent |
-| **CLS** (Cumulative Layout Shift) | 0.001 | ✅ Excellent |
-| **SI** (Speed Index) | 2.2s | ✅ Good |
+
+| Metric                             | Value | Status       |
+| ---------------------------------- | ----- | ------------ |
+| **LCP** (Largest Contentful Paint) | 1.7s  | ✅ Good      |
+| **FCP** (First Contentful Paint)   | 1.1s  | ✅ Good      |
+| **TBT** (Total Blocking Time)      | 30ms  | ✅ Excellent |
+| **CLS** (Cumulative Layout Shift)  | 0.001 | ✅ Excellent |
+| **SI** (Speed Index)               | 2.2s  | ✅ Good      |
 
 ### LCP Optimization - HTML-First Pattern
+
 The biggest performance win comes from rendering the LCP image (profile photo) directly in HTML:
 - **Problem**: Traditional React apps wait for JS → React mount → API fetch → render, causing ~1-2s LCP delay
 - **Solution**: The profile image is rendered directly in `index.html` with inline styles, allowing immediate paint
@@ -339,12 +351,14 @@ The biggest performance win comes from rendering the LCP image (profile photo) d
 - **Result**: LCP improved from 3.9s to 1.7s (56% faster)
 
 ### Mobile-Specific Optimizations
+
 - **Deferred Particles**: Seasonal particle animations delayed by 2.5s on mobile to prioritize LCP
 - **Reduced Particle Count**: 8 particles on mobile vs 20 on desktop
 - **Simplified Animations**: SVG stroke-dashoffset animations (non-GPU-compositable) replaced with simple opacity fades on mobile
 - **Content Visibility**: Below-fold sections use `content-visibility: auto` to skip rendering until scrolled into view
 
 ### Code Splitting Strategy
+
 Manual chunks defined in `vite.config.ts` optimize bundle size:
 - Initial bundle: ~50KB (gzipped)
 - Vendor chunks: Lazy loaded based on route/interaction
@@ -352,6 +366,7 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 - ChatBot component: Lazy loaded with `React.lazy`/`Suspense`
 
 ### Build Optimizations
+
 - **Rolldown Bundler**: Rust-based bundler (Vite 8) for ~5x faster builds
 - **Oxc Transforms**: Rust-based JSX transforms (no Babel in pipeline)
 - **Tree Shaking**: Unused code elimination
@@ -361,6 +376,7 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 - **LCP Preload**: Profile image preloaded with correct srcset sizes
 
 ### SEO Optimizations
+
 - Semantic HTML structure
 - Meta tags for social sharing
 - JSON-LD structured data (Person, WebSite schemas)
@@ -384,14 +400,14 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 
 ## Scripts Reference
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start Vite dev server on port 5173 |
-| `npm run build` | Production build (TypeScript + Vite) |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run Biome linter on src/ |
-| `npm run format` | Format code with Biome |
-| `npm run check` | Lint + format with auto-fix |
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start Vite dev server on port 5173   |
+| `npm run build`   | Production build (TypeScript + Vite) |
+| `npm run preview` | Preview production build locally     |
+| `npm run lint`    | Run Biome linter on the repo         |
+| `npm run format`  | Format TS, CSS, JSON, YAML, Markdown |
+| `npm run check`   | Lint + format with auto-fix          |
 
 ## Deployment
 
@@ -411,6 +427,7 @@ The site is deployed to GitHub Pages via GitHub Actions. The workflow:
 ## Troubleshooting
 
 ### ChatBot Not Responding
+
 - Verify `VITE_CHAT_API_URL` environment variable (e.g., `http://localhost:3000/api/chat`)
 - Ensure suggestions endpoint exists at `/api/suggestions` (or chatbot will use fallback suggestions)
 - Check API endpoint CORS configuration (must allow origin from portfolio domain)
@@ -422,11 +439,13 @@ The site is deployed to GitHub Pages via GitHub Actions. The workflow:
 - Test suggestions: Open chat and check if initial suggestions load (if not, check API logs)
 
 ### Build Failures
+
 - Clear `node_modules` and reinstall: `rm -rf node_modules package-lock.json && npm install`
 - Verify Node.js version: `node --version` (requires 24+)
 - Check TypeScript errors: `npm run build`
 
 ### GitHub Actions Deployment Fails
+
 - Check GitHub Pages is enabled in repository settings
 - Verify workflow permissions allow writing to repository
 - Review Actions logs for specific error messages

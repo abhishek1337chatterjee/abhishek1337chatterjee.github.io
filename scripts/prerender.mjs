@@ -59,7 +59,10 @@ async function readDistFile(urlPath) {
     filePath = join(DIST, 'index.html');
   }
   try {
-    return { body: await readFile(filePath), type: MIME[extname(filePath)] ?? 'application/octet-stream' };
+    return {
+      body: await readFile(filePath),
+      type: MIME[extname(filePath)] ?? 'application/octet-stream',
+    };
   } catch {
     return null;
   }
@@ -89,7 +92,10 @@ async function main() {
         // off the hosts that bot-challenge CI runners (e.g. simpleicons'
         // Cloudflare front returned CORP same-origin to Actions). Sanity is
         // the one cross-origin dependency that feeds content into the DOM.
-        if (SNAPSHOT_IRRELEVANT_TYPES.has(req.resourceType()) && !url.hostname.endsWith('.sanity.io')) {
+        if (
+          SNAPSHOT_IRRELEVANT_TYPES.has(req.resourceType()) &&
+          !url.hostname.endsWith('.sanity.io')
+        ) {
           req.abort('blockedbyclient');
           return;
         }
@@ -127,8 +133,11 @@ async function main() {
     const out = join(DIST, 'index.html');
     await writeFile(out, `<!doctype html>\n${html}\n`);
 
+    // biome-ignore lint/performance/useDomNodeTextContent: innerText counts only visible text, which is what this log reports
     const textChars = await page.evaluate(() => document.body.innerText.length);
-    console.log(`prerender: wrote ${out} (${html.length} bytes, ~${textChars} chars of visible text)`);
+    console.log(
+      `prerender: wrote ${out} (${html.length} bytes, ~${textChars} chars of visible text)`,
+    );
   } finally {
     await browser.close();
   }

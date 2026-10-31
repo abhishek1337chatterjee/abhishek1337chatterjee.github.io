@@ -23,9 +23,9 @@
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/generate-sitemap.mjs",
     "prerender": "node scripts/prerender.mjs",
-    "lint": "biome lint ./src",
-    "format": "biome format --write ./src",
-    "check": "biome check --write ./src",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
     "preview": "vite preview"
   },
   "dependencies": {
