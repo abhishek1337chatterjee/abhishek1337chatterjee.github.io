@@ -124,7 +124,7 @@ The application follows a clear separation of concerns:
 | **Tailwind CSS**   | Styling Framework           | 4.3.3                         |
 | **DaisyUI**        | Component Library           | 5.7.50                        |
 | **Framer Motion**  | Animation Library           | 14.6.0                        |
-| **Sanity CMS**     | Headless CMS                | client 8.11.0 · studio 6.18.0 |
+| **Sanity CMS**     | Headless CMS                | client 8.11.0 · studio 6.20.0 |
 | **React Markdown** | Markdown Rendering          | 10.1.0                        |
 | **Lucide React**   | Icon System                 | 1.x                           |
 | **Biome**          | Linting & Formatting        | 2.6.3                         |
