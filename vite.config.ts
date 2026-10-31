@@ -25,7 +25,6 @@ export default defineConfig({
           if (id.includes('react-dom') || id.includes('react/')) return 'vendor-react'
           if (id.includes('framer-motion')) return 'vendor-motion'
           if (id.includes('react-markdown') || id.includes('remark-gfm')) return 'vendor-markdown'
-          if (id.includes('/ai/') || id.includes('@ai-sdk/react')) return 'vendor-ai'
           if (id.includes('lucide-react')) return 'vendor-icons'
         },
       },

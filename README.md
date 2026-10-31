@@ -77,7 +77,6 @@ The project uses Vite 8's Rolldown bundler with `rolldownOptions` to implement s
 - **vendor-react**: Core React libraries isolated
 - **vendor-motion**: Framer Motion (large library) separated
 - **vendor-markdown**: Markdown rendering isolated
-- **vendor-ai**: AI SDK components separated
 - **vendor-icons**: Lucide React icons bundled
 
 This approach ensures optimal initial load times and efficient caching strategies.
@@ -116,17 +115,16 @@ The application follows a clear separation of concerns:
 
 | Technology | Purpose | Version |
 |------------|---------|---------|
-| **React** | UI Framework | 19.3.0 |
+| **React** | UI Framework | 19.3.1 |
 | **TypeScript** | Type Safety | 6.0.3 |
-| **Vite** | Build Tool (Rolldown + Oxc) | 8.3.4 |
+| **Vite** | Build Tool (Rolldown + Oxc) | 8.3.5 |
 | **Tailwind CSS** | Styling Framework | 4.3.3 |
-| **DaisyUI** | Component Library | 5.7.47 |
-| **Framer Motion** | Animation Library | 14.1.0 |
-| **AI SDK** | Chatbot Integration | 7.0.137 |
-| **Sanity CMS** | Headless CMS | client 8.9.0 · studio 6.18.0 |
+| **DaisyUI** | Component Library | 5.7.50 |
+| **Framer Motion** | Animation Library | 14.6.0 |
+| **Sanity CMS** | Headless CMS | client 8.11.0 · studio 6.18.0 |
 | **React Markdown** | Markdown Rendering | 10.1.0 |
 | **Lucide React** | Icon System | 1.x |
-| **Biome** | Linting & Formatting | 2.5.15 |
+| **Biome** | Linting & Formatting | 2.6.3 |
 
 ## Project Structure
 

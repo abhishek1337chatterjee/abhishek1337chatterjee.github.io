@@ -29,35 +29,29 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ai-sdk/react": "4.0.140",
-    "@sanity/client": "8.9.0",
+    "@sanity/client": "8.11.0",
     "@sanity/image-url": "2.1.1",
-    "@types/react-scroll": "1.8.10",
-    "ai": "7.0.137",
-    "framer-motion": "14.1.0",
-    "lucide-react": "1.55.0",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-github-calendar": "5.0.9",
+    "framer-motion": "14.6.0",
+    "lucide-react": "1.61.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-markdown": "10.1.0",
-    "react-scroll": "1.9.3",
-    "react-simple-typewriter": "5.0.1",
     "remark-gfm": "4.0.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.3",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
-    "daisyui": "5.7.47",
-    "puppeteer": "25.13.0",
+    "daisyui": "5.7.50",
+    "puppeteer": "25.16.0",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
-    "vite": "8.3.4"
+    "vite": "8.3.5"
   },
   "allowScripts": {
-    "puppeteer@25.13.0": true
+    "puppeteer@25.16.0": true
   }
 }
