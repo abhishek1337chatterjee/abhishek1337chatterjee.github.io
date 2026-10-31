@@ -10,4 +10,6 @@ export interface StatusLine {
   code: StatusCode;
   elapsedMs: number;
   waitSeconds?: number;
+  /** Browser clock when the line arrived; drives the queued countdown. */
+  receivedAtMs?: number;
 }

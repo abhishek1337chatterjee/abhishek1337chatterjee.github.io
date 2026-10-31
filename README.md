@@ -90,7 +90,7 @@ The chatbot implementation demonstrates advanced streaming patterns with Sanity 
   - `CHAT_API_URL` - Streaming chat responses with message history (default: `http://localhost:3000/api/chat`)
   - `SUGGESTIONS_API_URL` - Initial conversation starters (auto-derived by replacing `/api/chat` with `/api/suggestions`)
 - **Smart Suggestions System**:
-  - **Initial Suggestions**: Fetched from API on chat open, returns `{ suggestions: ["query1", "query2", "query3"] }`
+  - **Initial Suggestions**: Fetched from API when the console mounts (after scrolling past the hero), returns `{ suggestions: ["query1", "query2", "query3"] }`
   - **Follow-up Suggestions**: AI-generated after each bot response, embedded in streaming response as `[SUGGESTIONS]: query1 | query2 | query3`
   - **Tab Key Navigation**: Tab cycles forward through suggestions, Shift+Tab cycles backward, auto-fills input field
   - **Click to Send**: Clicking a suggestion chip auto-sends the query (no manual submit needed)
@@ -99,9 +99,10 @@ The chatbot implementation demonstrates advanced streaming patterns with Sanity 
   - **Third-Person Format**: All suggestions use "Abhishek's" (e.g., "What are Abhishek's skills?" not "your skills")
   - **Fallback**: If API fails, uses hardcoded third-person suggestions
 - **Streaming Response**: Word-by-word display with 15ms delay for natural conversation flow
+- **Status Log**: The chat asks for `Accept: application/x-ndjson` and shows what the API is doing above each answer (`loaded portfolio context`, `composing answer`, `high demand · switched to fast lane`, a live `starting in Ns` countdown, `could not get an answer right now`). No model names are shown. Parser: `src/lib/chatStream.ts`; wording: `src/components/chat/statusMessages.ts`; UI: `src/components/chat/StatusLog.tsx`
 - **Markdown Support**: Custom ReactMarkdown renderer with phone number detection, copy button, and external link handling
 - **Message History**: In-memory conversation history sent with each request for context-aware responses
-- **Error Handling**: User-friendly error messages with retry capability
+- **Error Handling**: A failed answer shows a **try again** button that resends the last question; a Vercel Firewall 429 shows "too many messages · try again in a minute"
 - **Responsive UI**: Mobile-optimized modal with smooth Framer Motion animations
 
 ### Component Architecture
@@ -243,13 +244,14 @@ npm run build
 **Automated Deployment**: Pushing to the `master` branch triggers GitHub Actions workflow:
 1. Code checkout
 2. Biome lint verification
-3. TypeScript compilation check
-4. Vite production build
-5. `postbuild`: `sitemap.xml` generated into `dist/` with today's `lastmod`
-6. Prerender: headless Chromium renders the SPA once and writes the full HTML into `dist/index.html` (`scripts/prerender.mjs`)
-7. Deployment to GitHub Pages
-8. IndexNow ping so Bing, Yandex, Naver, Seznam and Yep recrawl the homepage
-9. Commit SHA injection into footer
+3. Unit tests (`npm test`)
+4. TypeScript compilation check
+5. Vite production build
+6. `postbuild`: `sitemap.xml` generated into `dist/` with today's `lastmod`
+7. Prerender: headless Chromium renders the SPA once and writes the full HTML into `dist/index.html` (`scripts/prerender.mjs`)
+8. Deployment to GitHub Pages
+9. IndexNow ping so Bing, Yandex, Naver, Seznam and Yep recrawl the homepage
+10. Commit SHA injection into footer
 
 ## Configuration
 
@@ -406,6 +408,7 @@ Manual chunks defined in `vite.config.ts` optimize bundle size:
 | `npm run build`   | Production build (TypeScript + Vite) |
 | `npm run preview` | Preview production build locally     |
 | `npm run lint`    | Run Biome linter on the repo         |
+| `npm test`        | Unit tests (node --test, `tests/`)   |
 | `npm run format`  | Format TS, CSS, JSON, YAML, Markdown |
 | `npm run check`   | Lint + format with auto-fix          |
 
@@ -415,12 +418,13 @@ The site is deployed to GitHub Pages via GitHub Actions. The workflow:
 
 1. **Trigger**: Push to `master` branch
 2. **Lint**: Biome checks code quality
-3. **Build**: TypeScript compilation + Vite bundling
-4. **Sitemap**: `dist/sitemap.xml` written by the `postbuild` hook
-5. **Prerender**: `npm run prerender` snapshots the rendered page into `dist/index.html` (Chromium cached between runs)
-6. **Deploy**: Artifacts published via `actions/deploy-pages`
-7. **IndexNow**: `indexnow` job pings `api.indexnow.org` with the homepage URL
-8. **Versioning**: Commit SHA displayed in footer for tracking
+3. **Test**: `npm test` (chat stream parser and status wording)
+4. **Build**: TypeScript compilation + Vite bundling
+5. **Sitemap**: `dist/sitemap.xml` written by the `postbuild` hook
+6. **Prerender**: `npm run prerender` snapshots the rendered page into `dist/index.html` (Chromium cached between runs)
+7. **Deploy**: Artifacts published via `actions/deploy-pages`
+8. **IndexNow**: `indexnow` job pings `api.indexnow.org` with the homepage URL
+9. **Versioning**: Commit SHA displayed in footer for tracking
 
 **Deploy URL**: [https://abhishek1337chatterjee.github.io/](https://abhishek1337chatterjee.github.io/)
 

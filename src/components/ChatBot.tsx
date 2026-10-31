@@ -4,6 +4,10 @@ import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { createNdjsonParser } from '../lib/chatStream';
+import type { ChatEvent, StatusLine } from '../types/chat';
+import StatusLog from './chat/StatusLog';
+import { FIREWALL_LIMIT_TEXT, TRY_AGAIN_LABEL, TRY_AGAIN_NOTE } from './chat/statusMessages';
 
 // API endpoint from environment variable
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:3000/api/chat';
@@ -13,6 +17,8 @@ interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  statusLines?: StatusLine[];
+  failed?: boolean;
 }
 
 // Parse suggestions from bot response
@@ -393,7 +399,7 @@ export default function ChatBot() {
   };
 
   const sendMessage = useCallback(
-    async (userMessage: string) => {
+    async (userMessage: string, history: Message[] = messages) => {
       if (!userMessage.trim() || isLoading) return;
 
       const userMsg: Message = {
@@ -410,7 +416,7 @@ export default function ChatBot() {
       setSuggestions([]); // Clear suggestions while loading
 
       // Prepare messages for API (include history)
-      const apiMessages = [...messages, userMsg].map((m) => ({
+      const apiMessages = [...history, userMsg].map((m) => ({
         role: m.role,
         content: m.content,
       }));
@@ -418,58 +424,88 @@ export default function ChatBot() {
       try {
         const response = await fetch(CHAT_API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          // NDJSON opts in to status events; without it the API sends plain text
+          headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
           body: JSON.stringify({ messages: apiMessages }),
         });
 
+        if (response.status === 429) {
+          setError(FIREWALL_LIMIT_TEXT);
+          return;
+        }
         if (!response.ok) {
           throw new Error('Failed to get response');
         }
 
         // Create assistant message placeholder
         const assistantId = (Date.now() + 1).toString();
-        setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
+        setMessages((prev) => [
+          ...prev,
+          { id: assistantId, role: 'assistant', content: '', statusLines: [] },
+        ]);
 
-        // Read streaming response with word-by-word effect
+        const updateAssistant = (change: (message: Message) => Message) =>
+          setMessages((prev) => prev.map((m) => (m.id === assistantId ? change(m) : m)));
+
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
-        let buffer = '';
+        const pending: ChatEvent[] = [];
+        const parser = createNdjsonParser((event) => pending.push(event));
+        let wordBuffer = '';
         let fullContent = '';
+        let failed = false;
 
-        const addWordWithDelay = async (word: string, id: string) => {
+        const addWordWithDelay = async (word: string) => {
           fullContent += word;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === id ? { ...m, content: m.content + word } : m)),
-          );
+          updateAssistant((m) => ({ ...m, content: m.content + word }));
           // Small delay for smoother word-by-word effect
           await new Promise((resolve) => setTimeout(resolve, 15));
+        };
+
+        const handleEvent = async (event: ChatEvent) => {
+          if (event.type === 'status') {
+            failed ||= event.code === 'failed';
+            const line: StatusLine = {
+              code: event.code,
+              elapsedMs: event.elapsedMs,
+              waitSeconds: event.waitSeconds,
+              receivedAtMs: Date.now(),
+            };
+            updateAssistant((m) => ({
+              ...m,
+              statusLines: [...(m.statusLines ?? []), line],
+              failed: m.failed || event.code === 'failed',
+            }));
+            return;
+          }
+          // Text arrives in token-sized pieces; re-split into whole words for the typing effect
+          wordBuffer += event.delta;
+          const words = wordBuffer.split(/(\s+)/);
+          wordBuffer = words.pop() || '';
+          for (const word of words) {
+            await addWordWithDelay(word);
+          }
         };
 
         if (reader) {
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-
-            const chunk = decoder.decode(value, { stream: true });
-            buffer += chunk;
-
-            // Process buffer word by word
-            const words = buffer.split(/(\s+)/);
-            // Keep the last potentially incomplete word in buffer
-            buffer = words.pop() || '';
-
-            for (const word of words) {
-              await addWordWithDelay(word, assistantId);
+            parser.push(decoder.decode(value, { stream: true }));
+            for (const event of pending.splice(0)) {
+              await handleEvent(event);
             }
           }
-
-          // Add any remaining content in buffer
-          if (buffer) {
-            await addWordWithDelay(buffer, assistantId);
+          parser.flush();
+          for (const event of pending.splice(0)) {
+            await handleEvent(event);
+          }
+          if (wordBuffer) {
+            await addWordWithDelay(wordBuffer);
           }
 
-          // Empty stream (e.g. upstream LLM error) — drop the blank bubble, surface it
-          if (!fullContent.trim()) {
+          // Empty stream with no failed status (unexpected) — drop the blank bubble, surface it
+          if (!fullContent.trim() && !failed) {
             setMessages((prev) => prev.filter((m) => m.id !== assistantId));
             setError('No response from the assistant. Please try again.');
           }
@@ -489,6 +525,15 @@ export default function ChatBot() {
     },
     [messages, isLoading],
   );
+
+  // Resend the last question after a failed answer, dropping that failed turn from history
+  const retryLastQuestion = useCallback(() => {
+    const lastUserIndex = messages.findLastIndex((m) => m.role === 'user');
+    if (lastUserIndex < 0 || isLoading) return;
+    const history = messages.slice(0, lastUserIndex);
+    setMessages(history);
+    sendMessage(messages[lastUserIndex].content, history);
+  }, [messages, isLoading, sendMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -555,43 +600,64 @@ export default function ChatBot() {
                   <div
                     key={message.id}
                     className={`mb-2.5 flex ${
-                      message.role === 'user' ? 'justify-end' : 'justify-start'
+                      message.role === 'user' ? 'justify-end' : 'flex-col items-start'
                     }`}
                   >
-                    <div
-                      className="max-w-[82%] break-words rounded-xl px-3.5 py-2.5 text-[13.5px] leading-[1.55] text-ink"
-                      style={{
-                        background:
-                          message.role === 'user'
-                            ? 'color-mix(in srgb, var(--primary) 15%, transparent)'
-                            : 'rgba(237,239,243,0.04)',
-                        border:
-                          message.role === 'user'
-                            ? '1px solid color-mix(in srgb, var(--primary) 32%, transparent)'
-                            : '1px solid rgba(237,239,243,0.08)',
-                        overflowWrap: 'anywhere',
-                        wordBreak: 'break-word',
-                      }}
-                    >
-                      {message.content ? (
-                        <MessageContent content={message.content} />
-                      ) : (
-                        <span className="font-mono text-xs text-muted">
-                          querying logs
-                          <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
-                        </span>
-                      )}
-                      {/* streaming caret on the live assistant message */}
-                      {streaming && message.id === lastMsg?.id && (
-                        <span
-                          className="ml-0.5 inline-block h-3.5 w-[7px] align-[-2px]"
-                          style={{
-                            background: 'var(--primary)',
-                            animation: 'blink 1s step-end infinite',
-                          }}
-                        />
-                      )}
-                    </div>
+                    {message.statusLines && message.statusLines.length > 0 && (
+                      <div className="w-full sm:max-w-[82%]">
+                        <StatusLog lines={message.statusLines} />
+                      </div>
+                    )}
+                    {(message.content || !message.statusLines?.length) && (
+                      <div
+                        className="max-w-[82%] break-words rounded-xl px-3.5 py-2.5 text-[13.5px] leading-[1.55] text-ink"
+                        style={{
+                          background:
+                            message.role === 'user'
+                              ? 'color-mix(in srgb, var(--primary) 15%, transparent)'
+                              : 'rgba(237,239,243,0.04)',
+                          border:
+                            message.role === 'user'
+                              ? '1px solid color-mix(in srgb, var(--primary) 32%, transparent)'
+                              : '1px solid rgba(237,239,243,0.08)',
+                          overflowWrap: 'anywhere',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {message.content ? (
+                          <MessageContent content={message.content} />
+                        ) : (
+                          <span className="font-mono text-xs text-muted">
+                            querying logs
+                            <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
+                          </span>
+                        )}
+                        {/* streaming caret on the live assistant message */}
+                        {streaming && message.id === lastMsg?.id && (
+                          <span
+                            className="ml-0.5 inline-block h-3.5 w-[7px] align-[-2px]"
+                            style={{
+                              background: 'var(--primary)',
+                              animation: 'blink 1s step-end infinite',
+                            }}
+                          />
+                        )}
+                      </div>
+                    )}
+                    {message.failed && message.id === lastMsg?.id && (
+                      <div className="mt-1 flex items-center gap-3 font-mono text-xs">
+                        <button
+                          type="button"
+                          onClick={retryLastQuestion}
+                          disabled={isLoading}
+                          className="rounded-lg border px-3.5 py-2 transition-colors disabled:opacity-50"
+                          style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
+                        >
+                          {TRY_AGAIN_LABEL}
+                        </button>
+                        <span className="text-muted">{TRY_AGAIN_NOTE}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
 
