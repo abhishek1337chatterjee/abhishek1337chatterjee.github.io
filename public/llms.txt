@@ -21,6 +21,12 @@ Experience: 3+ years. Location: India. Highlights: 3+ Years Experience, Backend 
 - **tools**: Git, GitHub, Docker, Ubuntu, Linux, VS Code, Sanity, NPM, Vercel, Serverless, AWS SAM, Biome, pnpm, Claude Code, Terraform
 
 ## Projects
+### COSMIC Bluetooth Battery Applet (personal)
+Open-source panel applet for the COSMIC Linux desktop that shows the battery level of connected Bluetooth devices. Written in Rust with libcosmic; I use it daily.
+- Tech: Rust, libcosmic, BlueZ, D-Bus
+- Features: Event-driven: listens to BlueZ over D-Bus (bluer crate) instead of polling; Hides itself when no device is connected; Sanitizes device names before display
+- Code: https://github.com/abhishek1337chatterjee/cosmic-ext-applet-bluetooth-battery
+
 ### Face Auth System
 Face-recognition authentication platform. Iterated from browser-side detection (face-api.js, MediaPipe) to an AWS Rekognition compareFaces backend, with a production admin dashboard.
 - Tech: face-api.js, MediaPipe, AWS Rekognition, React, Express
