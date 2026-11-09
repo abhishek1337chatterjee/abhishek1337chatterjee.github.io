@@ -1,9 +1,9 @@
-# Abhishek Chatterjee — Serverless Engineer | React Developer | Event-Driven
+# Abhishek Chatterjee — Backend Engineer | Serverless | AWS | AI Agents | TypeScript
 
-> I'm a Software Engineer with 2+ years of experience building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
+> I'm a Software Engineer with 3+ years of experience, the last 2 building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
 > My work spans the full stack: streaming APIs, durable cross-account workflows, content architecture with Sanity CMS, and the CI/CD pipelines that ship it all.
 
-Experience: 2+ years. Location: India. Highlights: 2+ Years Experience, Serverless Engineer, Linux Enthusiast, Open Source Lover. Interests: Custom PC Assembly, Open Source, Linux.
+Experience: 3+ years. Location: India. Highlights: 3+ Years Experience, Backend & Serverless, Linux Enthusiast, Open Source Lover. Interests: Custom PC Assembly, Open Source, Linux.
 
 ## Site sections
 - [Overview: role, live telemetry, GitHub contribution activity](https://abhishek1337chatterjee.github.io/#top)
@@ -16,11 +16,17 @@ Experience: 2+ years. Location: India. Highlights: 2+ Years Experience, Serverle
 
 ## Skills
 - **frontend**: HTML, CSS, JavaScript, TypeScript, React.js, Next.js, Redux, Tailwind
-- **cloud**: Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES, Temporal.io
+- **cloud**: Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES, Temporal.io, Bedrock AgentCore, AWS SAM
 - **backend**: Node.js, Express, MongoDB, DynamoDB
-- **tools**: Git, GitHub, Docker, Ubuntu, Linux, VS Code, Sanity, NPM, Vercel, Serverless, AWS SAM, Biome, pnpm, Claude Code
+- **tools**: Git, GitHub, Docker, Ubuntu, Linux, VS Code, Sanity, NPM, Vercel, Serverless, Biome, pnpm, Claude Code, Terraform
 
 ## Projects
+### COSMIC Bluetooth Battery Applet (personal)
+Open-source panel applet for the COSMIC Linux desktop that shows the battery level of connected Bluetooth devices. Written in Rust with libcosmic; I use it daily.
+- Tech: Rust, libcosmic, BlueZ, D-Bus
+- Features: Event-driven: listens to BlueZ over D-Bus (bluer crate) instead of polling; Hides itself when no device is connected; Sanitizes device names before display
+- Code: https://github.com/abhishek1337chatterjee/cosmic-ext-applet-bluetooth-battery
+
 ### Face Auth System
 Face-recognition authentication platform. Iterated from browser-side detection (face-api.js, MediaPipe) to an AWS Rekognition compareFaces backend, with a production admin dashboard.
 - Tech: face-api.js, MediaPipe, AWS Rekognition, React, Express
@@ -41,9 +47,9 @@ Freshly delivers gourmet ready-made meals, prepared and delivered at the door. I
 - Live: https://fluffy-croquembouche-14d5f2.netlify.app/
 
 ### Glance Dashboard (personal)
-Self-hosted personal dashboard with custom Node.js microservices — GitHub security advisories, kernel.org LTS tracking, and a system-stats panel (power monitoring, disk health, network stats). Deployed via Docker Compose with health checks and auto-start.
-- Tech: Node.js 24, Express.js 5, Docker, Docker Compose, GraphQL, REST APIs, RSS/Atom, SQLite, Chart.js, smartmontools , vnstat
-- Features: GitHub Security Advisory feeds via GraphQL; Kernel.org LTS release tracking; Movie/OTT streaming feeds (TMDb + OMDb); 15+ RSS endpoints across services; 30-60 min in-memory caching; Health checks with dependency chain; System Stats dashboard with power monitoring; Power history with 2-year SQLite persistence; Energy consumption tracking (kWh daily/monthly); Disk health monitoring (SMART + SD card); Network stats via vnstat with graphs; Docker container stats with live updates
+Personal dashboard built on Glance, running as a container on Render. A small Go service I wrote (standard library only) caches every RSS and API feed in the background, so pages load fast even on a free-tier instance.
+- Tech: Go, Glance, Docker, Alpine Linux, Render, RSS/Atom, REST APIs
+- Features: Background feed cache in Go: worker pool, 20 s fetch timeout, hourly refresh; Security advisories: cve.now critical npm feed + GitHub npm advisories; Linux kernel LTS and changelog tracking; Markets, tech news, Hacker News and Reddit pages; Weather and air-quality card (Open-Meteo); Releases widget for tracked GitHub repos
 - Live: https://glance-dashboard-u99g.onrender.com
 
 ### Jet Prints (experience) [discontinued]
@@ -77,11 +83,11 @@ Wearly is a full-stack online fashion and cosmetic retailer. The project was bui
 - Live: https://wearly.vercel.app/
 
 ## Career
-### Serverless Engineer @ time.money (2024 - Present)
-Building scalable serverless architectures and event-driven systems for fintech applications.
-- Highlights: AWS Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES
+### Software Engineer @ time.money (2024 - Present)
+Event-driven AWS backends for a SEBI-registered investment adviser: regulated data pipelines, durable cross-account workflows and a multi-agent AI assistant on Amazon Bedrock AgentCore.
+- Highlights: AWS Lambda, Durable Functions, EventBridge, DynamoDB, Bedrock AgentCore, Cognito, Terraform
 
-### MERN Stack Developer @ Latitude Technolabs (2023 - 2024)
+### MERN Stack Web Developer @ Latitude Technolabs (2023 - 2024)
 Specialized in frontend development and client-focused solutions. Proactive in API development with technologies like Appwrite.
 - Highlights: React, TypeScript, Redux, Appwrite, Canvas API
 
@@ -145,9 +151,9 @@ Node: Radxa Zero 3E · Status: OFFLINE
 - Dashboard: https://glance.abhishekmediaserver.online
 
 ## Currently exploring
-- Lambda Durable Execution: Lambda Durable Execution 
-- AWS Bedrock Agentcore: Building Chat Agents using Agentcore Runtime and Memory with AWS Bedrock
-- Rust: Learning Rust
+- Rust: Building Linux desktop tools in Rust: a COSMIC panel applet and a video-splitting app
+- Go: Wrote a standard-library-only feed-cache service for my Glance dashboard
+- AgentCore Evaluations: Measuring AI-agent quality on AWS: traces, evaluators and regression checks
 
 ## Links
 - [Portfolio](https://abhishek1337chatterjee.github.io/)
