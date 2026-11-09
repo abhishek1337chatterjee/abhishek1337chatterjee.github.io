@@ -81,7 +81,7 @@ Wearly is a full-stack online fashion and cosmetic retailer. The project was bui
 Event-driven AWS backends for a SEBI-registered investment adviser: regulated data pipelines, durable cross-account workflows and a multi-agent AI assistant on Amazon Bedrock AgentCore.
 - Highlights: AWS Lambda, Durable Functions, EventBridge, DynamoDB, Bedrock AgentCore, Cognito, Terraform
 
-### MERN Stack Developer @ Latitude Technolabs (2023 - 2024)
+### MERN Stack Web Developer @ Latitude Technolabs (2023 - 2024)
 Specialized in frontend development and client-focused solutions. Proactive in API development with technologies like Appwrite.
 - Highlights: React, TypeScript, Redux, Appwrite, Canvas API
 
