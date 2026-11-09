@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useCareerPhases, useProjects } from '../../hooks/useSanityData';
+import { useCareerPhases, useCaseStudies, useProjects } from '../../hooks/useSanityData';
 import type { SanityCareerPhase } from '../../lib/sanity';
 import SectionHeader from '../ui/SectionHeader';
 
@@ -8,13 +8,8 @@ type Child = { name: string; sub: string };
 
 const COLS = { gridTemplateColumns: 'clamp(108px,25vw,228px) 1fr' } as const;
 
-// Non-confidential architecture patterns for the active role (from bio: event-driven,
-// orchestration, idempotency, retries, replay). Swappable / seedable later.
-const ACTIVE_CHILDREN: Child[] = [
-  { name: 'event-orchestration', sub: 'Step Functions' },
-  { name: 'idempotency-layer', sub: 'dedupe + retries' },
-  { name: 'eventbridge-bus', sub: 'fan-out + replay' },
-];
+// The active role's spans are its top case studies, so the timeline stays CMS-driven.
+const ACTIVE_SPAN_COUNT = 3;
 
 function parsePeriod(period: string, now: number): Span {
   const [a, b] = period.split(/[–-]/).map((s) => s.trim());
@@ -29,6 +24,7 @@ function parsePeriod(period: string, now: number): Span {
 export default function Journey() {
   const { careerPhases } = useCareerPhases();
   const { projects } = useProjects();
+  const { caseStudies } = useCaseStudies();
   const [seen, setSeen] = useState(false);
   // callback ref: fires when the node actually mounts (i.e. after Sanity data loads),
   // so the bars' grow-in reliably triggers on scroll into view.
@@ -71,7 +67,11 @@ export default function Journey() {
   const childrenOf = (p: SanityCareerPhase, span: Span): Child[] => {
     if (p.isEducation)
       return masai.map((m) => ({ name: m.title, sub: m.techStack?.[0]?.trim() ?? 'showcase' }));
-    if (span.ongoing) return ACTIVE_CHILDREN;
+    if (span.ongoing)
+      return caseStudies.slice(0, ACTIVE_SPAN_COUNT).map((cs) => ({
+        name: cs.slug,
+        sub: cs.stack.slice(0, 2).join(' + '),
+      }));
     return (p.projects ?? []).map((pr) => ({
       name: pr.title,
       sub: (pr.techStack ?? []).slice(0, 2).join(' + ') || 'project',

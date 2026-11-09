@@ -11,10 +11,12 @@ const GH_USER = 'abhishek1337chatterjee';
 // Toggle to preview the optional theme-matched "operator" avatar (compare with/without).
 const SHOW_AVATAR = true;
 
-// Hero tagline. Brand copy — could move to Sanity later.
-const TAGLINE_PREFIX = 'Serverless Engineer building ';
-const TAGLINE_ACCENT = 'event-driven systems on AWS';
-const TAGLINE_SUFFIX = ' — and the React frontends in front of them.';
+// Hero tagline lives in Sanity (about.tagline*); these only cover a missing field.
+const TAGLINE_FALLBACK = {
+  lead: 'Backend engineer building ',
+  accent: 'event-driven systems on AWS',
+  tail: ' — and the AI agents and React frontends on top.',
+};
 
 // The name's second segment cycles like a typed terminal token, sourced from
 // Sanity (about.title's `|`-separated segments). Starts as the real surname
@@ -279,11 +281,11 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
 
           {/* tagline */}
           <p className="max-w-2xl text-lg leading-relaxed text-ink/75 sm:text-xl">
-            {TAGLINE_PREFIX}
+            {about?.taglineLead ?? TAGLINE_FALLBACK.lead}
             <span className="font-medium" style={{ color: 'var(--primary)' }}>
-              {TAGLINE_ACCENT}
+              {about?.taglineAccent ?? TAGLINE_FALLBACK.accent}
             </span>
-            {TAGLINE_SUFFIX}
+            {about?.taglineTail ?? TAGLINE_FALLBACK.tail}
           </p>
 
           {/* CTAs */}

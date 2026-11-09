@@ -15,8 +15,27 @@ export default defineType({
       name: 'title',
       title: 'Professional Title',
       type: 'string',
-      description: 'e.g., "Serverless Engineer | React Developer"',
+      description:
+        'Short "|"-separated parts; the hero types each one after "abhishek." (e.g. "Backend Engineer | Serverless | AWS")',
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'taglineLead',
+      title: 'Hero tagline: lead',
+      type: 'string',
+      description: 'Text before the green phrase, e.g. "Backend engineer building "',
+    }),
+    defineField({
+      name: 'taglineAccent',
+      title: 'Hero tagline: accent (green)',
+      type: 'string',
+      description: 'The highlighted phrase, e.g. "event-driven systems on AWS"',
+    }),
+    defineField({
+      name: 'taglineTail',
+      title: 'Hero tagline: tail',
+      type: 'string',
+      description: 'Text after the green phrase, e.g. " — and the AI agents and React frontends on top."',
     }),
     defineField({
       name: 'location',

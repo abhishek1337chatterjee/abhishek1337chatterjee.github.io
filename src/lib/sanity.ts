@@ -23,6 +23,9 @@ export const queries = {
   about: `*[_type == "about"][0]{
     name,
     title,
+    taglineLead,
+    taglineAccent,
+    taglineTail,
     location,
     experience,
     bio,
@@ -115,15 +118,9 @@ export const queries = {
     color
   }`,
 
-  // Homelab section — anchored by the centerpiece project (Glance Dashboard),
-  // dereferenced inline so it arrives in one request.
+  // Side-builds section: the centerpiece plus every other side project, in one request.
   homelab: `*[_type == "homelab"][0]{
     heading,
-    status,
-    lastSeen,
-    node,
-    homeUrl,
-    emergencyUrl,
     "services": services[] | order(order asc){label, metric, category, note, order},
     "centerpiece": centerpieceProject->{
       title,
@@ -135,10 +132,9 @@ export const queries = {
       githubUrl,
       deployedUrl
     },
-    "secondary": secondaryProject->{
+    "sideProjects": *[_type == "project" && source == "side-project" && _id != ^.centerpieceProject._ref] | order(_createdAt desc){
       title,
       description,
-      "image": image.asset->url,
       techStack,
       githubUrl,
       deployedUrl
@@ -196,6 +192,9 @@ export interface HighlightedPhrase {
 export interface SanityAbout {
   name: string;
   title: string;
+  taglineLead?: string;
+  taglineAccent?: string;
+  taglineTail?: string;
   location?: string;
   experience?: string;
   bio?: string;
@@ -316,14 +315,9 @@ export interface HomelabFeature {
 
 export interface SanityHomelab {
   heading?: string;
-  status?: 'OFFLINE' | 'HEALTHY' | 'STANDBY';
-  lastSeen?: string;
-  node?: string;
-  homeUrl?: string;
-  emergencyUrl?: string;
   services?: HomelabService[];
   centerpiece?: HomelabFeature;
-  secondary?: HomelabFeature;
+  sideProjects?: HomelabFeature[];
 }
 
 export interface SanityLearning {
