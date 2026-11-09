@@ -1,4 +1,4 @@
-# Abhishek Chatterjee — Backend & Serverless Engineer | AWS · Node.js · TypeScript | AI agents
+# Abhishek Chatterjee — Backend Engineer | Serverless | AWS | AI Agents | TypeScript
 
 > I'm a Software Engineer with 3+ years of experience, the last 2 building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
 > My work spans the full stack: streaming APIs, durable cross-account workflows, content architecture with Sanity CMS, and the CI/CD pipelines that ship it all.
