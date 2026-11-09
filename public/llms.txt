@@ -16,9 +16,9 @@ Experience: 3+ years. Location: India. Highlights: 3+ Years Experience, Backend 
 
 ## Skills
 - **frontend**: HTML, CSS, JavaScript, TypeScript, React.js, Next.js, Redux, Tailwind
-- **cloud**: Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES, Temporal.io, Bedrock AgentCore
+- **cloud**: Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES, Temporal.io, Bedrock AgentCore, AWS SAM
 - **backend**: Node.js, Express, MongoDB, DynamoDB
-- **tools**: Git, GitHub, Docker, Ubuntu, Linux, VS Code, Sanity, NPM, Vercel, Serverless, AWS SAM, Biome, pnpm, Claude Code, Terraform
+- **tools**: Git, GitHub, Docker, Ubuntu, Linux, VS Code, Sanity, NPM, Vercel, Serverless, Biome, pnpm, Claude Code, Terraform
 
 ## Projects
 ### COSMIC Bluetooth Battery Applet (personal)
