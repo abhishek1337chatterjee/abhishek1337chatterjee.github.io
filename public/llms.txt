@@ -1,9 +1,9 @@
-# Abhishek Chatterjee — Serverless Engineer | React Developer | Event-Driven
+# Abhishek Chatterjee — Backend & Serverless Engineer | AWS · Node.js · TypeScript | AI agents
 
-> I'm a Software Engineer with 2+ years of experience building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
+> I'm a Software Engineer with 3+ years of experience, the last 2 building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
 > My work spans the full stack: streaming APIs, durable cross-account workflows, content architecture with Sanity CMS, and the CI/CD pipelines that ship it all.
 
-Experience: 2+ years. Location: India. Highlights: 2+ Years Experience, Serverless Engineer, Linux Enthusiast, Open Source Lover. Interests: Custom PC Assembly, Open Source, Linux.
+Experience: 3+ years. Location: India. Highlights: 3+ Years Experience, Backend & Serverless, Linux Enthusiast, Open Source Lover. Interests: Custom PC Assembly, Open Source, Linux.
 
 ## Site sections
 - [Overview: role, live telemetry, GitHub contribution activity](https://abhishek1337chatterjee.github.io/#top)
@@ -145,9 +145,9 @@ Node: Radxa Zero 3E · Status: OFFLINE
 - Dashboard: https://glance.abhishekmediaserver.online
 
 ## Currently exploring
-- Lambda Durable Execution: Lambda Durable Execution 
-- AWS Bedrock Agentcore: Building Chat Agents using Agentcore Runtime and Memory with AWS Bedrock
-- Rust: Learning Rust
+- Rust: Building Linux desktop tools in Rust: a COSMIC panel applet and a video-splitting app
+- Go: Wrote a standard-library-only feed-cache service for my Glance dashboard
+- AgentCore Evaluations: Measuring AI-agent quality on AWS: traces, evaluators and regression checks
 
 ## Links
 - [Portfolio](https://abhishek1337chatterjee.github.io/)
