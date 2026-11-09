@@ -77,9 +77,9 @@ Wearly is a full-stack online fashion and cosmetic retailer. The project was bui
 - Live: https://wearly.vercel.app/
 
 ## Career
-### Serverless Engineer @ time.money (2024 - Present)
-Building scalable serverless architectures and event-driven systems for fintech applications.
-- Highlights: AWS Lambda, Step Functions, EventBridge, SQS, SNS, Cognito, SES
+### Software Engineer @ time.money (2024 - Present)
+Event-driven AWS backends for a SEBI-registered investment adviser: regulated data pipelines, durable cross-account workflows and a multi-agent AI assistant on Amazon Bedrock AgentCore.
+- Highlights: AWS Lambda, Durable Functions, EventBridge, DynamoDB, Bedrock AgentCore, Cognito, Terraform
 
 ### MERN Stack Developer @ Latitude Technolabs (2023 - 2024)
 Specialized in frontend development and client-focused solutions. Proactive in API development with technologies like Appwrite.
