@@ -144,11 +144,8 @@ Fleet template ownership — SAM, Biome, ESM migrations rippled through 30+ serv
 - Drove Serverless→SAM, Biome, and ESM migrations across 30+ services
 - Internal CLIs: cross-account deletion verifier, quality dashboard, vendor mock platform
 
-## Homelab
-Node: Radxa Zero 3E · Status: OFFLINE
+## Side builds
 - Centerpiece project: Glance Dashboard
-- Secondary project: Pulse
-- Dashboard: https://glance.abhishekmediaserver.online
 
 ## Currently exploring
 - Rust: Building Linux desktop tools in Rust: a COSMIC panel applet and a video-splitting app
