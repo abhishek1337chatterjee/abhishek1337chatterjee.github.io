@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useAbout, useSiteSettings } from '../../hooks/useSanityData';
+import { downloadResume } from '../../utils/resume';
 
 const LINKS = ['about', 'skills', 'journey', 'work', 'homelab', 'github'];
 const teal = 'var(--primary)';
@@ -70,7 +71,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
   const { about } = useAbout();
   const { settings } = useSiteSettings();
   const name = (about?.name ?? 'Abhishek Chatterjee').toLowerCase().replace(/\s+/g, '.');
-  const resume = settings?.resumeUrl ?? '/Abhishek-Chatterjee-Resume.pdf';
+  const resume = settings?.resumeUrl;
   const [menuOpen, setMenuOpen] = useState(false);
 
   // close the mobile menu on Escape or on any in-page navigation (hash change)
@@ -109,14 +110,17 @@ export default function Navbar({ booted }: { booted: boolean }) {
               {l}
             </a>
           ))}
-          <a
-            href={resume}
-            target="_blank"
-            rel="noreferrer"
-            className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
-          >
-            resume
-          </a>
+          {resume && (
+            <a
+              href={resume}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => downloadResume(resume)}
+              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+            >
+              resume
+            </a>
+          )}
           <a
             href="#contact"
             className="ml-1 whitespace-nowrap rounded-md border px-3 py-1.5 font-medium transition-colors hover:bg-[color:var(--primary)]/10"
@@ -174,14 +178,17 @@ export default function Navbar({ booted }: { booted: boolean }) {
                   <span style={{ color: teal }}>›</span> {l}
                 </a>
               ))}
-              <a
-                href={resume}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
-              >
-                <span style={{ color: teal }}>›</span> resume
-              </a>
+              {resume && (
+                <a
+                  href={resume}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => downloadResume(resume)}
+                  className="flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+                >
+                  <span style={{ color: teal }}>›</span> resume
+                </a>
+              )}
               <a
                 href="#contact"
                 className="mt-1 flex items-center gap-2 rounded-md border px-2 py-2 font-medium"

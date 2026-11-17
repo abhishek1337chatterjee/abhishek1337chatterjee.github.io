@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useContributions } from '../../hooks/useContributions';
 import { useAbout, useSiteSettings, useSocials } from '../../hooks/useSanityData';
 import { getProfileImageUrl } from '../../lib/sanity';
+import { downloadResume } from '../../utils/resume';
 import Breadcrumb from '../ui/Breadcrumb';
 import TelemetryBadge from '../ui/TelemetryBadge';
 
@@ -208,7 +209,7 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
   const longestToken = tokens.reduce((a, b) => (b.length > a.length ? b : a), '');
   const github = findSocial(socials, 'GitHub');
   const linkedin = findSocial(socials, 'LinkedIn');
-  const resume = settings?.resumeUrl ?? '/Abhishek-Chatterjee-Resume.pdf';
+  const resume = settings?.resumeUrl;
   const avatarUrl = SHOW_AVATAR ? getProfileImageUrl(about?.profileImage, 160) : undefined;
   const region = 'ap-south-1';
   const tier = 'serverless';
@@ -299,7 +300,13 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
               View work →
             </button>
             {resume && (
-              <a href={resume} target="_blank" rel="noreferrer" className={ctaSecondary}>
+              <a
+                href={resume}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => downloadResume(resume)}
+                className={ctaSecondary}
+              >
                 Résumé
               </a>
             )}
