@@ -279,7 +279,9 @@ export default function ChatBot() {
   // docked = collapsed to the small trace❯ icon; open = full console
   const [open, setOpen] = useState(true);
   const [hintVisible, setHintVisible] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const transcriptRef = useRef<HTMLDivElement>(null);
+  // true while the reader is at the bottom of the transcript; scrolling up pauses auto-follow
+  const stickToBottom = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const consoleRef = useRef<HTMLDivElement>(null);
   const hasFetchedSuggestions = useRef(false);
@@ -330,11 +332,18 @@ export default function ChatBot() {
       .finally(() => setLoadingSuggestions(false));
   }, []);
 
-  // Auto-scroll the transcript as messages stream in
-  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional scroll on message change
+  // A new message (usually the reader's own question) always resumes following
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-runs on message count by design
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    stickToBottom.current = true;
   }, [messages.length]);
+
+  // Follow streamed words and status lines, which change content without adding messages
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-runs on every message update by design
+  useEffect(() => {
+    const el = transcriptRef.current;
+    if (el && stickToBottom.current) el.scrollTop = el.scrollHeight;
+  }, [messages]);
 
   // Escape collapses the transcript panel
   useEffect(() => {
@@ -595,7 +604,14 @@ export default function ChatBot() {
               </div>
 
               {/* transcript */}
-              <div className="flex max-h-[38vh] flex-col overflow-y-auto overflow-x-hidden [scrollbar-width:thin]">
+              <div
+                ref={transcriptRef}
+                onScroll={(e) => {
+                  const el = e.currentTarget;
+                  stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+                }}
+                className="flex max-h-[38vh] flex-col overflow-y-auto overflow-x-hidden [scrollbar-width:thin]"
+              >
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -686,7 +702,6 @@ export default function ChatBot() {
                     {error}
                   </div>
                 )}
-                <div ref={messagesEndRef} />
               </div>
             </motion.div>
           )}
