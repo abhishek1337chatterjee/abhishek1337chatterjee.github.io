@@ -204,7 +204,7 @@ function SuggestionPills({
         </button>
       ))}
       <span className="ml-1 hidden font-mono text-[10px] text-muted/50 sm:inline">
-        click to send · Tab to edit
+        click to send · ↑↓ to edit
       </span>
     </div>
   );
@@ -384,15 +384,15 @@ export default function ChatBot() {
     setOpen(true);
   };
 
-  // Tab cycles through suggestions and fills the input
+  // ↑/↓ cycle through suggestions and fill the input; Tab stays free to move focus
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Tab' && suggestions.length > 0 && !isLoading) {
+    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    if (step !== 0 && suggestions.length > 0 && !isLoading) {
       e.preventDefault();
-      const nextIndex = e.shiftKey
-        ? selectedSuggestionIndex <= 0
+      const nextIndex =
+        step === -1 && selectedSuggestionIndex <= 0
           ? suggestions.length - 1
-          : selectedSuggestionIndex - 1
-        : (selectedSuggestionIndex + 1) % suggestions.length;
+          : (selectedSuggestionIndex + step) % suggestions.length;
       setSelectedSuggestionIndex(nextIndex);
       setInput(suggestions[nextIndex]);
     }

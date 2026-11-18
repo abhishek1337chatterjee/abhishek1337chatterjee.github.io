@@ -13,12 +13,12 @@ This portfolio serves as both a professional showcase and a technical demonstrat
 - **AI-Powered ChatBot** - Interactive chatbot powered by Sanity CMS data with streaming responses and intelligent suggestions
   - **Initial Suggestions**: Fetched from `/api/suggestions` endpoint when chat opens (uses Sanity CMS data)
   - **Follow-up Suggestions**: AI-generated after each bot response, parsed via `[SUGGESTIONS]: query1 | query2 | query3` format
-  - **Tab Navigation**: Press Tab to cycle through suggestions and auto-fill input (Shift+Tab for reverse)
+  - **Arrow-key Navigation**: Press ↓/↑ to cycle through suggestions and auto-fill input (Tab moves focus normally)
   - **One-Click Send**: Click any suggestion chip to auto-send the query
   - **Third-Person Format**: All suggestions use "Abhishek's" format (e.g., "What are Abhishek's skills?")
   - **Word-by-Word Streaming**: Smooth 15ms delay animation for natural conversation flow
   - **Markdown Support**: Custom renderer with phone number detection, copy button, and external links
-  - **Hint Text**: "Click to send • Tab to edit" displayed below suggestion chips
+  - **Hint Text**: "click to send · ↑↓ to edit" displayed below suggestion chips
 - **Currently Exploring Section** - CMS-driven subsection in About showing technologies/concepts being actively learned, with color-coded cards and animated pulse indicator
 - **Custom Scrollbar** - Theme-matched scrollbar with pink-to-cyan gradient thumb matching site accent colors
 - **Sanity CMS Integration** - Headless CMS backend via external API (abhishek-api) for all portfolio and chatbot content
@@ -92,7 +92,7 @@ The chatbot implementation demonstrates advanced streaming patterns with Sanity 
 - **Smart Suggestions System**:
   - **Initial Suggestions**: Fetched from API when the console mounts (after scrolling past the hero), returns `{ suggestions: ["query1", "query2", "query3"] }`
   - **Follow-up Suggestions**: AI-generated after each bot response, embedded in streaming response as `[SUGGESTIONS]: query1 | query2 | query3`
-  - **Tab Key Navigation**: Tab cycles forward through suggestions, Shift+Tab cycles backward, auto-fills input field
+  - **Arrow-key Navigation**: ↓ cycles forward through suggestions, ↑ cycles backward, auto-fills input field; Tab is left to the browser so keyboard users can leave the field
   - **Click to Send**: Clicking a suggestion chip auto-sends the query (no manual submit needed)
   - **Visual Feedback**: Selected suggestion highlighted with cyan border and background
   - **Hint Text**: "Click to send • Tab to edit" displayed below chips
