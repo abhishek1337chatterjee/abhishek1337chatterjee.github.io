@@ -18,11 +18,27 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('react-dom') || id.includes('react/')) return 'vendor-react';
-          if (id.includes('framer-motion')) return 'vendor-motion';
-          if (id.includes('react-markdown') || id.includes('remark-gfm')) return 'vendor-markdown';
-          if (id.includes('lucide-react')) return 'vendor-icons';
+        // Groups pull their dependencies in recursively, so React must be claimed first
+        // (highest priority); otherwise it lands in the chat-only markdown chunk.
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vendor-react',
+              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 30,
+            },
+            {
+              name: 'vendor-motion',
+              test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/,
+              priority: 20,
+            },
+            {
+              name: 'vendor-markdown',
+              test: /node_modules[\\/](react-markdown|remark-gfm)[\\/]/,
+              priority: 10,
+            },
+            { name: 'vendor-icons', test: /node_modules[\\/]lucide-react[\\/]/, priority: 10 },
+          ],
         },
       },
     },
