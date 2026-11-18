@@ -322,8 +322,9 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
             )}
           </div>
 
-          {/* telemetry stat band */}
-          <div className="mt-6">
+          {/* telemetry stat band; min-h matches its rendered height so the centred hero
+              doesn't jump when the prerender-stripped band appears (desktop CLS) */}
+          <div className="mt-6 min-h-[25rem] sm:min-h-[24rem] lg:min-h-[16rem]">
             <HeroStats region={region} tier={tier} play={booted} />
           </div>
         </motion.div>

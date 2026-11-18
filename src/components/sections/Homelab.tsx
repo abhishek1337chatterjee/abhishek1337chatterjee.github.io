@@ -85,6 +85,8 @@ export default function Homelab() {
                   <img
                     src={center.image}
                     alt={center.title}
+                    width={400}
+                    height={225}
                     loading="lazy"
                     decoding="async"
                     className="max-h-52 w-full object-cover"

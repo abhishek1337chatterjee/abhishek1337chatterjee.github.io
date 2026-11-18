@@ -46,7 +46,8 @@ function App() {
         <Navbar booted={booted} />
         <main>
           <Hero booted={booted} />
-          <Suspense fallback={null}>
+          {/* full-height fallback keeps the footer below the fold while sections load (CLS) */}
+          <Suspense fallback={<div className="min-h-screen" />}>
             <About />
             <Skills />
             <Journey />
