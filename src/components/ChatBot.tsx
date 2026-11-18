@@ -693,15 +693,11 @@ export default function ChatBot() {
                   </div>
                 )}
 
-                {error && (
-                  <div
-                    role="alert"
-                    aria-live="polite"
-                    className="py-2 text-center text-sm text-error"
-                  >
-                    {error}
-                  </div>
-                )}
+                {/* always-present live region: a region that only appears with the error
+                    isn't announced reliably, so the text changes inside a stable one */}
+                <div aria-live="polite">
+                  {error && <div className="py-2 text-center text-sm text-error">{error}</div>}
+                </div>
               </div>
             </motion.div>
           )}
