@@ -139,6 +139,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
           onClick={() => setMenuOpen((o) => !o)}
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
           className="flex flex-none items-center justify-center rounded-md border border-line p-2 text-ink transition-colors hover:border-[color:var(--primary)]/50 sm:hidden"
         >
           <span className="relative flex h-3.5 w-4 flex-col justify-between">
@@ -158,10 +159,11 @@ export default function Navbar({ booted }: { booted: boolean }) {
         </button>
       </nav>
 
-      {/* mobile dropdown — in-flow accordion */}
+      {/* mobile dropdown — in-flow accordion (WAI disclosure: button aria-expanded + aria-controls) */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
