@@ -20,13 +20,17 @@ export default function StatusLog({ lines }: { lines: StatusLine[] }) {
   // Only a queued line that nothing has followed yet is still counting down
   const countingDown = lastLine?.code === 'queued' ? lastLine : undefined;
   const nowMs = useTicker(countingDown !== undefined);
+  // Screen readers hear each new status once; the per-second countdown stays visual only
+  const announcement = lastLine ? statusText(lastLine, false, lastLine.waitSeconds ?? 0) : '';
 
   return (
     <div
       className="mb-2 flex flex-col gap-1.5 rounded-[10px] px-3 py-2.5 font-mono text-[11.5px] text-ink/80"
       style={{ background: 'rgba(237,239,243,0.03)', border: '1px solid rgba(237,239,243,0.08)' }}
-      aria-live="polite"
     >
+      <p className="sr-only" aria-live="polite">
+        {announcement}
+      </p>
       {lines.map((line, index) => {
         const tone = statusTone(line.code);
         const isSettled = index < lines.length - 1;
