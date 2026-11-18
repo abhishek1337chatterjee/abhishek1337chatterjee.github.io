@@ -1,11 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useActiveSection } from '../../hooks/useActiveSection';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useAbout, useSiteSettings } from '../../hooks/useSanityData';
 import { downloadResume } from '../../utils/resume';
 
 const LINKS = ['about', 'skills', 'journey', 'work', 'homelab', 'github'];
+// contact is a separate CTA link, but must still take over the highlight at the bottom
+const SPY_IDS = [...LINKS, 'contact'];
 const teal = 'var(--primary)';
+// current section: brighter text plus a teal underline (not colour alone)
+const CURRENT_LINK =
+  'aria-[current=true]:text-ink aria-[current=true]:underline aria-[current=true]:decoration-[color:var(--primary)] aria-[current=true]:decoration-2 aria-[current=true]:underline-offset-[6px]';
 
 // Brand — static "ac❯" prompt with a live terminal caret that loops:
 // types the name, holds, erases, pauses, retypes. Starts after `start` (loader
@@ -73,6 +79,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
   const name = (about?.name ?? 'Abhishek Chatterjee').toLowerCase().replace(/\s+/g, '.');
   const resume = settings?.resumeUrl;
   const [menuOpen, setMenuOpen] = useState(false);
+  const activeSection = useActiveSection(SPY_IDS);
 
   // close the mobile menu on Escape or on any in-page navigation (hash change)
   useEffect(() => {
@@ -105,7 +112,8 @@ export default function Navbar({ booted }: { booted: boolean }) {
             <a
               key={l}
               href={`#${l}`}
-              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+              aria-current={activeSection === l ? 'true' : undefined}
+              className={`whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink ${CURRENT_LINK}`}
             >
               {l}
             </a>
@@ -123,7 +131,8 @@ export default function Navbar({ booted }: { booted: boolean }) {
           )}
           <a
             href="#contact"
-            className="ml-1 whitespace-nowrap rounded-md border px-3 py-1.5 font-medium transition-colors hover:bg-[color:var(--primary)]/10"
+            aria-current={activeSection === 'contact' ? 'true' : undefined}
+            className={`ml-1 whitespace-nowrap rounded-md border px-3 py-1.5 font-medium transition-colors hover:bg-[color:var(--primary)]/10 ${CURRENT_LINK}`}
             style={{
               color: 'var(--primary)',
               borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
@@ -175,7 +184,8 @@ export default function Navbar({ booted }: { booted: boolean }) {
                 <a
                   key={l}
                   href={`#${l}`}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+                  aria-current={activeSection === l ? 'true' : undefined}
+                  className={`flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink ${CURRENT_LINK}`}
                 >
                   <span style={{ color: teal }}>›</span> {l}
                 </a>
@@ -193,7 +203,8 @@ export default function Navbar({ booted }: { booted: boolean }) {
               )}
               <a
                 href="#contact"
-                className="mt-1 flex items-center gap-2 rounded-md border px-2 py-2 font-medium"
+                aria-current={activeSection === 'contact' ? 'true' : undefined}
+                className={`mt-1 flex items-center gap-2 rounded-md border px-2 py-2 font-medium ${CURRENT_LINK}`}
                 style={{
                   color: 'var(--primary)',
                   borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
