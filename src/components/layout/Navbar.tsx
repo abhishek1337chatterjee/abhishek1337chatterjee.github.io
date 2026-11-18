@@ -80,6 +80,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
   const resume = settings?.resumeUrl;
   const [menuOpen, setMenuOpen] = useState(false);
   const activeSection = useActiveSection(SPY_IDS);
+  const reduceMotion = useReducedMotion();
 
   // close the mobile menu on Escape or on any in-page navigation (hash change)
   useEffect(() => {
@@ -176,7 +177,10 @@ export default function Navbar({ booted }: { booted: boolean }) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }}
+            // reduced motion: open/close instantly instead of sliding
+            transition={
+              reduceMotion ? { duration: 0 } : { duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }
+            }
             className="overflow-hidden sm:hidden"
           >
             <div className="flex flex-col gap-1 border-t border-line/70 py-3 font-mono text-sm">
