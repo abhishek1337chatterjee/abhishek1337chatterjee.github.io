@@ -38,7 +38,9 @@ function highlightBio(text: string, phrases: HighlightedPhrase[] = []) {
 
 export default function About() {
   const { about } = useAbout();
-  if (!about) return null;
+  // full-height placeholder: About sits right under the hero, so collapsing it while
+  // Sanity loads would pull later sections into view and then push them away (CLS)
+  if (!about) return <section id="about" className="min-h-screen" aria-busy="true" />;
 
   const bioParagraphs = about.bio?.split('\n\n').filter(Boolean) ?? [];
 

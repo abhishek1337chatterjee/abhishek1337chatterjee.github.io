@@ -232,8 +232,8 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
           transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
           className="flex flex-col gap-5"
         >
-          {/* status row */}
-          <div className="flex items-center gap-3.5">
+          {/* status row; min-h holds the avatar's 64px before Sanity returns its URL (CLS) */}
+          <div className={`flex items-center gap-3.5 ${SHOW_AVATAR ? 'min-h-16' : ''}`}>
             {avatarUrl && (
               <img
                 src={avatarUrl}
