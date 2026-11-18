@@ -1,4 +1,11 @@
 @import "tailwindcss";
+/* Self-hosted fonts (Fontsource): bundled same-origin, no render-blocking Google Fonts chain.
+   Variable files cover every weight; unicode-range means only the latin file downloads. */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/space-grotesk/wght.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/ibm-plex-mono/latin-600.css";
 @plugin "daisyui";
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -43,8 +50,8 @@
 
 /* ── Tailwind v4 design tokens: fonts + neutral aliases ── */
 @theme {
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-display: "Space Grotesk Variable", "Space Grotesk", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 
   --color-line: #262a33;
