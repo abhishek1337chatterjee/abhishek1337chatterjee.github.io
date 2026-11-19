@@ -230,6 +230,16 @@ body {
   }
 }
 
+/* journey playhead — wrapper is first-year→now wide, so 100% lands exactly on now */
+@keyframes playhead {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
 /* ── Respect reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
