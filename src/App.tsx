@@ -15,7 +15,7 @@ const GitHubStats = lazy(() => import('./components/sections/GitHubStats'));
 const Contact = lazy(() => import('./components/sections/Contact'));
 const ChatBot = lazy(() => import('./components/ChatBot'));
 
-function App() {
+function App({ snapshot = false }: { snapshot?: boolean }) {
   const [booted, setBooted] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const handleDone = useCallback(() => setBooted(true), []);
@@ -37,7 +37,7 @@ function App() {
 
   return (
     <>
-      <Loader onDone={handleDone} />
+      <Loader onDone={handleDone} snapshot={snapshot} />
       {/* overflow-x-clip (not hidden) so it doesn't break the navbar's sticky */}
       <div className="min-h-screen overflow-x-clip">
         <Navbar booted={booted} />
