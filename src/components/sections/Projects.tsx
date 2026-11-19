@@ -315,27 +315,46 @@ export default function Journey() {
 
             return (
               <div key={p._id} className={idx ? 'mt-4 border-t border-ink/5 pt-4' : 'mt-2'}>
-                <button
-                  type="button"
-                  aria-pressed={on}
-                  aria-controls="journey-readout"
-                  onClick={() => setPicked(idx)}
-                  className="grid w-full cursor-pointer items-center gap-3.5 rounded-lg text-left"
-                  style={COLS}
-                >
+                {/* the company links out, so it sits beside the row's button, not inside it */}
+                <div className="grid w-full items-center gap-3.5" style={COLS}>
                   <span className="block min-w-0">
-                    <span className="block font-mono text-[11px] text-muted">{p.period}</span>
-                    <span
-                      className={`block font-display text-[15px] font-semibold tracking-tight transition-colors ${on ? 'text-ink' : 'text-ink/70'}`}
+                    <button
+                      type="button"
+                      aria-pressed={on}
+                      aria-controls="journey-readout"
+                      onClick={() => setPicked(idx)}
+                      className="block w-full cursor-pointer rounded text-left"
                     >
-                      {p.role}
-                    </span>
-                    <span className="block truncate text-xs text-muted">
-                      {p.companyName ?? p.title}
-                    </span>
+                      <span className="block font-mono text-[11px] text-muted">{p.period}</span>
+                      <span
+                        className={`block font-display text-[15px] font-semibold tracking-tight transition-colors ${on ? 'text-ink' : 'text-ink/70'}`}
+                      >
+                        {p.role}
+                      </span>
+                    </button>
+                    {p.companyWebsite ? (
+                      <a
+                        href={p.companyWebsite}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block truncate text-xs text-muted underline decoration-dotted underline-offset-4 transition-colors hover:text-[#34e5ff]"
+                      >
+                        {p.companyName ?? p.title} ↗
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    ) : (
+                      <span className="block truncate text-xs text-muted">
+                        {p.companyName ?? p.title}
+                      </span>
+                    )}
                   </span>
-                  <span
-                    className={`relative block h-10 rounded-lg border transition-colors ${on ? 'border-[color:var(--secondary)]/45' : 'border-ink/5'}`}
+                  {/* the bar picks the row too (pointer only; the label button is the keyboard path) */}
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    onClick={() => setPicked(idx)}
+                    className={`relative block h-10 cursor-pointer rounded-lg border transition-colors ${on ? 'border-[color:var(--secondary)]/45' : 'border-ink/5'}`}
                     style={track(gridPct)}
                   >
                     <span
@@ -366,8 +385,8 @@ export default function Journey() {
                         />
                       </span>
                     )}
-                  </span>
-                </button>
+                  </button>
+                </div>
 
                 {/* child sub-spans */}
                 {kids.length > 0 && (
@@ -491,7 +510,20 @@ export default function Journey() {
                     {p.role}
                     <span className="font-sans text-sm font-normal text-muted">
                       {' '}
-                      · {p.companyName ?? p.title}
+                      ·{' '}
+                      {p.companyWebsite ? (
+                        <a
+                          href={p.companyWebsite}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline decoration-dotted underline-offset-4 transition-colors hover:text-[#34e5ff]"
+                        >
+                          {p.companyName ?? p.title} ↗
+                          <span className="sr-only"> (opens in a new tab)</span>
+                        </a>
+                      ) : (
+                        (p.companyName ?? p.title)
+                      )}
                     </span>
                   </h3>
                   {(p.nonConfidentialImpact || p.description) && (
