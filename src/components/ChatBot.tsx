@@ -33,6 +33,15 @@ interface Message extends TraceTimings {
 }
 
 // Parse suggestions from bot response
+// Markdown marks read aloud as noise ("star star"); links keep their text only
+function plainText(markdown: string): string {
+  return markdown
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[*_`#>|~]+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function parseSuggestions(content: string): { text: string; suggestions: string[] } {
   const suggestionsMatch = content.match(/\[SUGGESTIONS\]:\s*(.+)$/m);
   if (suggestionsMatch) {
@@ -341,6 +350,38 @@ export default function ChatBot() {
       })
       .finally(() => setLoadingSuggestions(false));
   }, []);
+
+  // Phones: the sheet is modal, so the page behind neither scrolls nor takes focus
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    if (!open || wide || !sheet?.parentElement) return;
+    const behind = [...sheet.parentElement.children].filter(
+      (el): el is HTMLElement =>
+        el instanceof HTMLElement && el !== sheet && !el.hasAttribute('data-chat-scrim'),
+    );
+    for (const el of behind) el.inert = true;
+    const root = document.documentElement;
+    const overflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    return () => {
+      for (const el of behind) el.inert = false;
+      root.style.overflow = overflow;
+    };
+  }, [open, wide]);
+
+  // Screen readers hear the finished answer once; the word-by-word stream stays visual
+  const [answerNote, setAnswerNote] = useState('');
+  const wasLoading = useRef(false);
+  useEffect(() => {
+    if (isLoading) setAnswerNote('');
+    else if (wasLoading.current) {
+      const last = messages.at(-1);
+      if (last?.role === 'assistant' && !last.failed && last.content) {
+        setAnswerNote(plainText(parseSuggestions(last.content).text));
+      }
+    }
+    wasLoading.current = isLoading;
+  }, [isLoading, messages]);
 
   // A new message (usually the reader's own question) always resumes following
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-runs on message count by design
@@ -724,6 +765,7 @@ export default function ChatBot() {
             {!wide && (
               <motion.button
                 key="scrim"
+                data-chat-scrim
                 type="button"
                 aria-label="Close trace console"
                 onClick={closeDrawer}
@@ -738,6 +780,7 @@ export default function ChatBot() {
               ref={sheetRef}
               role="dialog"
               aria-label="Trace console"
+              aria-modal={wide ? undefined : true}
               {...motionProps}
               style={{ y: dragY }}
               className="fixed inset-x-0 bottom-0 z-50 flex h-[88dvh] flex-col overscroll-contain rounded-t-2xl border-t border-[#2f3440] bg-[#111318] shadow-[0_-18px_40px_rgba(0,0,0,0.5)] md:inset-x-auto md:top-14 md:right-0 md:h-auto md:w-[420px] md:rounded-none md:border-t-0 md:border-l md:border-line md:shadow-[-22px_0_44px_rgba(0,0,0,0.45)]"
@@ -793,7 +836,7 @@ export default function ChatBot() {
                   const el = e.currentTarget;
                   stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
                 }}
-                className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 [scrollbar-width:none] md:px-5 md:py-3.5 [&::-webkit-scrollbar]:hidden"
+                className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 py-3 [scrollbar-width:none] md:px-5 md:py-3.5 [&::-webkit-scrollbar]:hidden"
               >
                 {undo && <UndoToast key={undo.until} until={undo.until} onUndo={undoClear} />}
 
@@ -883,6 +926,7 @@ export default function ChatBot() {
                       {error}
                     </p>
                   )}
+                  {answerNote && <p className="sr-only">{answerNote}</p>}
                 </div>
               </div>
 
