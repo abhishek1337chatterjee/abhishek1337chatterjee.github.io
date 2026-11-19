@@ -4,6 +4,7 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useCaseStudies } from '../../hooks/useSanityData';
 import type { SanityCaseStudy } from '../../lib/sanity';
 import { peekPendingStudy, SELECT_STUDY, takePendingStudy } from '../../lib/studyEvents';
+import { TAP_44 } from '../ui/tapArea';
 
 // Fired by the "ask the chatbot about this" link; ChatBot listens and prefills.
 export function askChatAbout(question: string) {
@@ -53,7 +54,7 @@ function DetailPane({ study, animate }: { study: SanityCaseStudy; animate: boole
         onClick={() =>
           askChatAbout(study.chatPrompt ?? `Tell me about the "${study.title}" case study`)
         }
-        className="mt-3 mb-5 self-start font-mono text-[13px] text-muted transition-colors hover:text-ink"
+        className={`relative mt-3 mb-5 self-start font-mono text-[13px] text-muted transition-colors hover:text-ink ${TAP_44}`}
       >
         → <span style={{ color: 'var(--primary)' }}>ask the chatbot about this</span>
       </button>

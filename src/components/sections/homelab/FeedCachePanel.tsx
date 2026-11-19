@@ -1,6 +1,7 @@
 import { Pause, Play, RotateCcw } from 'lucide-react';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useReducedMotion } from '../../../hooks/useReducedMotion';
+import { TAP_44 } from '../../ui/tapArea';
 import {
   DEADLINE_S,
   FEEDS,
@@ -164,7 +165,7 @@ export default function FeedCachePanel({
           <button
             type="button"
             onClick={control}
-            className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-ink"
+            className={`relative inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-ink ${TAP_44}`}
           >
             {status === 'playing' ? (
               <Pause aria-hidden className="size-3.5" />
@@ -280,7 +281,7 @@ export default function FeedCachePanel({
               href={deployedUrl}
               target="_blank"
               rel="noreferrer"
-              className="whitespace-nowrap font-mono text-sm transition-opacity hover:opacity-80"
+              className={`relative whitespace-nowrap font-mono text-sm transition-opacity hover:opacity-80 ${TAP_44}`}
               style={{ color: TEAL }}
             >
               open dashboard ↗ <span className="text-muted">· live</span>

@@ -20,6 +20,7 @@ import PageRefs from './chat/PageRefs';
 import SpanWaterfall from './chat/SpanWaterfall';
 import { FIREWALL_LIMIT_TEXT, TRY_AGAIN_LABEL, TRY_AGAIN_NOTE } from './chat/statusMessages';
 import { matchStudies, type TraceTimings } from './chat/trace';
+import { TAP_44 } from './ui/tapArea';
 
 // API endpoint from environment variable
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:3000/api/chat';
@@ -84,7 +85,7 @@ function MessageContent({ content, live }: { content: string; live: boolean }) {
             </a>
             <button
               onClick={() => handleCopy(part)}
-              className="rounded p-0.5 transition-colors hover:bg-base-300/60"
+              className="relative rounded p-0.5 transition-colors pointer-coarse:before:absolute pointer-coarse:before:-inset-3.5 hover:bg-base-300/60"
               title="Copy phone number"
               aria-label={copiedText === part ? 'Phone number copied' : 'Copy phone number'}
               type="button"
@@ -812,7 +813,7 @@ export default function ChatBot() {
                       type="button"
                       onClick={clearTrace}
                       disabled={!canClear}
-                      className={`flex min-h-8 items-center gap-1.5 rounded-[7px] border px-2.5 transition-colors hover:text-[#34e5ff] disabled:opacity-45 disabled:hover:text-muted md:min-h-0 md:px-2 md:py-1 ${undo ? 'border-[color:var(--secondary-deep)] text-[color:var(--secondary)]' : 'border-line'}`}
+                      className={`relative flex min-h-8 items-center gap-1.5 rounded-[7px] border px-2.5 transition-colors hover:text-[#34e5ff] disabled:opacity-45 disabled:hover:text-muted md:min-h-0 md:px-2 md:py-1 ${TAP_44} ${undo ? 'border-[color:var(--secondary-deep)] text-[color:var(--secondary)]' : 'border-line'}`}
                     >
                       <Trash2 aria-hidden className="size-3" />
                       clear
@@ -820,10 +821,18 @@ export default function ChatBot() {
                     <button
                       type="button"
                       onClick={closeDrawer}
-                      className="flex min-h-8 items-center gap-1.5 rounded-[7px] border border-line px-2.5 transition-colors hover:text-[#34e5ff] md:min-h-0 md:px-2 md:py-1"
+                      className={`relative flex min-h-8 items-center gap-1.5 rounded-[7px] border border-line px-2.5 transition-colors hover:text-[#34e5ff] md:min-h-0 md:px-2 md:py-1 ${TAP_44}`}
                     >
                       <X aria-hidden className="size-3" />
-                      {wide ? 'esc' : 'close'}
+                      {/* "esc" only means something with a keyboard; touch tablets get the word */}
+                      {wide ? (
+                        <>
+                          <span className="pointer-coarse:hidden">esc</span>
+                          <span className="hidden pointer-coarse:inline">close</span>
+                        </>
+                      ) : (
+                        'close'
+                      )}
                     </button>
                   </span>
                 </div>

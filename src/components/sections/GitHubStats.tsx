@@ -3,6 +3,7 @@ import { useContributions } from '../../hooks/useContributions';
 import { useGitHubStats } from '../../hooks/useGitHubStats';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import Reveal from '../ui/Reveal';
+import { TAP_44 } from '../ui/tapArea';
 import { monthly, weekly } from './github/buckets';
 import Waveform from './github/Waveform';
 
@@ -203,7 +204,7 @@ export default function GitHubStats() {
             href={`https://github.com/${GITHUB_USERNAME}`}
             target="_blank"
             rel="noreferrer"
-            className="mt-2 inline-flex items-center gap-2 font-mono text-sm text-muted transition-colors hover:text-[color:var(--primary)]"
+            className={`relative mt-2 inline-flex items-center gap-2 font-mono text-sm text-muted transition-colors hover:text-[color:var(--primary)] ${TAP_44}`}
           >
             view full profile on GitHub →
           </a>

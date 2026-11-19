@@ -1,9 +1,10 @@
 import { useHomelab } from '../../hooks/useSanityData';
 import type { HomelabFeature } from '../../lib/sanity';
 import Reveal from '../ui/Reveal';
+import { TAP_44 } from '../ui/tapArea';
 import FeedCachePanel from './homelab/FeedCachePanel';
 
-const linkCls = 'font-mono text-xs text-[color:var(--primary)] transition-opacity hover:opacity-80';
+const linkCls = `relative font-mono text-xs text-[color:var(--primary)] transition-opacity hover:opacity-80 ${TAP_44}`;
 
 function LiveDot() {
   return (

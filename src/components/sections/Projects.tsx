@@ -11,6 +11,7 @@ import {
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useCareerPhases, useCaseStudies, useProjects } from '../../hooks/useSanityData';
 import type { SanityCareerPhase } from '../../lib/sanity';
+import { TAP_44 } from '../ui/tapArea';
 
 type Span = { start: number; end: number; ongoing: boolean };
 type Child = { name: string; sub: string };
@@ -337,9 +338,11 @@ export default function Journey() {
                         href={p.companyWebsite}
                         target="_blank"
                         rel="noreferrer"
-                        className="block truncate text-xs text-muted underline decoration-dotted underline-offset-4 transition-colors hover:text-[#34e5ff]"
+                        className="relative block text-xs text-muted underline decoration-dotted underline-offset-4 transition-colors pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:top-0 pointer-coarse:before:h-8 hover:text-[#34e5ff]"
                       >
-                        {p.companyName ?? p.title} ↗
+                        {/* tap layer grows down only (the role button sits right above); truncate stays on
+                            the inner span because overflow on the link would clip that layer */}
+                        <span className="block truncate">{p.companyName ?? p.title} ↗</span>
                         <span className="sr-only"> (opens in a new tab)</span>
                       </a>
                     ) : (
@@ -467,7 +470,7 @@ export default function Journey() {
                     aria-valuenow={Math.round(((elapsedRef.current - LEAD_S) / SWEEP_S) * 100)}
                     onKeyDown={nudge}
                     {...grab}
-                    className="pointer-events-auto absolute bottom-0 left-0 -translate-x-1/2 cursor-ew-resize touch-none rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]"
+                    className={`pointer-events-auto absolute bottom-0 left-0 -translate-x-1/2 cursor-ew-resize touch-none ${TAP_44} rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]`}
                   >
                     <span ref={dateRef}>{yearMonth(min)}</span>
                   </span>
