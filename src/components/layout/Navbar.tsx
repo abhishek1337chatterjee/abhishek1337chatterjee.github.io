@@ -13,6 +13,44 @@ const teal = 'var(--primary)';
 const CURRENT_LINK =
   'aria-[current=true]:text-ink aria-[current=true]:underline aria-[current=true]:decoration-[color:var(--primary)] aria-[current=true]:decoration-2 aria-[current=true]:underline-offset-[6px]';
 
+// mobile menu: current row gets an amber tint plus the amber dot glyph (not colour alone)
+const MENU_CURRENT =
+  'aria-[current=true]:bg-[color:var(--secondary)]/10 aria-[current=true]:text-ink';
+
+function MenuRow({
+  href,
+  n,
+  current = false,
+  external = false,
+  onClick,
+  children,
+}: {
+  href: string;
+  n: number;
+  current?: boolean;
+  external?: boolean;
+  onClick?: () => void;
+  children: string;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      aria-current={current ? 'true' : undefined}
+      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+      className={`flex min-h-11 items-center gap-2.5 rounded-md px-3 text-muted transition-colors hover:bg-base-200/60 hover:text-ink ${MENU_CURRENT}`}
+    >
+      <span aria-hidden style={{ color: current ? 'var(--secondary)' : teal }}>
+        {current ? '●' : '›'}
+      </span>
+      {children}
+      <span aria-hidden className="ml-auto text-[11px] text-[#5d6472]">
+        {String(n).padStart(2, '0')}
+      </span>
+    </a>
+  );
+}
+
 // Brand — "ac❯" prompt that types the name once after the loader, then stays still so the
 // identity is always readable. Hover or focus replays one erase + retype, like re-running a
 // trace. The caret is the favicon's ink block. Reduced motion → static full name, no replay.
@@ -99,31 +137,48 @@ export default function Navbar({ booted }: { booted: boolean }) {
   const activeSection = useActiveSection(SPY_IDS);
   const reduceMotion = useReducedMotion();
 
-  // close the mobile menu on Escape or on any in-page navigation (hash change)
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const fade = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.16, ease: [0.2, 0.7, 0.2, 1] as [number, number, number, number] };
+
+  // close the mobile menu on any in-page navigation (hash change)
   useEffect(() => {
     const close = () => setMenuOpen(false);
+    window.addEventListener('hashchange', close);
+    return () => window.removeEventListener('hashchange', close);
+  }, []);
+
+  // Escape closes; focus goes back to the toggle so it is not lost with the unmounted links
+  useEffect(() => {
+    if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMenuOpen(false);
+      if (e.key !== 'Escape') return;
+      setMenuOpen(false);
+      toggleRef.current?.focus();
     };
     window.addEventListener('keydown', onKey);
-    window.addEventListener('hashchange', close);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      window.removeEventListener('hashchange', close);
-    };
-  }, []);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
 
   return (
     <header
       className="sticky top-0 z-40 border-b border-line/70 px-5 backdrop-blur-md sm:px-8 lg:px-16"
       style={{ background: 'rgba(14,15,19,0.72)' }}
     >
-      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 py-2.5">
+      <nav
+        className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 py-2.5"
+        onBlur={(e) => {
+          // tabbing past the open menu would land on content hidden under the scrim
+          const next = e.relatedTarget as Node | null;
+          if (menuOpen && next && !e.currentTarget.contains(next)) setMenuOpen(false);
+        }}
+      >
         {/* brand — typed terminal command */}
         <NavBrand name={name} start={booted} />
 
         {/* desktop links */}
-        <div className="hidden items-center gap-1 font-mono text-[12.5px] sm:flex">
+        <div className="hidden items-center gap-1 font-mono text-[12.5px] min-[840px]:flex">
           {LINKS.map((l) => (
             <a
               key={l}
@@ -159,13 +214,15 @@ export default function Navbar({ booted }: { booted: boolean }) {
         </div>
 
         {/* mobile menu toggle — hamburger that morphs to ✕ */}
+        {/* the before: layer widens the tap area to 44 px without making the header taller */}
         <button
+          ref={toggleRef}
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
-          className="flex flex-none items-center justify-center rounded-md border border-line p-2 text-ink transition-colors hover:border-[color:var(--primary)]/50 sm:hidden"
+          className="relative flex flex-none items-center justify-center rounded-md border border-line p-2 text-ink transition-colors before:absolute before:-inset-[7px] hover:border-[color:var(--primary)]/50 min-[840px]:hidden"
         >
           <span className="relative flex h-3.5 w-4 flex-col justify-between">
             <span
@@ -182,59 +239,65 @@ export default function Navbar({ booted }: { booted: boolean }) {
             />
           </span>
         </button>
-      </nav>
 
-      {/* mobile dropdown — in-flow accordion (WAI disclosure: button aria-expanded + aria-controls) */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            id="mobile-menu"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            // reduced motion: open/close instantly instead of sliding
-            transition={
-              reduceMotion ? { duration: 0 } : { duration: 0.2, ease: [0.2, 0.7, 0.2, 1] }
-            }
-            className="overflow-hidden sm:hidden"
-          >
-            <div className="flex flex-col gap-1 border-t border-line/70 py-3 font-mono text-sm">
-              {LINKS.map((l) => (
-                <a
-                  key={l}
-                  href={`#${l}`}
-                  aria-current={activeSection === l ? 'true' : undefined}
-                  className={`flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink ${CURRENT_LINK}`}
-                >
-                  <span style={{ color: teal }}>›</span> {l}
-                </a>
-              ))}
-              {resume && (
-                <a
-                  href={resume}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={() => downloadResume(resume)}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
-                >
-                  <span style={{ color: teal }}>›</span> resume
-                </a>
-              )}
-              <a
-                href="#contact"
-                aria-current={activeSection === 'contact' ? 'true' : undefined}
-                className={`mt-1 flex items-center gap-2 rounded-md border px-2 py-2 font-medium ${CURRENT_LINK}`}
-                style={{
-                  color: 'var(--primary)',
-                  borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
-                }}
+        {/* mobile menu: drops over the page instead of pushing it down (WAI disclosure).
+            Absolute, not fixed: the header's backdrop-filter traps fixed children. */}
+        <AnimatePresence>
+          {menuOpen && (
+            <>
+              <motion.button
+                type="button"
+                tabIndex={-1}
+                aria-hidden
+                onClick={() => setMenuOpen(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={fade}
+                className="absolute inset-x-0 top-full h-[calc(100dvh-100%)] cursor-default touch-none bg-[rgba(6,7,9,0.6)] min-[840px]:hidden"
+              />
+              <motion.div
+                id="mobile-menu"
+                initial={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
+                transition={fade}
+                className="absolute inset-x-0 top-full flex flex-col gap-0.5 border-b border-line bg-[#111318] px-5 pt-2 pb-3.5 font-mono text-sm shadow-[0_18px_40px_rgba(0,0,0,0.5)] sm:right-8 sm:left-auto sm:w-80 sm:rounded-b-lg sm:border-x min-[840px]:hidden"
               >
-                <span>›</span> contact
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                {LINKS.map((l, i) => (
+                  <MenuRow key={l} href={`#${l}`} n={i + 1} current={activeSection === l}>
+                    {l}
+                  </MenuRow>
+                ))}
+                {resume && (
+                  <MenuRow
+                    href={resume}
+                    n={LINKS.length + 1}
+                    external
+                    onClick={() => {
+                      downloadResume(resume);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    resume
+                  </MenuRow>
+                )}
+                <a
+                  href="#contact"
+                  aria-current={activeSection === 'contact' ? 'true' : undefined}
+                  className={`mt-1.5 flex min-h-11 items-center gap-2.5 rounded-md border px-3 font-medium ${MENU_CURRENT}`}
+                  style={{
+                    color: 'var(--primary)',
+                    borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
+                  }}
+                >
+                  <span aria-hidden>›</span> contact
+                </a>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </nav>
     </header>
   );
 }
