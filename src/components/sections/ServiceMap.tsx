@@ -1,7 +1,8 @@
 import { ChevronDown, Star } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
-import { useCaseStudies } from '../../hooks/useSanityData';
+import { useCareerPhases, useCaseStudies } from '../../hooks/useSanityData';
+import { parsePeriod } from '../../lib/period';
 import type { SanityCaseStudy } from '../../lib/sanity';
 import { peekPendingStudy, SELECT_STUDY, takePendingStudy } from '../../lib/studyEvents';
 import { TAP_44 } from '../ui/tapArea';
@@ -173,6 +174,10 @@ function Stub({ on, grow, delay }: { on: boolean; grow: 'up' | 'down'; delay: nu
 
 export default function ServiceMap() {
   const { caseStudies } = useCaseStudies();
+  // The header describes the current role, read from the CMS like Journey does
+  const { careerPhases } = useCareerPhases();
+  const current = careerPhases.find((p) => !p.isEducation && parsePeriod(p.period, 0).ongoing);
+  const since = current && Math.floor(parsePeriod(current.period, 0).start);
   const reduce = useReducedMotion();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Phones can fold the open row away; desktop always shows one study.
@@ -256,8 +261,12 @@ export default function ServiceMap() {
             Service map
           </h2>
           <p className="font-mono text-sm text-muted">
-            time.money · <span className="text-ink">{ordered.length} services · 30+ lambdas</span> ·
-            2024→now
+            {current && <>{current.companyName ?? current.title} · </>}
+            <span className="text-ink">
+              {ordered.length} services
+              {current?.scaleNote && <> · {current.scaleNote}</>}
+            </span>
+            {since && <> · {since}→now</>}
           </p>
         </div>
 

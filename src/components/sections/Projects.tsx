@@ -10,11 +10,12 @@ import {
 } from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useCareerPhases, useCaseStudies, useProjects } from '../../hooks/useSanityData';
+import { parsePeriod, parseTimeline, type Span } from '../../lib/period';
 import type { SanityCareerPhase } from '../../lib/sanity';
 import { TAP_44 } from '../ui/tapArea';
 
-type Span = { start: number; end: number; ongoing: boolean };
-type Child = { name: string; sub: string };
+// `when` only when the CMS has real dates; undated children never get a made-up position.
+type Child = { name: string; sub: string; when?: { start: number; end: number } };
 
 const COLS = { gridTemplateColumns: 'clamp(108px,25vw,228px) 1fr' } as const;
 
@@ -26,29 +27,8 @@ const LEAD_S = 0.3;
 // How far the dashed "still running" tail reaches past now, in years.
 const TAIL_Y = 0.35;
 
-function parsePeriod(period: string, now: number): Span {
-  const [a, b] = period.split(/[–-]/).map((s) => s.trim());
-  const start = Number.parseInt(a, 10);
-  const ongoing = /present|now|current/i.test(b ?? '');
-  const parsedEnd = Number.parseInt(b ?? '', 10);
-  const safeStart = Number.isNaN(start) ? now : start;
-  const end = ongoing ? now : Number.isNaN(parsedEnd) ? safeStart + 1 : parsedEnd;
-  return { start: safeStart, end: Math.max(end, safeStart + 1), ongoing };
-}
-
-// Fractional year → "2024-03".
-function yearMonth(t: number) {
-  const y = Math.floor(t);
-  // epsilon: 2026 + 10/12 comes back as 9.9999… months and would floor to October
-  const m = Math.min(12, Math.floor((t - y) * 12 + 1e-6) + 1);
-  return `${y}-${String(m).padStart(2, '0')}`;
-}
-
-// Fractional year → "November 2025", what a screen reader says for the playhead.
-function spokenMonth(t: number) {
-  const [y, m] = yearMonth(t).split('-').map(Number);
-  return new Date(y, m - 1).toLocaleString('en', { month: 'long', year: 'numeric' });
-}
+// Most role periods in the CMS are year-only, so the playhead shows a year, never an invented month.
+const yearOf = (t: number) => String(Math.floor(t + 1e-6));
 
 const clock = (s: number) => s.toFixed(1).padStart(4, '0');
 const SWEEP_LABEL = `${clock(SWEEP_S)}s`;
@@ -101,7 +81,8 @@ export default function Journey() {
   const rows = careerPhases
     .map((p) => ({ p, span: parsePeriod(p.period, now) }))
     .sort((a, b) => b.span.start - a.span.start); // newest span on top
-  const min = rows.length ? Math.min(...rows.map((r) => r.span.start)) : now;
+  // whole year: the axis ticks and the trace_id label count from it
+  const min = Math.floor(rows.length ? Math.min(...rows.map((r) => r.span.start)) : now);
   const spansKey = rows.map((r) => `${r.span.start}-${r.span.end}`).join('|');
   const playing = seen && !reduce && rows.length > 0;
 
@@ -118,7 +99,7 @@ export default function Journey() {
   const paint = (elapsed: number) => {
     const p = Math.min(Math.max((elapsed - LEAD_S) / SWEEP_S, 0), 1);
     const t = min + p * (now - min);
-    if (dateRef.current) dateRef.current.textContent = yearMonth(t);
+    if (dateRef.current) dateRef.current.textContent = yearOf(t);
     if (clockRef.current)
       clockRef.current.textContent = `00:${clock(p * SWEEP_S)} / ${SWEEP_LABEL}`;
     return { p, idx: p >= 1 ? null : rowAt(t) };
@@ -240,6 +221,7 @@ export default function Journey() {
       return caseStudies.slice(0, ACTIVE_SPAN_COUNT).map((cs) => ({
         name: cs.slug,
         sub: cs.stack.slice(0, 2).join(' + '),
+        when: parseTimeline(cs.timeline, now),
       }));
     return (p.projects ?? []).map((pr) => ({
       name: pr.title,
@@ -409,11 +391,11 @@ export default function Journey() {
                 {/* child sub-spans */}
                 {kids.length > 0 && (
                   <div className="mt-3 flex flex-col gap-1.5">
-                    {kids.map((c, ci) => {
-                      const width = right - left;
-                      const cw = width * 0.6;
-                      const cl =
-                        left + (width - cw) * (kids.length > 1 ? ci / (kids.length - 1) : 0);
+                    {kids.map((c) => {
+                      // dated: placed from the CMS timeline; undated: a dotted outline over the
+                      // whole role, i.e. "during this role", with no invented position
+                      const cl = c.when ? pct(c.when.start) : left;
+                      const cw = c.when ? pct(c.when.end) - cl : right - left;
                       return (
                         <div key={c.name} className="grid items-center gap-3.5" style={COLS}>
                           <div className="flex min-w-0 items-center gap-1.5 pl-2.5">
@@ -436,8 +418,14 @@ export default function Journey() {
                               style={{
                                 left: `${cl}%`,
                                 width: `${cw}%`,
-                                background: `color-mix(in srgb, ${kidTint} 34%, #15171d)`,
-                                boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${kidTint} 70%, transparent)`,
+                                ...(c.when
+                                  ? {
+                                      background: `color-mix(in srgb, ${kidTint} 34%, #15171d)`,
+                                      boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${kidTint} 70%, transparent)`,
+                                    }
+                                  : {
+                                      border: `1px dotted color-mix(in srgb, ${kidTint} 55%, transparent)`,
+                                    }),
                                 ...sweep(cl, cl + cw),
                               }}
                             />
@@ -483,16 +471,16 @@ export default function Journey() {
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={Math.round(headP * 100)}
-                    aria-valuetext={spokenMonth(min + headP * (now - min))}
+                    aria-valuetext={yearOf(min + headP * (now - min))}
                     onKeyDown={nudge}
                     {...grab}
-                    className={`pointer-events-auto absolute bottom-0 left-0 -translate-x-1/2 cursor-ew-resize touch-none ${TAP_44} rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]`}
+                    className={`pointer-events-auto absolute bottom-0 left-0 -translate-x-1/2 cursor-ew-resize touch-none ${TAP_44} min-w-11 rounded-md border text-center border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]`}
                   >
-                    <span ref={dateRef}>{yearMonth(min)}</span>
+                    <span ref={dateRef}>{yearOf(min)}</span>
                   </span>
                 ) : (
                   <span className="absolute bottom-0 left-0 -translate-x-1/2 rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]">
-                    <span ref={dateRef}>{yearMonth(reduce ? now : min)}</span>
+                    <span ref={dateRef}>{yearOf(reduce ? now : min)}</span>
                   </span>
                 )}
               </div>

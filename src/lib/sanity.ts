@@ -100,6 +100,7 @@ export const queries = {
     highlights,
     nonConfidentialImpact,
     keyTechnologies,
+    scaleNote,
     tags,
     isEducation,
     "projects": projects[]->{
@@ -302,6 +303,7 @@ export interface SanityCareerPhase {
   highlights?: string[];
   nonConfidentialImpact?: string;
   keyTechnologies?: string[];
+  scaleNote?: string;
   tags?: string[];
   isEducation?: boolean;
   projects?: SanityProject[];
