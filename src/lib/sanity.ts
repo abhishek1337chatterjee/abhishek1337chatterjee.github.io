@@ -342,40 +342,52 @@ export interface SanityCaseStudy {
 }
 
 // Fetch functions
+// Several sections read the same documents; share one request per query per page load.
+const inflight = new Map<string, Promise<unknown>>();
+function fetchOnce<T>(query: string): Promise<T> {
+  let req = inflight.get(query) as Promise<T> | undefined;
+  if (!req) {
+    req = sanityClient.fetch<T>(query);
+    req.catch(() => inflight.delete(query)); // let a later caller retry
+    inflight.set(query, req);
+  }
+  return req;
+}
+
 export async function getAbout(): Promise<SanityAbout | null> {
-  return sanityClient.fetch(queries.about);
+  return fetchOnce(queries.about);
 }
 
 export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
-  return sanityClient.fetch(queries.siteSettings);
+  return fetchOnce(queries.siteSettings);
 }
 
 export async function getSkills(): Promise<SanitySkill[]> {
-  return sanityClient.fetch(queries.skills);
+  return fetchOnce(queries.skills);
 }
 
 export async function getProjects(): Promise<SanityProject[]> {
-  return sanityClient.fetch(queries.projects);
+  return fetchOnce(queries.projects);
 }
 
 export async function getCareerPhases(): Promise<SanityCareerPhase[]> {
-  return sanityClient.fetch(queries.careerPhases);
+  return fetchOnce(queries.careerPhases);
 }
 
 export async function getSocials(): Promise<SanitySocial[]> {
-  return sanityClient.fetch(queries.socials);
+  return fetchOnce(queries.socials);
 }
 
 export async function getHomelab(): Promise<SanityHomelab | null> {
-  return sanityClient.fetch(queries.homelab);
+  return fetchOnce(queries.homelab);
 }
 
 export async function getLearning(): Promise<SanityLearning[]> {
-  return sanityClient.fetch(queries.learning);
+  return fetchOnce(queries.learning);
 }
 
 export async function getCaseStudies(): Promise<SanityCaseStudy[]> {
-  return sanityClient.fetch(queries.caseStudies);
+  return fetchOnce(queries.caseStudies);
 }
 
 // For chatbot API - get all content in one request

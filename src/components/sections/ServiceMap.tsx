@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useCaseStudies } from '../../hooks/useSanityData';
 import type { SanityCaseStudy } from '../../lib/sanity';
+import { peekPendingStudy, SELECT_STUDY, takePendingStudy } from '../../lib/studyEvents';
 
 // Fired by the "ask the chatbot about this" link; ChatBot listens and prefills.
 export function askChatAbout(question: string) {
@@ -184,6 +185,23 @@ export default function ServiceMap() {
     [caseStudies],
   );
   const selected = ordered.find((c) => c._id === selectedId) ?? ordered[0];
+
+  useEffect(() => {
+    const pick = (slug: string | null) => {
+      const target = ordered.find((c) => c.slug === slug);
+      if (!target || !selected) return false;
+      takePendingStudy();
+      if (target._id === selected._id) return true;
+      setHop((h) => ({ from: selected._id, to: target._id, n: (h?.n ?? 0) + 1 }));
+      setSelectedId(target._id);
+      setLineClosed(false);
+      return true;
+    };
+    pick(peekPendingStudy());
+    const onSelect = (e: Event) => pick((e as CustomEvent<{ slug: string }>).detail?.slug);
+    window.addEventListener(SELECT_STUDY, onSelect);
+    return () => window.removeEventListener(SELECT_STUDY, onSelect);
+  }, [ordered, selected]);
 
   // Arrow keys browse while a tile has focus.
   useEffect(() => {

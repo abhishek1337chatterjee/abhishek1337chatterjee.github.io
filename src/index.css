@@ -266,6 +266,16 @@ body {
   }
 }
 
+/* about "currently learning" — dashes of an open span keep moving: started, not closed */
+@keyframes spanOpen {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 12px;
+  }
+}
+
 /* journey replay pause: freezes every sweep animation, including inline `animation` shorthands */
 .sweep-paused,
 .sweep-paused * {
