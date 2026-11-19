@@ -159,7 +159,7 @@ export default function GitHubStats() {
             <div className="py-5 md:pr-8">
               <p className={label}>public repos</p>
               <p className="mt-1.5 font-display text-3xl font-bold tabular-nums text-ink">
-                {stats.loading ? '—' : stats.publicRepos}
+                {stats.loading || stats.error ? '—' : stats.publicRepos}
               </p>
             </div>
             <div className="py-5 md:px-8">
@@ -168,6 +168,11 @@ export default function GitHubStats() {
             </div>
             <div className="py-5 md:pl-8">
               <p className={label}>language split</p>
+              {stats.error && (
+                <p className="mt-3 font-mono text-xs text-muted">
+                  GitHub didn't answer just now · try again in a while
+                </p>
+              )}
               {langs.length > 0 && (
                 <>
                   <div className="mt-3 flex h-2.5 overflow-hidden rounded-full bg-base-300">
@@ -202,8 +207,21 @@ export default function GitHubStats() {
           >
             view full profile on GitHub →
           </a>
+          {stats.staleAt !== null && (
+            <p className="mt-1 font-mono text-xs text-muted">
+              repos and languages: saved copy from {savedLabel(stats.staleAt)}, GitHub is busy
+            </p>
+          )}
         </Reveal>
       </div>
     </section>
   );
+}
+
+// Same day shows the time; older copies show the date.
+function savedLabel(at: number) {
+  const d = new Date(at);
+  return d.toDateString() === new Date().toDateString()
+    ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : d.toLocaleDateString([], { day: 'numeric', month: 'short' });
 }
