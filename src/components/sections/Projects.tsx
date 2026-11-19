@@ -1,5 +1,13 @@
-import { Play } from 'lucide-react';
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
+import { Pause, Play, RotateCcw } from 'lucide-react';
+import {
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useCareerPhases, useCaseStudies, useProjects } from '../../hooks/useSanityData';
 import type { SanityCareerPhase } from '../../lib/sanity';
@@ -30,7 +38,8 @@ function parsePeriod(period: string, now: number): Span {
 // Fractional year → "2024-03".
 function yearMonth(t: number) {
   const y = Math.floor(t);
-  const m = Math.min(12, Math.floor((t - y) * 12) + 1);
+  // epsilon: 2026 + 10/12 comes back as 9.9999… months and would floor to October
+  const m = Math.min(12, Math.floor((t - y) * 12 + 1e-6) + 1);
   return `${y}-${String(m).padStart(2, '0')}`;
 }
 
@@ -58,6 +67,11 @@ export default function Journey() {
   const [picked, setPicked] = useState<number | null>(null);
   const dateRef = useRef<HTMLSpanElement>(null);
   const clockRef = useRef<HTMLSpanElement>(null);
+  // Sweep time survives pauses: the loop adds frame deltas only while playing.
+  const elapsedRef = useRef(0);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [status, setStatus] = useState<'playing' | 'paused' | 'done'>('playing');
 
   // callback ref: fires when the node actually mounts (i.e. after Sanity data loads),
   // so the sweep reliably starts on scroll into view.
@@ -82,39 +96,94 @@ export default function Journey() {
   const spansKey = rows.map((r) => `${r.span.start}-${r.span.end}`).join('|');
   const playing = seen && !reduce && rows.length > 0;
 
+  // Newest span that contains time t (spans can touch at a year boundary).
+  const rowAt = (t: number) => {
+    let best: number | null = null;
+    rows.forEach((r, i) => {
+      const inside = t >= r.span.start && t < r.span.end;
+      if (inside && (best === null || r.span.start > rows[best].span.start)) best = i;
+    });
+    return best;
+  };
+  // Shared by the playback loop and dragging: one place turns sweep time into text + readout.
+  const paint = (elapsed: number) => {
+    const p = Math.min(Math.max((elapsed - LEAD_S) / SWEEP_S, 0), 1);
+    const t = min + p * (now - min);
+    if (dateRef.current) dateRef.current.textContent = yearMonth(t);
+    if (clockRef.current)
+      clockRef.current.textContent = `00:${clock(p * SWEEP_S)} / ${SWEEP_LABEL}`;
+    return { p, idx: p >= 1 ? null : rowAt(t) };
+  };
+
   // Drives the date under the playhead, the replay clock and which span the readout shows.
   // Text goes straight to the DOM so the 4 s sweep never re-renders the section per frame.
+  // Pausing stops this loop and freezes the CSS sweeps; resuming continues from elapsedRef.
   // biome-ignore lint/correctness/useExhaustiveDependencies: spansKey stands in for rows
   useEffect(() => {
-    if (!playing) return;
-    const rowAt = (t: number) => {
-      let best: number | null = null;
-      rows.forEach((r, i) => {
-        const inside = t >= r.span.start && t < r.span.end;
-        if (inside && (best === null || r.span.start > rows[best].span.start)) best = i;
-      });
-      return best;
-    };
+    if (!playing || status !== 'playing') return;
     let raf = 0;
     let last: number | null | undefined;
-    const t0 = performance.now();
+    let prev = performance.now();
     const tick = (ts: number) => {
-      const p = Math.min(Math.max(((ts - t0) / 1000 - LEAD_S) / SWEEP_S, 0), 1);
-      const t = min + p * (now - min);
-      if (dateRef.current) dateRef.current.textContent = yearMonth(t);
-      if (clockRef.current)
-        clockRef.current.textContent = `00:${clock(p * SWEEP_S)} / ${SWEEP_LABEL}`;
-      const idx = p >= 1 ? null : rowAt(t);
+      elapsedRef.current += Math.max(0, ts - prev) / 1000;
+      prev = ts;
+      const { p, idx } = paint(elapsedRef.current);
       if (idx !== last) {
         last = idx;
         setSweepIdx(idx);
       }
       if (p < 1) raf = requestAnimationFrame(tick);
+      else setStatus('done');
     };
-    setPicked(null);
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [playing, run, min, now, spansKey]);
+  }, [playing, status, run, min, now, spansKey]);
+
+  // Dragging the playhead seeks every CSS sweep to the same moment, then leaves it paused.
+  const seek = (p: number) => {
+    const elapsed = LEAD_S + Math.min(Math.max(p, 0), 1) * SWEEP_S;
+    elapsedRef.current = elapsed;
+    for (const a of chartRef.current?.getAnimations({ subtree: true }) ?? []) {
+      if (a instanceof CSSAnimation) a.currentTime = elapsed * 1000;
+    }
+    setSweepIdx(paint(elapsed).idx);
+    setPicked(null);
+    setStatus('paused');
+  };
+  const nowShare = () => {
+    const nowPctOf = (now - min) / (Math.max(...rows.map((r) => r.span.end), now) + TAIL_Y - min);
+    return nowPctOf || 1;
+  };
+  const scrubFrom = (clientX: number) => {
+    const r = trackRef.current?.getBoundingClientRect();
+    if (r) seek((clientX - r.left) / (r.width * nowShare()));
+  };
+  const grab = {
+    onPointerDown: (e: PointerEvent<HTMLElement>) => {
+      if (!playing) return;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      scrubFrom(e.clientX);
+    },
+    onPointerMove: (e: PointerEvent<HTMLElement>) => {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) scrubFrom(e.clientX);
+    },
+  };
+  const nudge = (e: KeyboardEvent<HTMLElement>) => {
+    const step = { ArrowLeft: -0.05, ArrowRight: 0.05, Home: -1, End: 1 }[e.key];
+    if (step === undefined || !playing) return;
+    e.preventDefault();
+    const p = (elapsedRef.current - LEAD_S) / SWEEP_S;
+    seek(Math.abs(step) === 1 ? (step > 0 ? 1 : 0) : p + step);
+  };
+
+  const control = () => {
+    if (status === 'playing') return setStatus('paused');
+    if (status === 'paused') return setStatus('playing');
+    elapsedRef.current = 0;
+    setPicked(null);
+    setRun((r) => r + 1);
+    setStatus('playing');
+  };
 
   if (!rows.length) return null;
 
@@ -183,11 +252,19 @@ export default function Journey() {
           {!reduce && (
             <button
               type="button"
-              onClick={() => setRun((r) => r + 1)}
+              onClick={control}
               className="inline-flex items-center gap-2.5 rounded-lg border border-[color:var(--secondary)] bg-[#1a1205] px-4 py-2.5 font-mono text-sm text-[color:var(--secondary)] transition-colors hover:bg-[#2a1d08]"
             >
-              <Play aria-hidden className="size-3.5 fill-current" />
-              replay trace
+              {status === 'playing' ? (
+                <Pause aria-hidden className="size-3.5 fill-current" />
+              ) : status === 'paused' ? (
+                <Play aria-hidden className="size-3.5 fill-current" />
+              ) : (
+                <RotateCcw aria-hidden className="size-3.5" />
+              )}
+              <span className="w-[6.75rem] text-left">
+                {status === 'playing' ? 'pause' : status === 'paused' ? 'resume' : 'replay'} trace
+              </span>
               <span ref={clockRef} className="tabular-nums text-[color:var(--secondary-deep)]">
                 00:00.0 / {SWEEP_LABEL}
               </span>
@@ -195,8 +272,13 @@ export default function Journey() {
           )}
         </div>
 
-        {/* key={run} remounts the bars so their CSS wipes restart on replay */}
-        <div key={run} className="relative mt-8 pb-8">
+        {/* key={run} remounts the bars so their CSS wipes restart on replay; pausing
+            freezes every sweep animation inside at the same moment as the clock */}
+        <div
+          key={run}
+          ref={chartRef}
+          className={`relative mt-8 pb-10 ${status === 'paused' ? 'sweep-paused' : ''}`}
+        >
           {/* year axis */}
           <div className="grid gap-3.5" style={COLS}>
             <div />
@@ -238,8 +320,6 @@ export default function Journey() {
                   aria-pressed={on}
                   aria-controls="journey-readout"
                   onClick={() => setPicked(idx)}
-                  onMouseEnter={() => setPicked(idx)}
-                  onFocus={() => setPicked(idx)}
                   className="grid w-full cursor-pointer items-center gap-3.5 rounded-lg text-left"
                   style={COLS}
                 >
@@ -334,14 +414,11 @@ export default function Journey() {
             );
           })}
 
-          {/* playhead: one amber line over every bar track, sweeping first year → now */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 grid gap-3.5"
-            style={COLS}
-          >
+          {/* playhead: one amber line over every bar track, sweeping first year → now;
+              the line and its date pill can be dragged to scrub the trace */}
+          <div className="pointer-events-none absolute inset-0 grid gap-3.5" style={COLS}>
             <div />
-            <div className="relative">
+            <div ref={trackRef} className="relative">
               <div
                 className="absolute inset-y-0 left-0"
                 style={{
@@ -350,13 +427,36 @@ export default function Journey() {
                   animation: playing ? `playhead ${SWEEP_S}s linear ${LEAD_S}s both` : undefined,
                 }}
               >
-                <div className="absolute top-0 bottom-6 left-0 w-0.5 -translate-x-1/2 bg-[color:var(--secondary)]" />
-                <span
-                  ref={dateRef}
-                  className="absolute bottom-0 left-0 -translate-x-1/2 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]"
-                >
-                  {yearMonth(reduce ? now : min)}
-                </span>
+                <div
+                  aria-hidden
+                  className="absolute top-0 bottom-8 left-0 w-0.5 -translate-x-1/2 bg-[color:var(--secondary)]"
+                />
+                {playing && (
+                  <div
+                    aria-hidden
+                    {...grab}
+                    className="pointer-events-auto absolute top-0 bottom-8 left-0 w-5 -translate-x-1/2 cursor-ew-resize touch-none"
+                  />
+                )}
+                {playing ? (
+                  <span
+                    role="slider"
+                    tabIndex={0}
+                    aria-label="Trace playhead, drag or use arrow keys"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(((elapsedRef.current - LEAD_S) / SWEEP_S) * 100)}
+                    onKeyDown={nudge}
+                    {...grab}
+                    className="pointer-events-auto absolute bottom-0 left-0 -translate-x-1/2 cursor-ew-resize touch-none rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]"
+                  >
+                    <span ref={dateRef}>{yearMonth(min)}</span>
+                  </span>
+                ) : (
+                  <span className="absolute bottom-0 left-0 -translate-x-1/2 rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]">
+                    <span ref={dateRef}>{yearMonth(reduce ? now : min)}</span>
+                  </span>
+                )}
               </div>
             </div>
           </div>

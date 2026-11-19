@@ -266,6 +266,13 @@ body {
   }
 }
 
+/* journey replay pause: freezes every sweep animation, including inline `animation` shorthands */
+.sweep-paused,
+.sweep-paused * {
+  /* biome-ignore lint/complexity/noImportantStyles: inline animation shorthands reset play-state to running */
+  animation-play-state: paused !important;
+}
+
 /* ── Respect reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
