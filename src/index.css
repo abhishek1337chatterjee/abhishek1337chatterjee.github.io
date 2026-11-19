@@ -123,6 +123,10 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* sections focused by an in-page jump: the scroll already shows where focus went */
+[data-jump-target]:focus-visible {
+  outline: none;
+}
 
 /* ── Custom scrollbar (gradient thumb in scheme colors) ── */
 ::-webkit-scrollbar {
@@ -157,6 +161,22 @@ body {
     stroke-dashoffset: 0;
   }
 }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wipeIn {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
 /* a sheen that sweeps across (boot reveal flourish) */
 @keyframes sheen {
   0% {
@@ -177,6 +197,18 @@ body {
     opacity: 0;
   }
 }
+/* chat console: the streaming caret sits inline after the last word of the live answer */
+.markdown-content[data-live] > :is(p, h1, h2, h3, blockquote):last-child::after,
+.markdown-content[data-live] > :is(ul, ol):last-child > li:last-child::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--primary);
+  animation: blink 1s steps(1) infinite;
+}
 /* live telemetry graph — line draws in left→right (--len), holds, then vanishes */
 @keyframes liveDraw {
   0% {
@@ -195,6 +227,83 @@ body {
   100% {
     opacity: 0;
   }
+}
+
+/* skills graph — a packet runs one edge (offset-path), then rests until the next request */
+@keyframes packetRun {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  3%,
+  18% {
+    opacity: 1;
+  }
+  20%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* journey playhead — wrapper is first-year→now wide, so 100% lands exactly on now */
+@keyframes playhead {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* service map — trail lights the bus from the old service to the new one, then fades */
+@keyframes busTrail {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  45% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* github monthly bars grow from the baseline on a view switch */
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* about "currently learning" — dashes of an open span keep moving: started, not closed */
+@keyframes spanOpen {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: 12px;
+  }
+}
+
+/* contact route — dashes march toward getform.io while a send is in flight */
+@keyframes wireMarch {
+  to {
+    background-position-x: 18px;
+  }
+}
+
+/* journey replay pause: freezes every sweep animation, including inline `animation` shorthands */
+.sweep-paused,
+.sweep-paused * {
+  /* biome-ignore lint/complexity/noImportantStyles: inline animation shorthands reset play-state to running */
+  animation-play-state: paused !important;
 }
 
 /* ── Respect reduced motion ── */

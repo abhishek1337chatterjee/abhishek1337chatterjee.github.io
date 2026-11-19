@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
 import Hero from './components/sections/Hero';
+import CmsOffline from './components/ui/CmsOffline';
 import Loader from './components/ui/Loader';
 import { useAnchorScrollFix } from './hooks/useAnchorScrollFix';
 
@@ -21,8 +22,8 @@ function App() {
   // correct in-page anchor landings (content-visibility:auto offsets are off)
   useAnchorScrollFix();
 
-  // Reveal the trace console only after the user scrolls past the hero, so it
-  // doesn't cover the first view ("available on scroll").
+  // Load the chat (and its markdown chunk) only once the visitor is past the hero;
+  // it then shows as a small chip and never opens by itself.
   useEffect(() => {
     const onScroll = () => {
       if (window.scrollY > window.innerHeight * 0.6) {
@@ -37,13 +38,10 @@ function App() {
   return (
     <>
       <Loader onDone={handleDone} />
-      {/* padding clears the fixed trace console (height published as --console-h);
-          overflow-x-clip (not hidden) so it doesn't break the navbar's sticky */}
-      <div
-        className="min-h-screen overflow-x-clip"
-        style={{ paddingBottom: showChat ? 'calc(var(--console-h, 6rem) + 1rem)' : undefined }}
-      >
+      {/* overflow-x-clip (not hidden) so it doesn't break the navbar's sticky */}
+      <div className="min-h-screen overflow-x-clip">
         <Navbar booted={booted} />
+        <CmsOffline />
         <main>
           <Hero booted={booted} />
           {/* full-height fallback keeps the footer below the fold while sections load (CLS) */}

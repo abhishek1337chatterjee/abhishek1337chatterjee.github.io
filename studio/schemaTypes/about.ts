@@ -84,12 +84,69 @@ export default defineType({
               },
               initialValue: 'cyan',
             },
+            {
+              name: 'proofKind',
+              title: 'Proves it',
+              type: 'string',
+              description:
+                'Where on the page this claim is proven. Leave empty to keep the phrase as plain coloured text.',
+              options: {
+                list: [
+                  {title: 'A role in Journey', value: 'role'},
+                  {title: 'One case study in Work', value: 'study'},
+                  {title: 'All case studies in Work', value: 'allStudies'},
+                  {title: 'A skill group in Skills', value: 'skillGroup'},
+                ],
+              },
+            },
+            {
+              name: 'proofRole',
+              title: 'Role',
+              type: 'reference',
+              to: [{type: 'careerPhase'}],
+              hidden: ({parent}: {parent?: {proofKind?: string}}) => parent?.proofKind !== 'role',
+            },
+            {
+              name: 'proofStudy',
+              title: 'Case study',
+              type: 'reference',
+              to: [{type: 'caseStudy'}],
+              hidden: ({parent}: {parent?: {proofKind?: string}}) => parent?.proofKind !== 'study',
+            },
+            {
+              name: 'proofSkillGroup',
+              title: 'Skill group',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Frontend', value: 'frontend'},
+                  {title: 'Backend', value: 'backend'},
+                  {title: 'Cloud & Serverless', value: 'cloud'},
+                  {title: 'Tools & Platforms', value: 'tools'},
+                ],
+              },
+              hidden: ({parent}: {parent?: {proofKind?: string}}) =>
+                parent?.proofKind !== 'skillGroup',
+            },
+            {
+              name: 'proofHot',
+              title: 'Highlight in peek',
+              type: 'string',
+              description:
+                'Optional: the chip to light up in the peek card, e.g. "React" among a role\'s highlights',
+              hidden: ({parent}: {parent?: {proofKind?: string}}) => parent?.proofKind !== 'role',
+            },
           ],
           preview: {
             select: {
               title: 'text',
-              subtitle: 'color',
+              color: 'color',
+              proof: 'proofKind',
             },
+            prepare: ({title, color, proof}: {title?: string; color?: string; proof?: string}) => ({
+              title,
+              subtitle: [color, proof ? `proves it: ${proof}` : 'no proof link'].join(' · '),
+            }),
           },
         },
       ],

@@ -69,6 +69,16 @@ jobs:
             package-lock.json
             studio/package-lock.json
 
+      # Known-CVE gate on the lockfiles, before npm ci runs any install scripts.
+      # A failure stops the job, so nothing is built or deployed.
+      - name: Audit app dependencies (fail on high or critical)
+        run: npm audit --audit-level=high
+
+      # Studio stops only on critical: its two highs are exact pins inside the Sanity CLI with no fix yet.
+      - name: Audit studio dependencies (fail on critical)
+        working-directory: studio
+        run: npm audit --audit-level=critical
+
       # Always build frontend (fast, ~30s)
       - name: Install dependencies
         run: npm ci

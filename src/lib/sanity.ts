@@ -29,7 +29,17 @@ export const queries = {
     location,
     experience,
     bio,
-    highlightedPhrases[]{text, color},
+    highlightedPhrases[]{
+      text,
+      color,
+      "proof": select(defined(proofKind) => {
+        "kind": proofKind,
+        "role": proofRole._ref,
+        "study": proofStudy->slug,
+        "skillGroup": proofSkillGroup,
+        "hot": proofHot
+      })
+    },
     highlights,
     interests,
     profileImage,
@@ -90,6 +100,7 @@ export const queries = {
     highlights,
     nonConfidentialImpact,
     keyTechnologies,
+    scaleNote,
     tags,
     isEducation,
     "projects": projects[]->{
@@ -135,6 +146,7 @@ export const queries = {
     "sideProjects": *[_type == "project" && source == "side-project" && _id != ^.centerpieceProject._ref] | order(_createdAt desc){
       title,
       description,
+      "image": image.asset->url,
       techStack,
       githubUrl,
       deployedUrl
@@ -184,9 +196,19 @@ export const queries = {
 };
 
 // Type definitions matching Sanity schema
+// Where a highlighted phrase is proven on the page; set per phrase in Studio.
+export interface PhraseProof {
+  kind: 'role' | 'study' | 'allStudies' | 'skillGroup';
+  role?: string; // careerPhase _id
+  study?: string; // caseStudy slug
+  skillGroup?: string; // skill category
+  hot?: string; // chip lit in the peek card
+}
+
 export interface HighlightedPhrase {
   text: string;
   color: 'cyan' | 'pink' | 'green' | 'orange' | 'purple';
+  proof?: PhraseProof | null;
 }
 
 export interface SanityAbout {
@@ -281,6 +303,7 @@ export interface SanityCareerPhase {
   highlights?: string[];
   nonConfidentialImpact?: string;
   keyTechnologies?: string[];
+  scaleNote?: string;
   tags?: string[];
   isEducation?: boolean;
   projects?: SanityProject[];
@@ -342,40 +365,52 @@ export interface SanityCaseStudy {
 }
 
 // Fetch functions
+// Several sections read the same documents; share one request per query per page load.
+const inflight = new Map<string, Promise<unknown>>();
+function fetchOnce<T>(query: string): Promise<T> {
+  let req = inflight.get(query) as Promise<T> | undefined;
+  if (!req) {
+    req = sanityClient.fetch<T>(query);
+    req.catch(() => inflight.delete(query)); // let a later caller retry
+    inflight.set(query, req);
+  }
+  return req;
+}
+
 export async function getAbout(): Promise<SanityAbout | null> {
-  return sanityClient.fetch(queries.about);
+  return fetchOnce(queries.about);
 }
 
 export async function getSiteSettings(): Promise<SanitySiteSettings | null> {
-  return sanityClient.fetch(queries.siteSettings);
+  return fetchOnce(queries.siteSettings);
 }
 
 export async function getSkills(): Promise<SanitySkill[]> {
-  return sanityClient.fetch(queries.skills);
+  return fetchOnce(queries.skills);
 }
 
 export async function getProjects(): Promise<SanityProject[]> {
-  return sanityClient.fetch(queries.projects);
+  return fetchOnce(queries.projects);
 }
 
 export async function getCareerPhases(): Promise<SanityCareerPhase[]> {
-  return sanityClient.fetch(queries.careerPhases);
+  return fetchOnce(queries.careerPhases);
 }
 
 export async function getSocials(): Promise<SanitySocial[]> {
-  return sanityClient.fetch(queries.socials);
+  return fetchOnce(queries.socials);
 }
 
 export async function getHomelab(): Promise<SanityHomelab | null> {
-  return sanityClient.fetch(queries.homelab);
+  return fetchOnce(queries.homelab);
 }
 
 export async function getLearning(): Promise<SanityLearning[]> {
-  return sanityClient.fetch(queries.learning);
+  return fetchOnce(queries.learning);
 }
 
 export async function getCaseStudies(): Promise<SanityCaseStudy[]> {
-  return sanityClient.fetch(queries.caseStudies);
+  return fetchOnce(queries.caseStudies);
 }
 
 // For chatbot API - get all content in one request

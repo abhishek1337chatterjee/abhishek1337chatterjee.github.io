@@ -32,7 +32,7 @@ export default defineType({
       name: 'period',
       title: 'Period',
       type: 'string',
-      description: 'e.g., "2024 - Present", "2023 - 2024"',
+      description: 'e.g., "Oct 2024 - Present", "2023 - 2024". A month places the Journey bar exactly.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -61,6 +61,13 @@ export default defineType({
       type: 'array',
       of: [{type: 'string'}],
       description: 'Primary stack for this phase',
+    }),
+    defineField({
+      name: 'scaleNote',
+      title: 'Work header: scale note',
+      type: 'string',
+      description:
+        'Current role only: a short, true scale fact shown in the Work header, e.g. "30+ lambdas". Leave empty to hide it.',
     }),
     defineField({
       name: 'tags',
