@@ -335,10 +335,10 @@ export default function Journey() {
                         href={p.companyWebsite}
                         target="_blank"
                         rel="noreferrer"
-                        className="relative block text-xs text-muted underline decoration-dotted underline-offset-4 transition-colors pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:top-0 pointer-coarse:before:h-8 hover:text-[#34e5ff]"
+                        className="relative -mb-2 block pb-2 text-xs text-muted underline decoration-dotted underline-offset-4 transition-colors pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:top-0 pointer-coarse:before:h-8 hover:text-[#34e5ff]"
                       >
-                        {/* tap layer grows down only (role button sits above); truncate lives on the inner
-                            span so overflow can't clip that layer, and phones wrap instead of cutting */}
+                        {/* pb-2 grows the link's own box past 24 px (Lighthouse ignores the tap layer) and -mb-2
+                            takes those 8 px back, so nothing moves; truncate stays on the inner span */}
                         <span className="block sm:truncate">{p.companyName ?? p.title} ↗</span>
                         <span className="sr-only"> (opens in a new tab)</span>
                       </a>
