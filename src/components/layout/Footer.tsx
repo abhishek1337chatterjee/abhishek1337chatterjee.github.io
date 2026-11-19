@@ -2,7 +2,7 @@ const sha = import.meta.env.VITE_COMMIT_SHA?.slice(0, 7) ?? 'local';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line px-5 py-8 sm:px-8 lg:px-16">
+    <footer className="border-t border-line px-5 pt-8 pb-24 sm:px-8 md:pb-20 lg:px-16">
       <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 font-mono text-xs text-muted">
         <span>
           built by <span className="text-ink">Abhishek Chatterjee</span>

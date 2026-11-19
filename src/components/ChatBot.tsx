@@ -1,23 +1,34 @@
-import { AnimatePresence, motion } from 'framer-motion';
-import { Check, ChevronDown, Copy, ExternalLink, Loader2 } from 'lucide-react';
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, animate, motion, useMotionValue } from 'framer-motion';
+import { Check, Copy, ExternalLink, Loader2, RotateCw, Trash2, Undo2, X } from 'lucide-react';
+import {
+  type ReactNode,
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useCaseStudies } from '../hooks/useSanityData';
 import { createNdjsonParser } from '../lib/chatStream';
+import { selectStudy } from '../lib/studyEvents';
 import type { ChatEvent, StatusLine } from '../types/chat';
-import StatusLog from './chat/StatusLog';
+import PageRefs from './chat/PageRefs';
+import SpanWaterfall from './chat/SpanWaterfall';
 import { FIREWALL_LIMIT_TEXT, TRY_AGAIN_LABEL, TRY_AGAIN_NOTE } from './chat/statusMessages';
+import { matchStudies, type TraceTimings } from './chat/trace';
 
 // API endpoint from environment variable
 const CHAT_API_URL = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:3000/api/chat';
 const SUGGESTIONS_API_URL = CHAT_API_URL.replace('/api/chat', '/api/suggestions');
 
-interface Message {
+interface Message extends TraceTimings {
   id: string;
   role: 'user' | 'assistant';
   content: string;
-  statusLines?: StatusLine[];
   failed?: boolean;
 }
 
@@ -36,7 +47,7 @@ function parseSuggestions(content: string): { text: string; suggestions: string[
 }
 
 // Component to render message content with markdown support
-function MessageContent({ content }: { content: string }) {
+function MessageContent({ content, live }: { content: string; live: boolean }) {
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
   const handleCopy = async (text: string) => {
@@ -111,7 +122,7 @@ function MessageContent({ content }: { content: string }) {
         {processChildren(children)}
       </h3>
     ),
-    p: ({ children }) => <p className="mb-2 last:mb-0">{processChildren(children)}</p>,
+    p: ({ children }) => <p className="mb-2">{processChildren(children)}</p>,
     a: ({ href, children }) => {
       const isEmail = href?.startsWith('mailto:');
       return (
@@ -126,9 +137,11 @@ function MessageContent({ content }: { content: string }) {
         </a>
       );
     },
-    ul: ({ children }) => <ul className="mb-2 list-inside list-disc space-y-1">{children}</ul>,
-    ol: ({ children }) => <ol className="mb-2 list-inside list-decimal space-y-1">{children}</ol>,
-    li: ({ children }) => <li className="text-ink">{processChildren(children)}</li>,
+    ul: ({ children }) => <ul className="mb-2 list-disc pl-[1.15em]">{children}</ul>,
+    ol: ({ children }) => <ol className="mb-2 list-decimal pl-[1.5em]">{children}</ol>,
+    li: ({ children }) => (
+      <li className="mb-1 text-ink marker:text-muted">{processChildren(children)}</li>
+    ),
     code: ({ className, children }) => {
       const isInline = !className;
       if (isInline) {
@@ -151,7 +164,7 @@ function MessageContent({ content }: { content: string }) {
       </blockquote>
     ),
     strong: ({ children }) => (
-      <strong className="font-bold text-ink">{processChildren(children)}</strong>
+      <strong className="font-semibold text-ink">{processChildren(children)}</strong>
     ),
     em: ({ children }) => <em className="text-muted italic">{processChildren(children)}</em>,
     hr: () => <hr className="my-3 border-line" />,
@@ -161,7 +174,8 @@ function MessageContent({ content }: { content: string }) {
   const { text: displayContent } = parseSuggestions(content);
 
   return (
-    <div className="markdown-content">
+    // data-live puts the streaming caret inline after the last word (index.css)
+    <div className="markdown-content" data-live={live || undefined}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
         {displayContent}
       </ReactMarkdown>
@@ -169,105 +183,102 @@ function MessageContent({ content }: { content: string }) {
   );
 }
 
-// Suggestion pills — mono chips shown above the input line
-function SuggestionPills({
+// How long "trace cleared" offers its undo.
+const UNDO_MS = 5000;
+const FALLBACK_SUGGESTIONS = [
+  "What are Abhishek's technical skills?",
+  "Tell me about Abhishek's experience",
+  'What projects has Abhishek worked on?',
+];
+
+// One suggestion per row so ↑/↓ reads as a list; the picked row is amber (selected).
+function SuggestionList({
   suggestions,
   onSelect,
-  isLoading,
   selectedIndex,
 }: {
   suggestions: string[];
   onSelect: (suggestion: string, index: number) => void;
-  isLoading: boolean;
   selectedIndex: number;
 }) {
-  if (suggestions.length === 0 || isLoading) return null;
-
+  if (suggestions.length === 0) return null;
   return (
-    // mobile: one horizontal-scroll row (compact); sm+: wrap to fill width
-    <div className="mb-2.5 flex flex-nowrap items-center gap-1.5 overflow-x-auto [scrollbar-width:none] sm:flex-wrap [&::-webkit-scrollbar]:hidden">
-      {suggestions.map((suggestion, index) => (
-        <button
-          key={suggestion}
-          type="button"
-          onClick={() => onSelect(suggestion, index)}
-          className="shrink-0 whitespace-nowrap rounded-full border px-2.5 py-1.5 font-mono text-[11.5px] transition-colors sm:shrink"
-          style={{
-            borderColor:
-              selectedIndex === index
-                ? 'color-mix(in srgb, var(--primary) 55%, transparent)'
-                : 'rgba(237,239,243,0.12)',
-            color: selectedIndex === index ? 'var(--primary)' : '#8a91a0',
-          }}
-        >
-          {suggestion}
-        </button>
-      ))}
-      <span className="ml-1 hidden font-mono text-[10px] text-muted/50 sm:inline">
-        click to send · ↑↓ to edit
-      </span>
+    <div className="mt-2">
+      <ul className="font-mono text-[13px] md:text-xs">
+        {suggestions.map((suggestion, index) => {
+          const on = selectedIndex === index;
+          return (
+            <li key={suggestion}>
+              <button
+                type="button"
+                onClick={() => onSelect(suggestion, index)}
+                aria-current={on ? 'true' : undefined}
+                className={`group mt-1.5 flex min-h-11 w-full items-center gap-2 rounded-[7px] border px-2.5 py-[7px] text-left transition-colors md:mt-0 md:min-h-0 ${on ? 'border-[color:var(--secondary-deep)] bg-[#1b1710] text-[color:var(--secondary)]' : 'border-line text-[#a9afbb] hover:text-[#34e5ff] md:border-transparent'}`}
+              >
+                <span
+                  aria-hidden
+                  className={
+                    on ? '' : 'text-[#3a4050] transition-colors group-hover:text-[#34e5ff]'
+                  }
+                >
+                  ❯
+                </span>
+                {suggestion}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 hidden font-mono text-xs text-muted md:block">
+        <Key>↑</Key> <Key>↓</Key> pick · <Key>Enter</Key> send
+      </p>
     </div>
   );
 }
 
-// Docked state — a small themed "trace ❯" chip that reopens the console, with a
-// pulse ring + a brief hint so the user knows where the console went.
-function DockedConsole({ onReopen, hintVisible }: { onReopen: () => void; hintVisible: boolean }) {
-  return (
-    <div className="relative">
-      <AnimatePresence>
-        {hintVisible && (
-          <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.96 }}
-            transition={{ duration: 0.25, ease: [0.2, 0.7, 0.2, 1] }}
-            className="absolute right-0 bottom-full mb-2.5 w-max max-w-[78vw] rounded-xl border border-line px-3 py-2 font-mono text-[11.5px] text-ink"
-            style={{
-              background: 'rgba(23,25,31,0.96)',
-              backdropFilter: 'blur(14px)',
-              WebkitBackdropFilter: 'blur(14px)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
-            }}
-          >
-            <span style={{ color: 'var(--primary)' }}>trace ❯</span> console docked — tap to reopen
-            {/* little pointer toward the chip */}
-            <span
-              className="absolute top-full right-5 size-2.5 -translate-y-1/2 rotate-45 border-r border-b border-line"
-              style={{ background: 'rgba(23,25,31,0.96)' }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+const Key = ({ children }: { children: ReactNode }) => (
+  <kbd className="rounded border border-line bg-[#13151a] px-[5px] py-px text-ink">{children}</kbd>
+);
 
+// Counts the undo window down in whole seconds, so the visitor sees how long the offer lasts.
+function UndoToast({ until, onUndo }: { until: number; onUndo: () => void }) {
+  const [left, setLeft] = useState(() => Math.ceil((until - Date.now()) / 1000));
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setLeft(Math.max(0, Math.ceil((until - Date.now()) / 1000))),
+      250,
+    );
+    return () => window.clearInterval(timer);
+  }, [until]);
+  return (
+    <div className="mb-2 flex items-center justify-between gap-2 rounded-lg border border-line bg-[#13151a] px-2.5 py-[7px] font-mono text-[12.5px] text-muted md:text-xs">
+      <span>trace cleared</span>
       <button
         type="button"
-        onClick={onReopen}
-        aria-label="Reopen trace console"
-        className="group relative flex items-center gap-1.5 rounded-full border px-4 py-2.5 font-mono text-[13px] font-semibold transition-transform hover:-translate-y-0.5"
-        style={{
-          background: 'rgba(23,25,31,0.96)',
-          backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
-          color: 'var(--primary)',
-          borderColor: 'color-mix(in srgb, var(--primary) 45%, transparent)',
-          boxShadow:
-            '0 -8px 30px rgba(0,0,0,0.4), 0 0 0 1px color-mix(in srgb, var(--primary) 12%, transparent)',
-        }}
+        onClick={onUndo}
+        className="-my-2 flex min-h-9 items-center gap-[5px] tabular-nums text-[color:var(--primary)] transition-colors hover:text-[#34e5ff]"
       >
-        {/* pulse ring to stay discoverable after the hint fades */}
-        <span
-          className="absolute inset-0 animate-ping rounded-full opacity-40"
-          style={{ boxShadow: '0 0 0 1px color-mix(in srgb, var(--primary) 50%, transparent)' }}
-          aria-hidden="true"
-        />
-        <span className="relative">trace ❯</span>
+        <Undo2 aria-hidden className="size-3" />
+        undo · {left}s
       </button>
     </div>
   );
 }
 
+// Share of the sheet's height a drag must pass to close it; a fast flick closes sooner.
+const DRAG_CLOSE_RATIO = 0.25;
+const FLICK_PX_PER_MS = 0.5;
+const FLICK_MIN_PX = 24;
+const FLICK_WINDOW_MS = 100;
+
+// Typing in a field must not trigger the "/" shortcut.
+const isTyping = (el: Element | null) =>
+  el instanceof HTMLInputElement ||
+  el instanceof HTMLTextAreaElement ||
+  (el instanceof HTMLElement && el.isContentEditable);
+
 export default function ChatBot() {
+  const reduce = useReducedMotion();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -275,41 +286,40 @@ export default function ChatBot() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const [expanded, setExpanded] = useState(false);
-  // docked = collapsed to the small trace❯ icon; open = full console
-  const [open, setOpen] = useState(true);
-  const [hintVisible, setHintVisible] = useState(false);
+  // Nothing opens by itself: the chip opens the drawer, and only the visitor does that.
+  const [open, setOpen] = useState(false);
+  const [wide, setWide] = useState(() => window.matchMedia('(min-width: 768px)').matches);
+  const [undo, setUndo] = useState<{
+    messages: Message[];
+    suggestions: string[];
+    until: number;
+  } | null>(null);
+  // After "jump there" on a phone the chip is the way back to the answer
+  const [jumped, setJumped] = useState(false);
+  // A drag-close already moved the sheet off screen, so the exit must not slide it again
+  const [dragClosing, setDragClosing] = useState(false);
+  const { caseStudies } = useCaseStudies();
+  const dragY = useMotionValue(0);
+  const sheetRef = useRef<HTMLElement>(null);
+  const drag = useRef<{ id: number; startY: number; trail: { y: number; t: number }[] }>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   // true while the reader is at the bottom of the transcript; scrolling up pauses auto-follow
   const stickToBottom = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
-  const consoleRef = useRef<HTMLDivElement>(null);
+  const chipRef = useRef<HTMLButtonElement>(null);
   const hasFetchedSuggestions = useRef(false);
-  const hintTimer = useRef<number | undefined>(undefined);
+  const openingSuggestions = useRef<string[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+  const undoTimer = useRef<number | undefined>(undefined);
 
-  // Publish the docked-or-open block's live height as --console-h so page content
-  // can pad itself clear of the fixed bar. Re-runs on open/close so the observed
-  // element (console card ↔ small chip) is always the current one.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `open` re-runs the effect to re-observe the swapped element
   useEffect(() => {
-    const el = consoleRef.current;
-    if (!el) return;
-    const apply = () => {
-      document.documentElement.style.setProperty('--console-h', `${el.offsetHeight + 8}px`);
-    };
-    apply();
-    const ro = new ResizeObserver(apply);
-    ro.observe(el);
-    return () => {
-      ro.disconnect();
-      document.documentElement.style.removeProperty('--console-h');
-    };
-  }, [open]);
+    const mq = window.matchMedia('(min-width: 768px)');
+    const onChange = (e: MediaQueryListEvent) => setWide(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
-  // transcript panel shows only once there's a conversation in flight (and open)
-  const panelVisible = open && expanded && (messages.length > 0 || isLoading);
-
-  // Fetch the opening suggestions once (on mount) so the console invites a query
+  // Fetch the opening suggestions once, so the drawer invites a first question
   useEffect(() => {
     if (hasFetchedSuggestions.current) return;
     hasFetchedSuggestions.current = true;
@@ -317,17 +327,17 @@ export default function ChatBot() {
     fetch(SUGGESTIONS_API_URL)
       .then((res) => res.json())
       .then((data) => {
-        if (data.suggestions && Array.isArray(data.suggestions)) {
-          setSuggestions(data.suggestions);
-        }
+        const list =
+          data.suggestions && Array.isArray(data.suggestions)
+            ? data.suggestions
+            : FALLBACK_SUGGESTIONS;
+        openingSuggestions.current = list;
+        setSuggestions(list);
       })
       .catch((err) => {
         console.error('Failed to fetch suggestions:', err);
-        setSuggestions([
-          "What are Abhishek's technical skills?",
-          "Tell me about Abhishek's experience",
-          'What projects has Abhishek worked on?',
-        ]);
+        openingSuggestions.current = FALLBACK_SUGGESTIONS;
+        setSuggestions(FALLBACK_SUGGESTIONS);
       })
       .finally(() => setLoadingSuggestions(false));
   }, []);
@@ -345,28 +355,46 @@ export default function ChatBot() {
     if (el && stickToBottom.current) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
-  // Escape collapses the transcript panel
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setExpanded(false);
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+  const openDrawer = useCallback(() => {
+    dragY.set(0);
+    setDragClosing(false);
+    setJumped(false);
+    setOpen(true);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }, [dragY]);
+
+  const closeDrawer = useCallback(() => {
+    setOpen(false);
+    // focus goes back to the chip that opened the drawer
+    requestAnimationFrame(() => chipRef.current?.focus());
   }, []);
 
-  // "ask the chatbot about this" links (ServiceMap) reopen the console with a
-  // prefilled question; the visitor just hits Enter
+  // "/" opens the drawer from anywhere on the page; Escape closes it
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === '/' && !open && !isTyping(document.activeElement)) {
+        e.preventDefault();
+        openDrawer();
+      } else if (e.key === 'Escape' && open) {
+        closeDrawer();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, openDrawer, closeDrawer]);
+
+  // "ask the chatbot about this" links (ServiceMap) open the drawer with a prefilled
+  // question; the visitor just hits Enter
   useEffect(() => {
     const handleAsk = (e: Event) => {
       const question = (e as CustomEvent<{ question: string }>).detail?.question;
       if (!question) return;
-      setOpen(true);
       setInput(question);
-      requestAnimationFrame(() => inputRef.current?.focus());
+      openDrawer();
     };
     window.addEventListener('tm-ask-chat', handleAsk);
     return () => window.removeEventListener('tm-ask-chat', handleAsk);
-  }, []);
+  }, [openDrawer]);
 
   // Reset selected suggestion when suggestions change
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentional reset when suggestions change
@@ -375,23 +403,11 @@ export default function ChatBot() {
   }, [suggestions]);
 
   useEffect(() => {
-    return () => window.clearTimeout(hintTimer.current);
+    return () => {
+      window.clearTimeout(undoTimer.current);
+      abortRef.current?.abort();
+    };
   }, []);
-
-  // dock → small chip + a brief themed hint that auto-fades
-  const dock = () => {
-    setOpen(false);
-    setExpanded(false);
-    setHintVisible(true);
-    window.clearTimeout(hintTimer.current);
-    hintTimer.current = window.setTimeout(() => setHintVisible(false), 4500);
-  };
-
-  const reopen = () => {
-    window.clearTimeout(hintTimer.current);
-    setHintVisible(false);
-    setOpen(true);
-  };
 
   // ↑/↓ cycle through suggestions and fill the input; Tab stays free to move focus
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -417,7 +433,12 @@ export default function ChatBot() {
         content: userMessage,
       };
 
-      setExpanded(true);
+      // "clear" aborts this run: the fetch, the stream reader and the typing loop all stop
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const { signal } = controller;
+      const sentAtMs = Date.now();
+
       setMessages((prev) => [...prev, userMsg]);
       setInput('');
       setIsLoading(true);
@@ -436,6 +457,7 @@ export default function ChatBot() {
           // NDJSON opts in to status events; without it the API sends plain text
           headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
           body: JSON.stringify({ messages: apiMessages }),
+          signal,
         });
 
         if (response.status === 429) {
@@ -450,7 +472,7 @@ export default function ChatBot() {
         const assistantId = (Date.now() + 1).toString();
         setMessages((prev) => [
           ...prev,
-          { id: assistantId, role: 'assistant', content: '', statusLines: [] },
+          { id: assistantId, role: 'assistant', content: '', statusLines: [], sentAtMs },
         ]);
 
         const updateAssistant = (change: (message: Message) => Message) =>
@@ -458,27 +480,30 @@ export default function ChatBot() {
 
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
-        const pending: ChatEvent[] = [];
-        const parser = createNdjsonParser((event) => pending.push(event));
+        // Stamped on arrival: the typing delay below must not shift a span's real time
+        const pending: { event: ChatEvent; atMs: number }[] = [];
+        const parser = createNdjsonParser((event) => pending.push({ event, atMs: Date.now() }));
         let wordBuffer = '';
         let fullContent = '';
         let failed = false;
 
         const addWordWithDelay = async (word: string) => {
+          if (signal.aborted) return;
           fullContent += word;
-          updateAssistant((m) => ({ ...m, content: m.content + word }));
+          updateAssistant((m) => ({ ...m, content: m.content + word, streamLastMs: Date.now() }));
           // Small delay for smoother word-by-word effect
           await new Promise((resolve) => setTimeout(resolve, 15));
         };
 
-        const handleEvent = async (event: ChatEvent) => {
+        const handleEvent = async ({ event, atMs }: { event: ChatEvent; atMs: number }) => {
+          if (signal.aborted) return;
           if (event.type === 'status') {
             failed ||= event.code === 'failed';
             const line: StatusLine = {
               code: event.code,
               elapsedMs: event.elapsedMs,
               waitSeconds: event.waitSeconds,
-              receivedAtMs: Date.now(),
+              receivedAtMs: atMs,
             };
             updateAssistant((m) => ({
               ...m,
@@ -487,6 +512,9 @@ export default function ChatBot() {
             }));
             return;
           }
+          updateAssistant((m) =>
+            m.streamStartMs === undefined ? { ...m, streamStartMs: atMs } : m,
+          );
           // Text arrives in token-sized pieces; re-split into whole words for the typing effect
           wordBuffer += event.delta;
           const words = wordBuffer.split(/(\s+)/);
@@ -497,23 +525,27 @@ export default function ChatBot() {
         };
 
         if (reader) {
-          while (true) {
+          while (!signal.aborted) {
             const { done, value } = await reader.read();
             if (done) break;
             parser.push(decoder.decode(value, { stream: true }));
-            for (const event of pending.splice(0)) {
-              await handleEvent(event);
+            for (const stamped of pending.splice(0)) {
+              await handleEvent(stamped);
             }
           }
+          if (signal.aborted) {
+            reader.cancel().catch(() => {});
+            return;
+          }
           parser.flush();
-          for (const event of pending.splice(0)) {
-            await handleEvent(event);
+          for (const stamped of pending.splice(0)) {
+            await handleEvent(stamped);
           }
           if (wordBuffer) {
             await addWordWithDelay(wordBuffer);
           }
 
-          // Empty stream with no failed status (unexpected) — drop the blank bubble, surface it
+          // Empty stream with no failed status (unexpected) — drop the blank answer, surface it
           if (!fullContent.trim() && !failed) {
             setMessages((prev) => prev.filter((m) => m.id !== assistantId));
             setError('No response from the assistant. Please try again.');
@@ -526,10 +558,15 @@ export default function ChatBot() {
           }
         }
       } catch (err) {
+        if (signal.aborted) return;
         console.error('Chat error:', err);
         setError('Failed to send message. Please try again.');
       } finally {
-        setIsLoading(false);
+        // a cleared run must not flip the loading state of whatever came after it
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+          setIsLoading(false);
+        }
       }
     },
     [messages, isLoading],
@@ -542,7 +579,31 @@ export default function ChatBot() {
     const history = messages.slice(0, lastUserIndex);
     setMessages(history);
     sendMessage(messages[lastUserIndex].content, history);
-  }, [messages, isLoading, sendMessage]);
+    // the retry button unmounts with the failed turn; keep keyboard focus in the console
+    if (wide) inputRef.current?.focus();
+  }, [messages, isLoading, sendMessage, wide]);
+
+  // Clear stops a running answer and brings back the opening suggestions, with a short undo.
+  const clearTrace = () => {
+    setUndo({ messages, suggestions, until: Date.now() + UNDO_MS });
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsLoading(false);
+    setMessages([]);
+    setError(null);
+    setSuggestions(openingSuggestions.current);
+    window.clearTimeout(undoTimer.current);
+    undoTimer.current = window.setTimeout(() => setUndo(null), UNDO_MS);
+    inputRef.current?.focus();
+  };
+
+  const undoClear = () => {
+    if (!undo) return;
+    setMessages(undo.messages);
+    setSuggestions(undo.suggestions);
+    setUndo(null);
+    window.clearTimeout(undoTimer.current);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -552,238 +613,316 @@ export default function ChatBot() {
   const handleSuggestionClick = (suggestion: string, index: number) => {
     setSelectedSuggestionIndex(index);
     sendMessage(suggestion); // Auto-send on click
+    // The clicked row unmounts; without this, focus drops to the page and ↑/↓ go dead.
+    // Phones skip it: focusing the input would pop the keyboard over the answer.
+    if (wide) inputRef.current?.focus();
   };
 
-  const showSuggestions = suggestions.length > 0 && !isLoading;
+  // Scrolling is left to the row's own #work link
+  const jumpToStudy = (slug: string) => {
+    selectStudy(slug);
+    if (!wide) {
+      setJumped(true);
+      closeDrawer();
+    }
+  };
+
+  // The sheet follows the finger from the handle or header; buttons keep their own taps
+  const onDragStart = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (wide || (e.target as Element).closest('button')) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drag.current = {
+      id: e.pointerId,
+      startY: e.clientY,
+      trail: [{ y: e.clientY, t: e.timeStamp }],
+    };
+  };
+
+  const onDragMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    // Speed is read over the last FLICK_WINDOW_MS, so one jittery sample cannot fake a flick
+    d.trail.push({ y: e.clientY, t: e.timeStamp });
+    while (d.trail.length > 1 && e.timeStamp - d.trail[0].t > FLICK_WINDOW_MS) d.trail.shift();
+    dragY.set(Math.max(0, e.clientY - d.startY));
+  };
+
+  const onDragEnd = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    const pulled = dragY.get();
+    const height = sheetRef.current?.offsetHeight ?? window.innerHeight;
+    const from = d.trail[0];
+    const elapsed = e.timeStamp - from.t;
+    // a finger that paused before lifting is a slow release, not a flick
+    const speed =
+      elapsed > 0 && elapsed <= FLICK_WINDOW_MS * 2 ? (e.clientY - from.y) / elapsed : 0;
+    const close =
+      e.type !== 'pointercancel' &&
+      (pulled > height * DRAG_CLOSE_RATIO || (speed > FLICK_PX_PER_MS && pulled > FLICK_MIN_PX));
+    if (!close) {
+      if (reduce) dragY.set(0);
+      else animate(dragY, 0, { type: 'spring', stiffness: 420, damping: 38 });
+      return;
+    }
+    if (reduce) {
+      closeDrawer();
+      return;
+    }
+    setDragClosing(true);
+    animate(dragY, height, { duration: 0.2, ease: 'easeIn' }).then(closeDrawer);
+  };
+
   const lastMsg = messages[messages.length - 1];
-  const streaming = isLoading && lastMsg?.role === 'assistant' && lastMsg.content.length > 0;
+  const showSuggestions = suggestions.length > 0 && !isLoading;
+  const canClear = messages.length > 0 || isLoading;
+  const motionProps = reduce
+    ? {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.12 },
+      }
+    : {
+        initial: wide ? { opacity: 0, x: 24 } : { opacity: 0, y: 48 },
+        animate: { opacity: 1, x: 0, y: 0 },
+        exit: wide ? { opacity: 0, x: 24 } : dragClosing ? { opacity: 0 } : { opacity: 0, y: 48 },
+        transition: { duration: 0.28, ease: [0.2, 0.7, 0.2, 1] as const },
+      };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50">
-      <motion.div
-        initial={{ y: 90, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-        className="pointer-events-auto mx-auto w-full max-w-6xl px-3.5 pb-3.5"
-      >
-        {/* expand panel — the transcript */}
-        <AnimatePresence>
-          {panelVisible && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 16 }}
-              transition={{ duration: 0.2 }}
-              className="-mb-px rounded-t-2xl border border-b-0 border-line p-4 pt-3.5"
-              style={{
-                background: 'rgba(23,25,31,0.94)',
-                backdropFilter: 'blur(14px)',
-                WebkitBackdropFilter: 'blur(14px)',
-                boxShadow: '0 -18px 50px rgba(0,0,0,0.45)',
-              }}
+    <>
+      {/* launcher chip: rises once after the hero, never pulses */}
+      {!open && (
+        <motion.button
+          ref={chipRef}
+          type="button"
+          onClick={openDrawer}
+          initial={reduce ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}
+          aria-label={jumped ? 'Back to trace' : 'Ask this page (press / to open)'}
+          className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex h-12 items-center gap-2.5 rounded-xl border px-4 font-mono text-[13px] text-ink shadow-[0_10px_26px_rgba(0,0,0,0.5)] transition-colors hover:text-ink md:h-10 md:px-3.5"
+          style={{
+            background: 'rgba(19,21,26,0.96)',
+            borderColor: 'var(--primary-deep)',
+          }}
+        >
+          <span style={{ color: 'var(--primary)' }}>trace ❯</span>
+          <span>{jumped ? 'back to trace' : 'ask this page'}</span>
+          <kbd className="hidden rounded border border-line px-1.5 text-[11px] text-muted md:inline">
+            /
+          </kbd>
+        </motion.button>
+      )}
+
+      <AnimatePresence>
+        {open && (
+          <>
+            {/* phones: the sheet covers most of the screen, so a tap on the strip above closes it */}
+            {!wide && (
+              <motion.button
+                key="scrim"
+                type="button"
+                aria-label="Close trace console"
+                onClick={closeDrawer}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-black/55"
+              />
+            )}
+            <motion.aside
+              key="drawer"
+              ref={sheetRef}
+              role="dialog"
+              aria-label="Trace console"
+              {...motionProps}
+              style={{ y: dragY }}
+              className="fixed inset-x-0 bottom-0 z-50 flex h-[88dvh] flex-col overscroll-contain rounded-t-2xl border-t border-[#2f3440] bg-[#111318] shadow-[0_-18px_40px_rgba(0,0,0,0.5)] md:inset-x-auto md:top-14 md:right-0 md:h-auto md:w-[420px] md:rounded-none md:border-t-0 md:border-l md:border-line md:shadow-[-22px_0_44px_rgba(0,0,0,0.45)]"
             >
-              {/* panel header */}
-              <div className="mb-3 flex items-center justify-between gap-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-muted">
-                <span className="flex items-center gap-2">
+              {/* handle + header: on phones this strip drags the sheet down to close it */}
+              <div
+                onPointerDown={onDragStart}
+                onPointerMove={onDragMove}
+                onPointerUp={onDragEnd}
+                onPointerCancel={onDragEnd}
+                className={`flex flex-none flex-col ${wide ? '' : 'cursor-grab touch-none select-none'}`}
+              >
+                {!wide && (
                   <span
-                    className="size-[7px] rounded-full"
-                    style={{
-                      background: 'var(--primary)',
-                      boxShadow: '0 0 7px color-mix(in srgb, var(--primary) 70%, transparent)',
-                    }}
+                    aria-hidden
+                    className="mx-auto mt-[7px] h-1 w-9 flex-none rounded-full bg-[#3a4050]"
                   />
-                  query · telemetry
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setExpanded(false)}
-                  className="rounded px-1.5 py-0.5 text-muted transition-colors hover:bg-base-content/5 hover:text-ink"
-                >
-                  collapse ✕
-                </button>
+                )}
+                <div className="flex h-11 flex-none items-center justify-between gap-2.5 border-b border-line px-4 font-mono text-[12.5px] text-muted md:px-5 md:text-xs">
+                  <span className="flex items-center gap-2 text-ink">
+                    <span
+                      className="size-[7px] rounded-full"
+                      style={{ background: 'var(--primary)' }}
+                    />
+                    trace ❯ console
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={clearTrace}
+                      disabled={!canClear}
+                      className={`flex min-h-8 items-center gap-1.5 rounded-[7px] border px-2.5 transition-colors hover:text-[#34e5ff] disabled:opacity-45 disabled:hover:text-muted md:min-h-0 md:px-2 md:py-1 ${undo ? 'border-[color:var(--secondary-deep)] text-[color:var(--secondary)]' : 'border-line'}`}
+                    >
+                      <Trash2 aria-hidden className="size-3" />
+                      clear
+                    </button>
+                    <button
+                      type="button"
+                      onClick={closeDrawer}
+                      className="flex min-h-8 items-center gap-1.5 rounded-[7px] border border-line px-2.5 transition-colors hover:text-[#34e5ff] md:min-h-0 md:px-2 md:py-1"
+                    >
+                      <X aria-hidden className="size-3" />
+                      {wide ? 'esc' : 'close'}
+                    </button>
+                  </span>
+                </div>
               </div>
 
-              {/* transcript */}
+              {/* transcript: scrolls by wheel, touch and keys, but the page keeps the only scrollbar */}
               <div
                 ref={transcriptRef}
                 onScroll={(e) => {
                   const el = e.currentTarget;
                   stickToBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
                 }}
-                className="flex max-h-[38vh] flex-col overflow-y-auto overflow-x-hidden [scrollbar-width:thin]"
+                className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 [scrollbar-width:none] md:px-5 md:py-3.5 [&::-webkit-scrollbar]:hidden"
               >
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`mb-2.5 flex ${
-                      message.role === 'user' ? 'justify-end' : 'flex-col items-start'
-                    }`}
-                  >
-                    {message.statusLines && message.statusLines.length > 0 && (
-                      <div className="w-full sm:max-w-[82%]">
-                        <StatusLog lines={message.statusLines} />
-                      </div>
-                    )}
-                    {(message.content || !message.statusLines?.length) && (
-                      <div
-                        className="max-w-[82%] break-words rounded-xl px-3.5 py-2.5 text-[13.5px] leading-[1.55] text-ink"
-                        style={{
-                          background:
-                            message.role === 'user'
-                              ? 'color-mix(in srgb, var(--primary) 15%, transparent)'
-                              : 'rgba(237,239,243,0.04)',
-                          border:
-                            message.role === 'user'
-                              ? '1px solid color-mix(in srgb, var(--primary) 32%, transparent)'
-                              : '1px solid rgba(237,239,243,0.08)',
-                          overflowWrap: 'anywhere',
-                          wordBreak: 'break-word',
-                        }}
-                      >
-                        {message.content ? (
-                          <MessageContent content={message.content} />
-                        ) : (
-                          <span className="font-mono text-xs text-muted">
-                            querying logs
-                            <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
-                          </span>
-                        )}
-                        {/* streaming caret on the live assistant message */}
-                        {streaming && message.id === lastMsg?.id && (
-                          <span
-                            className="ml-0.5 inline-block h-3.5 w-[7px] align-[-2px]"
-                            style={{
-                              background: 'var(--primary)',
-                              animation: 'blink 1s step-end infinite',
-                            }}
-                          />
-                        )}
-                      </div>
-                    )}
-                    {message.failed && message.id === lastMsg?.id && (
-                      <div className="mt-1 flex items-center gap-3 font-mono text-xs">
-                        <button
-                          type="button"
-                          onClick={retryLastQuestion}
-                          disabled={isLoading}
-                          className="rounded-lg border px-3.5 py-2 transition-colors disabled:opacity-50"
-                          style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
-                        >
-                          {TRY_AGAIN_LABEL}
-                        </button>
-                        <span className="text-muted">{TRY_AGAIN_NOTE}</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                {undo && <UndoToast key={undo.until} until={undo.until} onUndo={undoClear} />}
 
-                {/* loading bubble before the first token arrives */}
-                {isLoading && lastMsg?.role === 'user' && (
-                  <div className="mb-2.5 flex justify-start">
-                    <div
-                      className="rounded-xl px-3.5 py-2.5 font-mono text-xs text-muted"
-                      style={{
-                        background: 'rgba(237,239,243,0.04)',
-                        border: '1px solid rgba(237,239,243,0.08)',
-                      }}
-                    >
-                      querying logs
-                      <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
+                {messages.map((message) => {
+                  const isLast = message.id === lastMsg?.id;
+                  const live = isLoading && isLast;
+                  if (message.role === 'user') {
+                    return (
+                      <p
+                        key={message.id}
+                        className="mt-5 flex gap-2 font-mono text-[12.5px] leading-normal font-medium text-ink first:mt-0 md:text-xs"
+                      >
+                        <span aria-hidden className="flex-none" style={{ color: 'var(--primary)' }}>
+                          ❯
+                        </span>
+                        {message.content}
+                      </p>
+                    );
+                  }
+                  const { text } = parseSuggestions(message.content);
+                  return (
+                    <div key={message.id}>
+                      <SpanWaterfall
+                        timings={message}
+                        live={live}
+                        failed={Boolean(message.failed)}
+                        reduce={reduce}
+                      />
+                      {message.content && (
+                        <div
+                          className="mt-2.5 text-[15px] leading-[1.58] text-ink md:text-[14px]"
+                          style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+                        >
+                          <MessageContent content={message.content} live={live} />
+                        </div>
+                      )}
+                      {message.failed && isLast && (
+                        <div className="mt-2.5 flex items-center gap-2.5 font-mono text-[12.5px] md:text-xs">
+                          <button
+                            type="button"
+                            onClick={retryLastQuestion}
+                            disabled={isLoading}
+                            className="flex min-h-11 items-center gap-[7px] rounded-lg border border-[color:var(--primary-deep)] px-4 font-semibold text-[color:var(--primary)] transition-colors hover:border-[#34e5ff] hover:text-[#34e5ff] disabled:opacity-50 md:min-h-0 md:px-3 md:py-1.5"
+                          >
+                            <RotateCw aria-hidden className="size-3" />
+                            {TRY_AGAIN_LABEL}
+                          </button>
+                          <span className="text-muted">{TRY_AGAIN_NOTE}</span>
+                        </div>
+                      )}
+                      {/* only a finished answer points at the page: no rows popping in mid-stream */}
+                      {!live && !message.failed && (
+                        <PageRefs refs={matchStudies(text, caseStudies)} onJump={jumpToStudy} />
+                      )}
                     </div>
-                  </div>
+                  );
+                })}
+
+                {/* before the first status or token arrives */}
+                {isLoading && lastMsg?.role === 'user' && (
+                  <p className="mt-2 font-mono text-[12.5px] text-muted md:text-xs">
+                    querying logs
+                    <span style={{ animation: 'blink 1s step-end infinite' }}>_</span>
+                  </p>
+                )}
+
+                {loadingSuggestions && messages.length === 0 ? (
+                  <output className="mt-2 flex items-center gap-2 font-mono text-xs text-muted">
+                    <Loader2 size={12} className="animate-spin" aria-hidden="true" />
+                    loading suggestions…
+                  </output>
+                ) : (
+                  showSuggestions && (
+                    <SuggestionList
+                      suggestions={suggestions}
+                      onSelect={handleSuggestionClick}
+                      selectedIndex={selectedSuggestionIndex}
+                    />
+                  )
                 )}
 
                 {/* always-present live region: a region that only appears with the error
                     isn't announced reliably, so the text changes inside a stable one */}
                 <div aria-live="polite">
-                  {error && <div className="py-2 text-center text-sm text-error">{error}</div>}
+                  {error && (
+                    <p className="mt-3 font-mono text-[12.5px] text-[#ff6b6b] md:text-xs">
+                      {error}
+                    </p>
+                  )}
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* bottom block: full console (open) or docked chip — ref stays stable for --console-h */}
-        <div ref={consoleRef} className={open ? undefined : 'flex justify-end'}>
-          {open ? (
-            <div
-              className="rounded-2xl border border-line p-3"
-              style={{
-                background: 'rgba(23,25,31,0.96)',
-                backdropFilter: 'blur(14px)',
-                WebkitBackdropFilter: 'blur(14px)',
-                boxShadow: '0 -10px 40px rgba(0,0,0,0.4)',
-              }}
-            >
-              {/* minimize handle */}
-              <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted/45">
-                  trace ❯ console
-                </span>
-                <button
-                  type="button"
-                  onClick={dock}
-                  aria-label="Minimize console"
-                  title="Minimize console"
-                  className="flex items-center gap-1 rounded-md border border-line px-2 py-1 font-mono text-[11px] text-muted transition-colors hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]"
-                >
-                  <ChevronDown size={14} aria-hidden="true" />
-                  minimize
-                </button>
-              </div>
-
-              {loadingSuggestions && messages.length === 0 ? (
-                <output className="mb-2.5 flex items-center gap-2 font-mono text-[11px] text-muted">
-                  <Loader2 size={12} className="animate-spin" aria-hidden="true" />
-                  loading suggestions…
-                </output>
-              ) : (
-                showSuggestions && (
-                  <SuggestionPills
-                    suggestions={suggestions}
-                    onSelect={handleSuggestionClick}
-                    isLoading={isLoading}
-                    selectedIndex={selectedSuggestionIndex}
-                  />
-                )
-              )}
-
-              <form onSubmit={handleSubmit} className="flex items-center gap-2.5">
+              {/* composer */}
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-none items-center gap-2.5 border-t border-line bg-[#111318] px-4 pt-2.5 pb-[calc(0.875rem+env(safe-area-inset-bottom,0px))] md:px-5 md:pb-[calc(0.7rem+env(safe-area-inset-bottom,0px))]"
+              >
                 <span
-                  className="flex-none font-mono text-sm"
+                  className="flex-none font-mono text-[12.5px] whitespace-nowrap md:text-xs"
                   style={{ color: 'var(--primary)' }}
                   aria-hidden="true"
                 >
                   trace ❯
                 </span>
+                {/* never disabled: a disabled input drops focus, and ↑/↓ would go dead after
+                    the first answer. Sending is blocked while an answer runs instead. */}
                 <input
                   ref={inputRef}
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  onFocus={() => messages.length > 0 && setExpanded(true)}
-                  placeholder="ask my telemetry anything…"
-                  aria-label="Query the portfolio"
-                  className="min-w-0 flex-1 border-none bg-transparent py-2 text-[14.5px] text-ink placeholder:text-muted/60 focus:outline-none"
-                  disabled={isLoading}
+                  placeholder={messages.length ? 'ask a follow-up…' : 'ask about Abhishek’s work…'}
+                  aria-label="Ask about Abhishek's work"
+                  className="min-w-0 flex-1 rounded-md border-none bg-transparent px-1.5 py-2 text-base text-ink placeholder:text-muted focus:outline-none md:text-[14px]"
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  aria-label="Send query"
-                  className="flex flex-none items-center gap-1.5 rounded-lg px-3.5 py-2 font-mono text-[13px] font-semibold transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: 'var(--primary)', color: '#0e0f13' }}
+                  aria-label="Send"
+                  className="flex min-h-11 flex-none items-center gap-[7px] rounded-lg border border-transparent bg-[linear-gradient(180deg,var(--primary),var(--primary-deep))] px-4 font-mono text-[12.5px] font-semibold whitespace-nowrap text-[#07140d] transition-colors disabled:cursor-not-allowed disabled:border-line disabled:bg-[#17191f] disabled:bg-none disabled:text-muted md:min-h-0 md:px-3 md:py-1.5 md:text-xs"
                 >
                   {isLoading ? <Loader2 size={14} className="animate-spin" /> : 'send'}
                 </button>
               </form>
-            </div>
-          ) : (
-            <DockedConsole onReopen={reopen} hintVisible={hintVisible} />
-          )}
-        </div>
-      </motion.div>
-    </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

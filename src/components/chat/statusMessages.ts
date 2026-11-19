@@ -19,6 +19,8 @@ const TONE: Record<StatusCode, StatusTone> = {
   failed: 'error',
 };
 
+// The one span the browser measures itself: first answer text to last shown word
+export const STREAMING_LABEL = 'streaming answer';
 export const QUEUED_NOTE = 'Your question is kept. No need to send it again.';
 export const TRY_AGAIN_LABEL = 'try again';
 export const TRY_AGAIN_NOTE = 'or ask in a minute';
