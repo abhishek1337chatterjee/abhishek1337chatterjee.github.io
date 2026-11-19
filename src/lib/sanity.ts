@@ -29,7 +29,17 @@ export const queries = {
     location,
     experience,
     bio,
-    highlightedPhrases[]{text, color},
+    highlightedPhrases[]{
+      text,
+      color,
+      "proof": select(defined(proofKind) => {
+        "kind": proofKind,
+        "role": proofRole._ref,
+        "study": proofStudy->slug,
+        "skillGroup": proofSkillGroup,
+        "hot": proofHot
+      })
+    },
     highlights,
     interests,
     profileImage,
@@ -185,9 +195,19 @@ export const queries = {
 };
 
 // Type definitions matching Sanity schema
+// Where a highlighted phrase is proven on the page; set per phrase in Studio.
+export interface PhraseProof {
+  kind: 'role' | 'study' | 'allStudies' | 'skillGroup';
+  role?: string; // careerPhase _id
+  study?: string; // caseStudy slug
+  skillGroup?: string; // skill category
+  hot?: string; // chip lit in the peek card
+}
+
 export interface HighlightedPhrase {
   text: string;
   color: 'cyan' | 'pink' | 'green' | 'orange' | 'purple';
+  proof?: PhraseProof | null;
 }
 
 export interface SanityAbout {
