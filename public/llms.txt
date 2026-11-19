@@ -1,7 +1,7 @@
 # Abhishek Chatterjee — Backend Engineer | Serverless | AWS | AI Agents | TypeScript
 
-> I'm a Software Engineer with 3+ years of experience, the last 2 building production systems in fintech. I started as a Frontend Developer crafting React interfaces, and today I work as a Serverless Engineer, designing event-driven, cloud-native backends on AWS — Lambda, EventBridge, Step Functions, and the wider serverless ecosystem.
-> My work spans the full stack: streaming APIs, durable cross-account workflows, content architecture with Sanity CMS, and the CI/CD pipelines that ship it all.
+> I'm a Software Engineer with 3+ years of experience. Since October 2024 I've been at time.money, a personal-finance fintech. I started as a Frontend Developer crafting React interfaces; today I build event-driven, serverless backends on AWS: Lambda, Step Functions, EventBridge and DynamoDB.
+> My work spans regulated data pipelines (credit bureau, consent, Account Aggregator), durable cross-account workflows, AI agents on Amazon Bedrock AgentCore, content architecture with Sanity CMS, and the CI/CD pipelines that ship it all.
 
 Experience: 3+ years. Location: India. Highlights: 3+ Years Experience, Backend & Serverless, Linux Enthusiast, Open Source Lover. Interests: Custom PC Assembly, Open Source, Linux.
 
