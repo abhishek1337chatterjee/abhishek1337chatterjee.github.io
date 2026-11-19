@@ -135,6 +135,7 @@ export const queries = {
     "sideProjects": *[_type == "project" && source == "side-project" && _id != ^.centerpieceProject._ref] | order(_createdAt desc){
       title,
       description,
+      "image": image.asset->url,
       techStack,
       githubUrl,
       deployedUrl
