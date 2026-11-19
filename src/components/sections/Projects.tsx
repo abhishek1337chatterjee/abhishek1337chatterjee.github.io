@@ -44,6 +44,12 @@ function yearMonth(t: number) {
   return `${y}-${String(m).padStart(2, '0')}`;
 }
 
+// Fractional year → "November 2025", what a screen reader says for the playhead.
+function spokenMonth(t: number) {
+  const [y, m] = yearMonth(t).split('-').map(Number);
+  return new Date(y, m - 1).toLocaleString('en', { month: 'long', year: 'numeric' });
+}
+
 const clock = (s: number) => s.toFixed(1).padStart(4, '0');
 const SWEEP_LABEL = `${clock(SWEEP_S)}s`;
 
@@ -66,6 +72,8 @@ export default function Journey() {
   const [run, setRun] = useState(0);
   const [sweepIdx, setSweepIdx] = useState<number | null>(null);
   const [picked, setPicked] = useState<number | null>(null);
+  // playhead share 0..1 for the slider's ARIA value; the per-frame date text bypasses React
+  const [headP, setHeadP] = useState(0);
   const dateRef = useRef<HTMLSpanElement>(null);
   const clockRef = useRef<HTMLSpanElement>(null);
   // Sweep time survives pauses: the loop adds frame deltas only while playing.
@@ -132,9 +140,13 @@ export default function Journey() {
       if (idx !== last) {
         last = idx;
         setSweepIdx(idx);
+        setHeadP(p);
       }
       if (p < 1) raf = requestAnimationFrame(tick);
-      else setStatus('done');
+      else {
+        setHeadP(1);
+        setStatus('done');
+      }
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
@@ -147,7 +159,9 @@ export default function Journey() {
     for (const a of chartRef.current?.getAnimations({ subtree: true }) ?? []) {
       if (a instanceof CSSAnimation) a.currentTime = elapsed * 1000;
     }
-    setSweepIdx(paint(elapsed).idx);
+    const painted = paint(elapsed);
+    setSweepIdx(painted.idx);
+    setHeadP(painted.p);
     setPicked(null);
     setStatus('paused');
   };
@@ -181,6 +195,7 @@ export default function Journey() {
     if (status === 'playing') return setStatus('paused');
     if (status === 'paused') return setStatus('playing');
     elapsedRef.current = 0;
+    setHeadP(0);
     setPicked(null);
     setRun((r) => r + 1);
     setStatus('playing');
@@ -340,13 +355,13 @@ export default function Journey() {
                         rel="noreferrer"
                         className="relative block text-xs text-muted underline decoration-dotted underline-offset-4 transition-colors pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:top-0 pointer-coarse:before:h-8 hover:text-[#34e5ff]"
                       >
-                        {/* tap layer grows down only (the role button sits right above); truncate stays on
-                            the inner span because overflow on the link would clip that layer */}
-                        <span className="block truncate">{p.companyName ?? p.title} ↗</span>
+                        {/* tap layer grows down only (role button sits above); truncate lives on the inner
+                            span so overflow can't clip that layer, and phones wrap instead of cutting */}
+                        <span className="block sm:truncate">{p.companyName ?? p.title} ↗</span>
                         <span className="sr-only"> (opens in a new tab)</span>
                       </a>
                     ) : (
-                      <span className="block truncate text-xs text-muted">
+                      <span className="block text-xs text-muted sm:truncate">
                         {p.companyName ?? p.title}
                       </span>
                     )}
@@ -406,10 +421,10 @@ export default function Journey() {
                               └
                             </span>
                             <div className="min-w-0">
-                              <div className="truncate font-mono text-xs text-[#c9cdd6]">
+                              <div className="font-mono text-xs text-[#c9cdd6] [overflow-wrap:anywhere] sm:truncate">
                                 {c.name}
                               </div>
-                              <div className="truncate text-[11px] text-muted">{c.sub}</div>
+                              <div className="text-[11px] text-muted sm:truncate">{c.sub}</div>
                             </div>
                           </div>
                           <div
@@ -467,7 +482,8 @@ export default function Journey() {
                     aria-label="Trace playhead, drag or use arrow keys"
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    aria-valuenow={Math.round(((elapsedRef.current - LEAD_S) / SWEEP_S) * 100)}
+                    aria-valuenow={Math.round(headP * 100)}
+                    aria-valuetext={spokenMonth(min + headP * (now - min))}
                     onKeyDown={nudge}
                     {...grab}
                     className={`pointer-events-auto absolute bottom-0 left-0 -translate-x-1/2 cursor-ew-resize touch-none ${TAP_44} rounded-md border border-[color:var(--secondary)]/50 bg-[#1a1205] px-1.5 py-0.5 font-mono text-xs whitespace-nowrap tabular-nums text-[color:var(--secondary)]`}
