@@ -288,6 +288,13 @@ body {
   }
 }
 
+/* contact route — dashes march toward getform.io while a send is in flight */
+@keyframes wireMarch {
+  to {
+    background-position-x: 18px;
+  }
+}
+
 /* journey replay pause: freezes every sweep animation, including inline `animation` shorthands */
 .sweep-paused,
 .sweep-paused * {
