@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Footer from './components/layout/Footer';
 import Navbar from './components/layout/Navbar';
 import Hero from './components/sections/Hero';
+import CmsOffline from './components/ui/CmsOffline';
 import Loader from './components/ui/Loader';
 import { useAnchorScrollFix } from './hooks/useAnchorScrollFix';
 
@@ -40,6 +41,7 @@ function App() {
       {/* overflow-x-clip (not hidden) so it doesn't break the navbar's sticky */}
       <div className="min-h-screen overflow-x-clip">
         <Navbar booted={booted} />
+        <CmsOffline />
         <main>
           <Hero booted={booted} />
           {/* full-height fallback keeps the footer below the fold while sections load (CLS) */}

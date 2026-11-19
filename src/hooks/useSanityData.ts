@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { cmsStatus } from '../lib/cmsStatus';
 import {
   getAbout,
   getCareerPhases,
@@ -20,181 +21,70 @@ import {
   type SanitySocial,
 } from '../lib/sanity';
 
-interface SanityDataState {
-  about: SanityAbout | null;
-  settings: SanitySiteSettings | null;
-  skills: SanitySkill[];
-  projects: SanityProject[];
-  careerPhases: SanityCareerPhase[];
-  socials: SanitySocial[];
-  loading: boolean;
-  error: Error | null;
-}
-
-// Hook to fetch all Sanity data
-export function useSanityData() {
-  const [state, setState] = useState<SanityDataState>({
-    about: null,
-    settings: null,
-    skills: [],
-    projects: [],
-    careerPhases: [],
-    socials: [],
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [about, settings, skills, projects, careerPhases, socials] = await Promise.all([
-          getAbout(),
-          getSiteSettings(),
-          getSkills(),
-          getProjects(),
-          getCareerPhases(),
-          getSocials(),
-        ]);
-
-        setState({
-          about,
-          settings,
-          skills,
-          projects,
-          careerPhases,
-          socials,
-          loading: false,
-          error: null,
-        });
-      } catch (err) {
-        setState((prev) => ({
-          ...prev,
-          loading: false,
-          error: err instanceof Error ? err : new Error('Failed to fetch Sanity data'),
-        }));
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  return state;
-}
-
-// Individual hooks for specific data types (more efficient when you only need one type)
-export function useAbout() {
-  const [about, setAbout] = useState<SanityAbout | null>(null);
+// Shared fetch for every hook below: a failure raises the page-wide notice instead of
+// leaving a section blank in silence, and its retry bumps the epoch so this runs again.
+function useCms<T>(load: () => Promise<T>, initial: T) {
+  const [data, setData] = useState<T>(initial);
   const [loading, setLoading] = useState(true);
+  const epoch = useSyncExternalStore(cmsStatus.subscribe, cmsStatus.epoch);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: epoch is the retry trigger
   useEffect(() => {
-    getAbout()
-      .then(setAbout)
-      .finally(() => setLoading(false));
-  }, []);
+    let live = true;
+    setLoading(true);
+    load()
+      .then((value) => live && setData(value))
+      .catch(() => live && cmsStatus.markFailed())
+      .finally(() => live && setLoading(false));
+    return () => {
+      live = false;
+    };
+  }, [load, epoch]);
 
+  return { data, loading };
+}
+
+export function useAbout() {
+  const { data: about, loading } = useCms<SanityAbout | null>(getAbout, null);
   return { about, loading };
 }
 
 export function useSkills() {
-  const [skills, setSkills] = useState<SanitySkill[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getSkills()
-      .then(setSkills)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: skills, loading } = useCms<SanitySkill[]>(getSkills, []);
   return { skills, loading };
 }
 
 export function useProjects() {
-  const [projects, setProjects] = useState<SanityProject[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getProjects()
-      .then(setProjects)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: projects, loading } = useCms<SanityProject[]>(getProjects, []);
   return { projects, loading };
 }
 
 export function useCareerPhases() {
-  const [careerPhases, setCareerPhases] = useState<SanityCareerPhase[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getCareerPhases()
-      .then(setCareerPhases)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: careerPhases, loading } = useCms<SanityCareerPhase[]>(getCareerPhases, []);
   return { careerPhases, loading };
 }
 
 export function useSocials() {
-  const [socials, setSocials] = useState<SanitySocial[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getSocials()
-      .then(setSocials)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: socials, loading } = useCms<SanitySocial[]>(getSocials, []);
   return { socials, loading };
 }
 
 export function useSiteSettings() {
-  const [settings, setSettings] = useState<SanitySiteSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getSiteSettings()
-      .then(setSettings)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: settings, loading } = useCms<SanitySiteSettings | null>(getSiteSettings, null);
   return { settings, loading };
 }
 
 export function useHomelab() {
-  const [homelab, setHomelab] = useState<SanityHomelab | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getHomelab()
-      .then(setHomelab)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: homelab, loading } = useCms<SanityHomelab | null>(getHomelab, null);
   return { homelab, loading };
 }
 
 export function useLearning() {
-  const [learning, setLearning] = useState<SanityLearning[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getLearning()
-      .then(setLearning)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: learning, loading } = useCms<SanityLearning[]>(getLearning, []);
   return { learning, loading };
 }
 
 export function useCaseStudies() {
-  const [caseStudies, setCaseStudies] = useState<SanityCaseStudy[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getCaseStudies()
-      .then(setCaseStudies)
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: caseStudies, loading } = useCms<SanityCaseStudy[]>(getCaseStudies, []);
   return { caseStudies, loading };
 }
