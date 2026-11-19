@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useActiveSection } from '../../hooks/useActiveSection';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useAbout, useSiteSettings } from '../../hooks/useSanityData';
@@ -13,19 +13,42 @@ const teal = 'var(--primary)';
 const CURRENT_LINK =
   'aria-[current=true]:text-ink aria-[current=true]:underline aria-[current=true]:decoration-[color:var(--primary)] aria-[current=true]:decoration-2 aria-[current=true]:underline-offset-[6px]';
 
-// Brand — static "ac❯" prompt with a live terminal caret that loops:
-// types the name, holds, erases, pauses, retypes. Starts after `start` (loader
-// done) so the first pass isn't hidden behind the boot screen; loops forever
-// after so it's always visibly "alive". Reduced-motion → static full name.
+// Brand — "ac❯" prompt that types the name once after the loader, then stays still so the
+// identity is always readable. Hover or focus replays one erase + retype, like re-running a
+// trace. The caret is the favicon's ink block. Reduced motion → static full name, no replay.
 const TYPE_MS = 80; // per-char while typing
-const ERASE_MS = 40; // per-char while erasing
-const HOLD_MS = 3000; // pause at the full name
-const PAUSE_MS = 800; // pause at the empty prompt
+const ERASE_MS = 30; // per-char while erasing (replay only)
+const PAUSE_MS = 250; // beat at the empty prompt before retyping
 
 function NavBrand({ name, start }: { name: string; start: boolean }) {
   const reduced = useReducedMotion();
   const [n, setN] = useState(0);
   const len = name.length;
+  const timer = useRef(0);
+  const busy = useRef(false);
+
+  const play = useCallback(
+    (erase: boolean) => {
+      window.clearTimeout(timer.current);
+      busy.current = true;
+      let i = erase ? len : 0;
+      let dir = erase ? -1 : 1;
+      const tick = () => {
+        i += dir;
+        setN(i);
+        if (dir === -1 && i <= 0) {
+          dir = 1;
+          timer.current = window.setTimeout(tick, PAUSE_MS);
+        } else if (dir === 1 && i >= len) {
+          busy.current = false;
+        } else {
+          timer.current = window.setTimeout(tick, dir === 1 ? TYPE_MS : ERASE_MS);
+        }
+      };
+      timer.current = window.setTimeout(tick, erase ? ERASE_MS : TYPE_MS);
+    },
+    [len],
+  );
 
   useEffect(() => {
     if (reduced) {
@@ -36,40 +59,34 @@ function NavBrand({ name, start }: { name: string; start: boolean }) {
       setN(0);
       return;
     }
-    let timer = 0;
-    let i = 0;
-    let dir = 1; // 1 = typing, -1 = erasing
-    const tick = () => {
-      i += dir;
-      setN(i);
-      let delay: number;
-      if (dir === 1 && i >= len) {
-        dir = -1;
-        delay = HOLD_MS;
-      } else if (dir === -1 && i <= 0) {
-        dir = 1;
-        delay = PAUSE_MS;
-      } else {
-        delay = dir === 1 ? TYPE_MS : ERASE_MS;
-      }
-      timer = window.setTimeout(tick, delay);
-    };
-    timer = window.setTimeout(tick, TYPE_MS);
-    return () => window.clearTimeout(timer);
-  }, [reduced, start, len]);
+    play(false);
+    return () => window.clearTimeout(timer.current);
+  }, [reduced, start, len, play]);
+
+  // A replay never interrupts a pass already running.
+  const retrace = () => {
+    if (!reduced && start && !busy.current) play(true);
+  };
 
   return (
-    <span className="inline-flex items-center font-mono text-[14px] tracking-tight text-ink">
-      <span className="font-bold">ac</span>
-      <span className="font-bold" style={{ color: teal }}>
-        ❯
-      </span>
-      <span className="ml-1">{name.slice(0, n)}</span>
+    <a href="#top" onMouseEnter={retrace} onFocus={retrace} className="flex flex-none items-center">
+      {/* the visible name is mid-typing at times; screen readers get it whole */}
+      <span className="sr-only">{name}, back to top</span>
       <span
-        className="ml-0.5 inline-block h-[0.9em] w-[0.4ch] align-[-0.1em]"
-        style={{ background: teal, animation: 'blink 1s step-end infinite' }}
-      />
-    </span>
+        aria-hidden
+        className="inline-flex items-center font-mono text-[14px] tracking-tight text-ink"
+      >
+        <span className="font-bold">ac</span>
+        <span className="font-bold" style={{ color: teal }}>
+          ❯
+        </span>
+        <span className="ml-1">{name.slice(0, n)}</span>
+        <span
+          className="mb-[0.2em] ml-1 inline-block h-[0.32em] w-[0.8em] self-end rounded-[2px] bg-ink"
+          style={{ animation: 'blink 1.1s step-end infinite' }}
+        />
+      </span>
+    </a>
   );
 }
 
@@ -103,9 +120,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
     >
       <nav className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 py-2.5">
         {/* brand — typed terminal command */}
-        <a href="#top" className="flex flex-none items-center">
-          <NavBrand name={name} start={booted} />
-        </a>
+        <NavBrand name={name} start={booted} />
 
         {/* desktop links */}
         <div className="hidden items-center gap-1 font-mono text-[12.5px] sm:flex">
