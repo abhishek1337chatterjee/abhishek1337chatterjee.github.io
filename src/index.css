@@ -240,6 +240,22 @@ body {
   }
 }
 
+/* service map — trail lights the bus from the old service to the new one, then fades */
+@keyframes busTrail {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  45% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
 /* ── Respect reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
