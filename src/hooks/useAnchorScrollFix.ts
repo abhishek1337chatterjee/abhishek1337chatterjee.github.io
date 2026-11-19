@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { focusTarget } from '../utils/focusTarget';
 
 // In-page anchor nav lands inaccurately because `content-visibility: auto`
 // sections use a placeholder height (contain-intrinsic-size) until they render,
@@ -74,6 +75,7 @@ export function useAnchorScrollFix() {
         // notify hashchange listeners (e.g. the mobile menu close) without a native jump
         window.dispatchEvent(new HashChangeEvent('hashchange'));
       }
+      focusTarget(document.getElementById(id));
       converge(id);
     };
 

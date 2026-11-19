@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useContributions } from '../../hooks/useContributions';
 import { useAbout, useSiteSettings, useSocials } from '../../hooks/useSanityData';
 import { getProfileImageUrl } from '../../lib/sanity';
+import { focusTarget } from '../../utils/focusTarget';
 import { downloadResume } from '../../utils/resume';
 import Breadcrumb from '../ui/Breadcrumb';
 import TelemetryBadge from '../ui/TelemetryBadge';
@@ -268,8 +269,11 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
   const { total, weeks } = useContributions(GH_USER);
   const count = total ? total.toLocaleString() : '—';
 
-  const scrollTo = (id: string) => () =>
-    document.getElementById(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+  const scrollTo = (id: string) => () => {
+    const el = document.getElementById(id);
+    el?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    focusTarget(el);
+  };
 
   const ctaSecondary =
     'rounded-lg border border-line bg-base-200 px-5 py-2.5 text-ink transition-colors hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]';

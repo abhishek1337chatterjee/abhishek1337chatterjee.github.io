@@ -5,6 +5,7 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useAbout, useCareerPhases, useCaseStudies, useSkills } from '../../hooks/useSanityData';
 import type { HighlightedPhrase } from '../../lib/sanity';
 import { selectStudy } from '../../lib/studyEvents';
+import { focusTarget } from '../../utils/focusTarget';
 import Reveal from '../ui/Reveal';
 import ClaimWires from './about/ClaimWires';
 import { buildClaims, type Claim, COLOR_HEX, HOVER_HEX } from './about/claims';
@@ -63,15 +64,17 @@ export default function About() {
   const jump = (e: MouseEvent, c: Claim) => {
     e.preventDefault();
     if (c.study) selectStudy(c.study);
-    document.getElementById(c.target)?.scrollIntoView({ behavior });
+    const target = document.getElementById(c.target);
+    target?.scrollIntoView({ behavior });
+    focusTarget(target);
     setActive(null);
     setSelected(c.n);
     setBack(c.n);
   };
   const returnTo = (n: number) => {
-    gridRef.current
-      ?.querySelector(`[data-claim="${n}"]`)
-      ?.scrollIntoView({ behavior, block: 'center' });
+    const claim = gridRef.current?.querySelector(`[data-claim="${n}"]`);
+    claim?.scrollIntoView({ behavior, block: 'center' });
+    focusTarget(claim);
     setBack(null);
   };
   const hover = (n: number | null) => () => setActive(n);

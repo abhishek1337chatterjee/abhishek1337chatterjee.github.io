@@ -123,6 +123,10 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* sections focused by an in-page jump: the scroll already shows where focus went */
+[data-jump-target]:focus-visible {
+  outline: none;
+}
 
 /* ── Custom scrollbar (gradient thumb in scheme colors) ── */
 ::-webkit-scrollbar {
