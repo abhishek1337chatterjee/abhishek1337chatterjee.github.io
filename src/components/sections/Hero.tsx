@@ -323,12 +323,14 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
           <h1 className="grid font-display text-5xl font-bold leading-[0.95] tracking-[-0.04em] text-ink [overflow-wrap:anywhere] sm:text-7xl lg:text-[6rem]">
             {/* invisible sizer: reserves height for the longest token so the cycling
                 typewriter never re-wraps the block and shifts the page (CLS) */}
+            {/* the visible name types and cycles; screen readers get it once, whole */}
+            <span className="sr-only">{about?.name ?? 'Abhishek Chatterjee'}</span>
             <span aria-hidden className="invisible [grid-area:1/1]">
               {firstName}.
               <br />
               {longestToken.replace(/\./g, '.\u200b')}
             </span>
-            <span className="[grid-area:1/1]">
+            <span aria-hidden className="[grid-area:1/1]">
               {firstName}
               <span style={{ color: 'var(--primary)' }}>.</span>
               <br />

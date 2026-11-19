@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSlashShortcut } from '../../../lib/slashShortcut';
 import { COPY_FEEDBACK_MS } from './policy';
 
 const row = 'border-t border-line py-3.5';
@@ -49,11 +50,12 @@ function CopyButton({ text, what }: { text: string; what: string }) {
   );
 }
 
-// The chat listens for "/" on window; replaying that key opens it without a new event.
-const openChat = () => window.dispatchEvent(new KeyboardEvent('keydown', { key: '/' }));
+// The chat's own open event, so this still works when the "/" shortcut is switched off.
+const openChat = () => window.dispatchEvent(new CustomEvent('tm-ask-chat', { detail: {} }));
 
 // Direct ways to reach me. Email and phone come from Sanity site settings.
 export default function SidePanel({ email, phone }: { email: string; phone: string }) {
+  const slashKey = useSlashShortcut();
   const phoneDigits = phone.replace(/[^\d+]/g, '');
 
   return (
@@ -93,13 +95,15 @@ export default function SidePanel({ email, phone }: { email: string; phone: stri
           className="group min-h-11 w-full py-3.5 text-left text-[13px] leading-[1.55] text-muted transition-colors hover:text-[#34e5ff]"
         >
           or{' '}
-          <span className="hidden lg:inline">
-            press{' '}
-            <kbd className="rounded border border-line px-[5px] py-px font-mono text-xs text-ink">
-              /
-            </kbd>{' '}
-            to{' '}
-          </span>
+          {slashKey && (
+            <span className="hidden lg:inline">
+              press{' '}
+              <kbd className="rounded border border-line px-[5px] py-px font-mono text-xs text-ink">
+                /
+              </kbd>{' '}
+              to{' '}
+            </span>
+          )}
           ask the{' '}
           <span className="text-[color:var(--primary)] transition-colors group-hover:text-[#34e5ff]">
             trace ❯

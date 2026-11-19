@@ -293,7 +293,7 @@ export default function FeedCachePanel({
         </div>
       </div>
 
-      <p className="mt-4 font-mono text-[11px] text-muted/80">
+      <p className="mt-4 font-mono text-[11px] text-muted">
         replay of a cold start · timings illustrative · workers, deadline and queue rules are the
         service's own
       </p>

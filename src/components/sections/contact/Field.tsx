@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export const controlCls = (bad: boolean, locked: boolean) =>
   `block w-full min-h-12 rounded-lg border py-3 pr-10 pl-3.5 text-base leading-[1.45] outline-none transition-colors placeholder:text-muted focus:border-[color:var(--primary)] lg:min-h-11 lg:py-2.5 lg:pr-[38px] lg:pl-[13px] lg:text-[15px] ${
-    bad ? 'border-[color:var(--secondary)]' : 'border-line'
+    bad ? 'border-[color:var(--secondary)]' : 'border-[#5d6370]'
   } ${locked ? 'bg-[#101216] text-muted' : 'bg-base-200 text-ink'}`;
 
 export const hintId = (id: string) => `${id}-hint`;

@@ -14,6 +14,7 @@ import remarkGfm from 'remark-gfm';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useCaseStudies } from '../hooks/useSanityData';
 import { createNdjsonParser } from '../lib/chatStream';
+import { slashShortcut, useSlashShortcut } from '../lib/slashShortcut';
 import { selectStudy } from '../lib/studyEvents';
 import type { ChatEvent, StatusLine } from '../types/chat';
 import PageRefs from './chat/PageRefs';
@@ -115,22 +116,23 @@ function MessageContent({ content, live }: { content: string; live: boolean }) {
     return children;
   };
 
-  // Custom components for ReactMarkdown — Trace theme
+  // Custom components for ReactMarkdown — Trace theme. Answer headings start at h3 so a
+  // "# Title" in a reply never adds a second h1 to the page outline.
   const markdownComponents: Components = {
     h1: ({ children }) => (
-      <h1 className="mt-3 mb-2 font-display text-base font-bold text-ink first:mt-0">
-        {processChildren(children)}
-      </h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="mt-3 mb-2 font-display text-[15px] font-bold text-ink first:mt-0">
-        {processChildren(children)}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="mt-2 mb-1 font-display text-sm font-bold text-ink first:mt-0">
+      <h3 className="mt-3 mb-2 font-display text-base font-bold text-ink first:mt-0">
         {processChildren(children)}
       </h3>
+    ),
+    h2: ({ children }) => (
+      <h4 className="mt-3 mb-2 font-display text-[15px] font-bold text-ink first:mt-0">
+        {processChildren(children)}
+      </h4>
+    ),
+    h3: ({ children }) => (
+      <h5 className="mt-2 mb-1 font-display text-sm font-bold text-ink first:mt-0">
+        {processChildren(children)}
+      </h5>
     ),
     p: ({ children }) => <p className="mb-2">{processChildren(children)}</p>,
     a: ({ href, children }) => {
@@ -298,6 +300,7 @@ export default function ChatBot() {
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   // Nothing opens by itself: the chip opens the drawer, and only the visitor does that.
   const [open, setOpen] = useState(false);
+  const slashKey = useSlashShortcut();
   const [wide, setWide] = useState(() => window.matchMedia('(min-width: 768px)').matches);
   const [undo, setUndo] = useState<{
     messages: Message[];
@@ -411,10 +414,10 @@ export default function ChatBot() {
     requestAnimationFrame(() => chipRef.current?.focus());
   }, []);
 
-  // "/" opens the drawer from anywhere on the page; Escape closes it
+  // "/" opens the drawer from anywhere on the page (unless switched off); Escape closes it
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === '/' && !open && !isTyping(document.activeElement)) {
+      if (e.key === '/' && slashKey && !open && !isTyping(document.activeElement)) {
         e.preventDefault();
         openDrawer();
       } else if (e.key === 'Escape' && open) {
@@ -423,15 +426,15 @@ export default function ChatBot() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, openDrawer, closeDrawer]);
+  }, [open, slashKey, openDrawer, closeDrawer]);
 
   // "ask the chatbot about this" links (ServiceMap) open the drawer with a prefilled
   // question; the visitor just hits Enter
   useEffect(() => {
     const handleAsk = (e: Event) => {
-      const question = (e as CustomEvent<{ question: string }>).detail?.question;
-      if (!question) return;
-      setInput(question);
+      // with a question the input is prefilled; without one the drawer just opens
+      const question = (e as CustomEvent<{ question?: string }>).detail?.question;
+      if (question) setInput(question);
       openDrawer();
     };
     window.addEventListener('tm-ask-chat', handleAsk);
@@ -744,7 +747,13 @@ export default function ChatBot() {
           initial={reduce ? false : { opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.24, ease: [0.2, 0.7, 0.2, 1] }}
-          aria-label={jumped ? 'Back to trace' : 'Ask this page (press / to open)'}
+          aria-label={
+            jumped
+              ? 'Back to trace'
+              : slashKey
+                ? 'Ask this page (press / to open)'
+                : 'Ask this page'
+          }
           className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex h-12 items-center gap-2.5 rounded-xl border px-4 font-mono text-[13px] text-ink shadow-[0_10px_26px_rgba(0,0,0,0.5)] transition-colors hover:text-ink md:h-10 md:px-3.5"
           style={{
             background: 'rgba(19,21,26,0.96)',
@@ -753,9 +762,11 @@ export default function ChatBot() {
         >
           <span style={{ color: 'var(--primary)' }}>trace ❯</span>
           <span>{jumped ? 'back to trace' : 'ask this page'}</span>
-          <kbd className="hidden rounded border border-line px-1.5 text-[11px] text-muted md:inline">
-            /
-          </kbd>
+          {slashKey && (
+            <kbd className="hidden rounded border border-line px-1.5 text-[11px] text-muted md:inline">
+              /
+            </kbd>
+          )}
         </motion.button>
       )}
 
@@ -972,6 +983,21 @@ export default function ChatBot() {
                   {isLoading ? <Loader2 size={14} className="animate-spin" /> : 'send'}
                 </button>
               </form>
+
+              {/* keyboard-sized screens only, where the "/" hint is shown */}
+              <div className="hidden flex-none items-center justify-end gap-2 border-t border-line px-5 py-1.5 font-mono text-[11px] text-muted md:flex">
+                <Key>/</Key> opens this console
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={slashKey}
+                  aria-label="/ key opens the trace console"
+                  onClick={() => slashShortcut.set(!slashKey)}
+                  className={`min-w-9 rounded border px-1.5 py-0.5 transition-colors hover:text-[#34e5ff] ${slashKey ? 'border-[color:var(--primary-deep)] text-[color:var(--primary)]' : 'border-line'}`}
+                >
+                  {slashKey ? 'on' : 'off'}
+                </button>
+              </div>
             </motion.aside>
           </>
         )}
