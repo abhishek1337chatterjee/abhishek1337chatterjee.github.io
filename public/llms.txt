@@ -83,7 +83,7 @@ Wearly is a full-stack online fashion and cosmetic retailer. The project was bui
 - Live: https://wearly.vercel.app/
 
 ## Career
-### Software Engineer @ time.money (2024 - Present)
+### Software Engineer @ time.money (Oct 2024 - Present)
 Event-driven AWS backends for a SEBI-registered investment adviser: regulated data pipelines, durable cross-account workflows and a multi-agent AI assistant on Amazon Bedrock AgentCore.
 - Highlights: AWS Lambda, Durable Functions, EventBridge, DynamoDB, Bedrock AgentCore, Cognito, Terraform
 
