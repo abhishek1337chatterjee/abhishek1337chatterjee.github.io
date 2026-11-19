@@ -192,7 +192,7 @@ function TraceBand({ weeks, count, play }: { weeks: number[]; count: string; pla
               style={{ color: 'var(--secondary)' }}
             >
               now · {count}
-              <span className="hidden sm:inline"> commits / 12 mo</span>
+              <span className="hidden sm:inline"> contributions / 12 mo</span>
             </span>
           </div>
         </div>
