@@ -59,29 +59,12 @@
   --color-ink: #edeff3;
 }
 
-/* ════════════════════════════════════════════════════════════════════════
-   COLOR SCHEMES — CSS-var swap. teal+amber is the locked default.
-   Custom primitives read var(--primary)/var(--secondary) (+ -deep).
-   Switch by setting data-scheme on a wrapper element.
-   ════════════════════════════════════════════════════════════════════════ */
-:root,
-[data-scheme="teal+amber"] {
+/* Brand colours: teal = primary / ok, amber = secondary / selected or in flight. */
+:root {
   --primary: #3ddc97;
   --primary-deep: #2faf78;
   --secondary: #f5a623;
   --secondary-deep: #c5811a;
-}
-[data-scheme="cyan+pink"] {
-  --primary: #34e5ff;
-  --primary-deep: #29e7ff;
-  --secondary: #ff7ac6;
-  --secondary-deep: #db2777;
-}
-[data-scheme="cyan-only"] {
-  --primary: #34e5ff;
-  --primary-deep: #29e7ff;
-  --secondary: #1fb6d6;
-  --secondary-deep: #1689a8;
 }
 
 /* ── Global base ── */
@@ -209,26 +192,6 @@ body {
   background: var(--primary);
   animation: blink 1s steps(1) infinite;
 }
-/* live telemetry graph — line draws in left→right (--len), holds, then vanishes */
-@keyframes liveDraw {
-  0% {
-    stroke-dashoffset: var(--len);
-  }
-  66%,
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-@keyframes liveFade {
-  0%,
-  83% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
 /* skills graph — a packet runs one edge (offset-path), then rests until the next request */
 @keyframes packetRun {
   0% {
