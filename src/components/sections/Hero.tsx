@@ -92,11 +92,11 @@ function TraceBand({ weeks, count, play }: { weeks: number[]; count: string; pla
   const paceY = H - (pace / max) * (H - 24);
 
   return (
-    // outer box always holds the band's height so the page never shifts (CLS);
-    // the drawing itself is live data, kept out of the build-time snapshot
+    // outer box holds the band's height so the page never shifts (CLS), lower on short
+    // laptop screens so the stat strip fits; the live drawing stays out of the snapshot
     <div
       aria-hidden="true"
-      className="relative ml-[calc(50%-50vw)] min-h-28 w-screen flex-1 sm:min-h-44 lg:-mt-14 lg:min-h-56"
+      className="relative ml-[calc(50%-50vw)] min-h-28 w-screen flex-1 sm:min-h-44 lg:-mt-14 lg:min-h-56 lg:[@media(max-height:860px)]:min-h-24"
     >
       {weeks.length > 1 && (
         <div data-prerender="skip" className="pointer-events-none absolute inset-0">
@@ -279,9 +279,11 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
     'rounded-lg border border-line bg-base-200 px-5 py-2.5 text-ink transition-colors hover:border-[#34e5ff] hover:text-[#34e5ff]';
 
   return (
+    // phones can't fit the 2×2 stat strip, so the graph fills the screen and the strip
+    // starts on the first scroll instead of being cut through its first row
     <section
       id="top"
-      className="relative flex min-h-[calc(100svh-3.5rem)] flex-col px-5 pt-14 pb-4 sm:px-8 lg:px-16"
+      className="relative flex min-h-[calc(100svh-3.5rem)] flex-col px-5 pt-14 pb-4 max-sm:min-h-[calc(100svh-3.5rem+14.75rem)] sm:px-8 lg:px-16"
     >
       <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col">
         <motion.div
