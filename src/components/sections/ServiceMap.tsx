@@ -19,9 +19,9 @@ const SPAN_GAP_S = 0.35;
 
 function DetailPane({ study, animate }: { study: SanityCaseStudy; animate: boolean }) {
   return (
-    <div className="flex h-full flex-col rounded-xl border border-[color:var(--primary-deep)] bg-base-200 p-5 sm:p-6">
+    <div className="flex h-full flex-col rounded-xl border border-[color:var(--secondary-deep)] bg-base-200 p-5 sm:p-6">
       <p className="flex items-center gap-2 font-mono text-[13px] text-muted">
-        <span className="size-2 rounded-full" style={{ background: 'var(--primary)' }} />
+        <span className="size-2 rounded-full" style={{ background: 'var(--secondary)' }} />
         <span>
           svc/<span className="text-ink">{study.slug}</span>
         </span>
@@ -55,9 +55,12 @@ function DetailPane({ study, animate }: { study: SanityCaseStudy; animate: boole
         onClick={() =>
           askChatAbout(study.chatPrompt ?? `Tell me about the "${study.title}" case study`)
         }
-        className={`relative mt-3 mb-5 self-start font-mono text-[13px] text-muted transition-colors hover:text-ink ${TAP_44}`}
+        className={`group relative mt-3 mb-5 self-start font-mono text-[13px] text-muted transition-colors hover:text-[#34e5ff] ${TAP_44}`}
       >
-        → <span style={{ color: 'var(--primary)' }}>ask the chatbot about this</span>
+        →{' '}
+        <span className="text-[color:var(--primary)] transition-colors group-hover:text-[#34e5ff]">
+          ask the chatbot about this
+        </span>
       </button>
 
       <p className="mt-auto flex flex-wrap justify-between gap-2 border-t border-line pt-4 font-mono text-xs text-muted">
@@ -78,8 +81,8 @@ function Tile({ study, on, onPick }: { study: SanityCaseStudy; on: boolean; onPi
       onClick={onPick}
       className={`flex h-full w-full flex-col rounded-xl p-4 text-left transition-colors ${
         on
-          ? 'border-2 border-[color:var(--primary)] bg-[#0e1a14]'
-          : `border bg-base-200 hover:border-muted ${study.flagship ? 'border-[#3a3f48]' : 'border-line'}`
+          ? 'border-2 border-[color:var(--secondary)] bg-[#1a1205]'
+          : `border bg-base-200 hover:border-[#34e5ff]/60 ${study.flagship ? 'border-[#3a3f48]' : 'border-line'}`
       } ${study.flagship ? 'min-h-32' : 'min-h-28'}`}
     >
       {study.flagship ? (
@@ -128,7 +131,7 @@ function LineRow({
         aria-hidden
         className={`relative size-3.5 flex-none rounded-full border-2 ${
           open
-            ? 'border-[color:var(--primary)] bg-[color:var(--primary)]'
+            ? 'border-[color:var(--secondary)] bg-[color:var(--secondary)]'
             : 'border-[#3a3f48] bg-base-100'
         }`}
       />
@@ -161,7 +164,7 @@ function Stub({ on, grow, delay }: { on: boolean; grow: 'up' | 'down'; delay: nu
     <div aria-hidden className="flex h-7 justify-center">
       <span className="relative w-0.5 bg-line">
         <span
-          className={`absolute inset-0 bg-[color:var(--primary)] transition-transform duration-300 ease-out ${grow === 'up' ? 'origin-bottom' : 'origin-top'}`}
+          className={`absolute inset-0 bg-[color:var(--secondary)] transition-transform duration-300 ease-out ${grow === 'up' ? 'origin-bottom' : 'origin-top'}`}
           style={{
             transform: `scaleY(${on ? 1 : 0})`,
             transitionDelay: on ? `${delay}s` : '0s',
@@ -327,7 +330,7 @@ export default function ServiceMap() {
                 {trail && trail.a !== trail.b && !reduce && (
                   <span
                     key={hop?.n}
-                    className={`absolute inset-y-0 rounded-full bg-[color:var(--primary)] ${trail.b > trail.a ? 'origin-left' : 'origin-right'}`}
+                    className={`absolute inset-y-0 rounded-full bg-[color:var(--secondary)] ${trail.b > trail.a ? 'origin-left' : 'origin-right'}`}
                     style={{
                       left: colCenter(Math.min(trail.a, trail.b), n),
                       width: `calc(${colCenter(Math.max(trail.a, trail.b), n)} - ${colCenter(Math.min(trail.a, trail.b), n)})`,
@@ -336,7 +339,7 @@ export default function ServiceMap() {
                   />
                 )}
                 <span
-                  className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--primary)] transition-[left] ease-in-out"
+                  className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--secondary)] transition-[left] ease-in-out"
                   style={{ left: colCenter(here, n), transitionDuration: `${BUS_MOVE_S}s` }}
                 />
               </div>

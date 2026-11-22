@@ -9,9 +9,9 @@ const LINKS = ['about', 'skills', 'journey', 'work', 'homelab', 'github'];
 // contact is a separate CTA link, but must still take over the highlight at the bottom
 const SPY_IDS = [...LINKS, 'contact'];
 const teal = 'var(--primary)';
-// current section: brighter text plus a teal underline (not colour alone)
+// current section: brighter text plus an amber underline (not colour alone)
 const CURRENT_LINK =
-  'aria-[current=true]:text-ink aria-[current=true]:underline aria-[current=true]:decoration-[color:var(--primary)] aria-[current=true]:decoration-2 aria-[current=true]:underline-offset-[6px]';
+  'aria-[current=true]:text-ink aria-[current=true]:underline aria-[current=true]:decoration-[color:var(--secondary)] aria-[current=true]:decoration-2 aria-[current=true]:underline-offset-[6px]';
 
 // mobile menu: current row gets an amber tint plus the amber dot glyph (not colour alone)
 const MENU_CURRENT =
@@ -38,7 +38,7 @@ function MenuRow({
       onClick={onClick}
       aria-current={current ? 'true' : undefined}
       {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-      className={`flex min-h-11 items-center gap-2.5 rounded-md px-3 text-muted transition-colors hover:bg-base-200/60 hover:text-ink ${MENU_CURRENT}`}
+      className={`flex min-h-11 items-center gap-2.5 rounded-md px-3 text-muted transition-colors hover:bg-base-200/60 hover:text-[#34e5ff] ${MENU_CURRENT}`}
     >
       <span aria-hidden style={{ color: current ? 'var(--secondary)' : teal }}>
         {current ? '●' : '›'}
@@ -184,7 +184,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
               key={l}
               href={`#${l}`}
               aria-current={activeSection === l ? 'true' : undefined}
-              className={`whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink ${CURRENT_LINK}`}
+              className={`whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-[#34e5ff] ${CURRENT_LINK}`}
             >
               {l}
             </a>
@@ -195,7 +195,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
               target="_blank"
               rel="noreferrer"
               onClick={() => downloadResume(resume)}
-              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-ink"
+              className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-muted transition-colors hover:bg-base-200/60 hover:text-[#34e5ff]"
             >
               resume
             </a>
@@ -203,9 +203,8 @@ export default function Navbar({ booted }: { booted: boolean }) {
           <a
             href="#contact"
             aria-current={activeSection === 'contact' ? 'true' : undefined}
-            className={`ml-1 whitespace-nowrap rounded-md border px-3 py-1.5 font-medium transition-colors hover:bg-[color:var(--primary)]/10 ${CURRENT_LINK}`}
+            className={`ml-1 whitespace-nowrap rounded-md border px-3 py-1.5 font-medium text-[color:var(--primary)] transition-colors hover:bg-[color:var(--primary)]/10 hover:text-[#34e5ff] ${CURRENT_LINK}`}
             style={{
-              color: 'var(--primary)',
               borderColor: 'color-mix(in srgb, var(--primary) 35%, transparent)',
             }}
           >
@@ -222,7 +221,7 @@ export default function Navbar({ booted }: { booted: boolean }) {
           aria-label="Toggle navigation menu"
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
-          className="relative flex flex-none items-center justify-center rounded-md border border-line p-2 text-ink transition-colors before:absolute before:-inset-[7px] hover:border-[color:var(--primary)]/50 min-[840px]:hidden"
+          className="relative flex flex-none items-center justify-center rounded-md border border-line p-2 text-ink transition-colors before:absolute before:-inset-[7px] hover:border-[#34e5ff]/50 min-[840px]:hidden"
         >
           <span className="relative flex h-3.5 w-4 flex-col justify-between">
             <span

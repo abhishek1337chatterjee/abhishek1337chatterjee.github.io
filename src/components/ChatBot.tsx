@@ -86,7 +86,7 @@ function MessageContent({ content, live }: { content: string; live: boolean }) {
             </a>
             <button
               onClick={() => handleCopy(part)}
-              className="relative rounded p-0.5 transition-colors pointer-coarse:before:absolute pointer-coarse:before:-inset-3.5 hover:bg-base-300/60"
+              className="relative rounded p-0.5 transition-colors pointer-coarse:before:absolute pointer-coarse:before:-inset-3.5 hover:bg-base-300/60 hover:text-[#34e5ff]"
               title="Copy phone number"
               aria-label={copiedText === part ? 'Phone number copied' : 'Copy phone number'}
               type="button"
@@ -754,7 +754,7 @@ export default function ChatBot() {
                 ? 'Ask this page (press / to open)'
                 : 'Ask this page'
           }
-          className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex h-12 items-center gap-2.5 rounded-xl border px-4 font-mono text-[13px] text-ink shadow-[0_10px_26px_rgba(0,0,0,0.5)] transition-colors hover:text-ink md:h-10 md:px-3.5"
+          className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] z-50 flex h-12 items-center gap-2.5 rounded-xl border px-4 font-mono text-[13px] text-ink shadow-[0_10px_26px_rgba(0,0,0,0.5)] transition-colors hover:text-[#34e5ff] md:h-10 md:px-3.5"
           style={{
             background: 'rgba(19,21,26,0.96)',
             borderColor: 'var(--primary-deep)',

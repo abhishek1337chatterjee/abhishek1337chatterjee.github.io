@@ -129,9 +129,9 @@ export default function GitHubStats() {
                       aria-controls="gh-graph"
                       tabIndex={on ? 0 : -1}
                       onClick={() => pickRange(r.id)}
-                      className={`flex min-h-10 items-center gap-1.5 rounded-md px-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors sm:min-h-8 ${on ? 'bg-base-300 text-ink' : 'text-muted hover:text-ink'}`}
+                      className={`flex min-h-10 items-center gap-1.5 rounded-md px-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors sm:min-h-8 ${on ? 'bg-base-300 text-ink' : 'text-muted hover:text-[#34e5ff]'}`}
                     >
-                      {on && <span className="size-1.5 rounded-full bg-[color:var(--primary)]" />}
+                      {on && <span className="size-1.5 rounded-full bg-[color:var(--secondary)]" />}
                       {r.name}
                     </button>
                   );
@@ -204,7 +204,7 @@ export default function GitHubStats() {
             href={`https://github.com/${GITHUB_USERNAME}`}
             target="_blank"
             rel="noreferrer"
-            className={`relative mt-2 inline-flex items-center gap-2 font-mono text-sm text-muted transition-colors hover:text-[color:var(--primary)] ${TAP_44}`}
+            className={`relative mt-2 inline-flex items-center gap-2 font-mono text-sm text-muted transition-colors hover:text-[#34e5ff] ${TAP_44}`}
           >
             view full profile on GitHub →
           </a>

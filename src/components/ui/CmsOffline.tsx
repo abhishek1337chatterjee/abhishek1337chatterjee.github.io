@@ -20,7 +20,7 @@ export default function CmsOffline() {
       <button
         type="button"
         onClick={cmsStatus.retry}
-        className={`relative rounded-md border border-[color:var(--primary)]/50 px-2.5 py-1 text-[color:var(--primary)] transition-colors hover:bg-[color:var(--primary)]/10 ${TAP_44}`}
+        className={`relative rounded-md border border-[color:var(--primary)]/50 px-2.5 py-1 text-[color:var(--primary)] transition-colors hover:bg-[color:var(--primary)]/10 hover:text-[#34e5ff] ${TAP_44}`}
       >
         retry
       </button>

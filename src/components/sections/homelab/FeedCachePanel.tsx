@@ -165,7 +165,7 @@ export default function FeedCachePanel({
           <button
             type="button"
             onClick={control}
-            className={`relative inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-ink ${TAP_44}`}
+            className={`relative inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-[#34e5ff] ${TAP_44}`}
           >
             {status === 'playing' ? (
               <Pause aria-hidden className="size-3.5" />

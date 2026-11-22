@@ -276,7 +276,7 @@ export default function Hero({ booted = false }: { booted?: boolean }) {
   };
 
   const ctaSecondary =
-    'rounded-lg border border-line bg-base-200 px-5 py-2.5 text-ink transition-colors hover:border-[color:var(--primary)] hover:text-[color:var(--primary)]';
+    'rounded-lg border border-line bg-base-200 px-5 py-2.5 text-ink transition-colors hover:border-[#34e5ff] hover:text-[#34e5ff]';
 
   return (
     <section
