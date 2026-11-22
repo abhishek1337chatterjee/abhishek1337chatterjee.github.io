@@ -67,6 +67,22 @@
   --secondary-deep: #c5811a;
 }
 
+/* The navbar's glass for chat panels; solid where blur is missing or the visitor
+   asked for less transparency. Panels set --glass-alpha for their density. */
+@utility trace-glass {
+  background-color: #111318;
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    background-color: rgb(14 15 19 / var(--glass-alpha, 0.72));
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: #111318;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* ── Global base ── */
 html {
   scroll-behavior: smooth;

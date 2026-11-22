@@ -795,7 +795,7 @@ export default function ChatBot() {
               aria-modal={wide ? undefined : true}
               {...motionProps}
               style={{ y: dragY }}
-              className="fixed inset-x-0 bottom-0 z-50 flex h-[88dvh] flex-col overscroll-contain rounded-t-2xl border-t border-[#2f3440] bg-[#111318] shadow-[0_-18px_40px_rgba(0,0,0,0.5)] md:inset-x-auto md:top-14 md:right-0 md:h-auto md:w-[420px] md:rounded-none md:border-t-0 md:border-l md:border-line md:shadow-[-22px_0_44px_rgba(0,0,0,0.45)]"
+              className="fixed inset-x-0 bottom-0 z-50 flex h-[88dvh] flex-col overscroll-contain rounded-t-2xl border-t border-line/70 trace-glass shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_-18px_40px_rgba(0,0,0,0.5)] md:inset-x-auto md:top-14 md:right-0 md:h-auto md:w-[420px] md:rounded-none md:border-t-0 md:border-l md:border-line/70 md:[--glass-alpha:0.85] md:shadow-[-22px_0_44px_rgba(0,0,0,0.45)]"
             >
               {/* handle + header: on phones this strip drags the sheet down to close it */}
               <div
@@ -811,7 +811,7 @@ export default function ChatBot() {
                     className="mx-auto mt-[7px] h-1 w-9 flex-none rounded-full bg-[#3a4050]"
                   />
                 )}
-                <div className="flex h-11 flex-none items-center justify-between gap-2.5 border-b border-line px-4 font-mono text-[12.5px] text-muted md:px-5 md:text-xs">
+                <div className="flex h-11 flex-none items-center justify-between gap-2.5 border-b border-line/70 px-4 font-mono text-[12.5px] text-muted md:px-5 md:text-xs">
                   <span className="flex items-center gap-2 text-ink">
                     <span
                       className="size-[7px] rounded-full"
@@ -953,7 +953,7 @@ export default function ChatBot() {
               {/* composer */}
               <form
                 onSubmit={handleSubmit}
-                className="flex flex-none items-center gap-2.5 border-t border-line bg-[#111318] px-4 pt-2.5 pb-[calc(0.875rem+env(safe-area-inset-bottom,0px))] md:px-5 md:pb-[calc(0.7rem+env(safe-area-inset-bottom,0px))]"
+                className="flex flex-none items-center gap-2.5 border-t border-line/70 px-4 pt-2.5 pb-[calc(0.875rem+env(safe-area-inset-bottom,0px))] md:px-5 md:pb-[calc(0.7rem+env(safe-area-inset-bottom,0px))]"
               >
                 <span
                   className="flex-none font-mono text-[12.5px] whitespace-nowrap md:text-xs"
@@ -985,7 +985,7 @@ export default function ChatBot() {
               </form>
 
               {/* keyboard-sized screens only, where the "/" hint is shown */}
-              <div className="hidden flex-none items-center justify-end gap-2 border-t border-line px-5 py-1.5 font-mono text-[11px] text-muted md:flex">
+              <div className="hidden flex-none items-center justify-end gap-2 border-t border-line/70 px-5 py-1.5 font-mono text-[11px] text-muted md:flex">
                 <Key>/</Key> opens this console
                 <button
                   type="button"
