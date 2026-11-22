@@ -147,6 +147,7 @@ export const queries = {
       title,
       description,
       "image": image.asset->url,
+      "imageSize": image.asset->metadata.dimensions{width, height},
       techStack,
       githubUrl,
       deployedUrl
@@ -329,6 +330,8 @@ export interface HomelabFeature {
   title: string;
   description?: string;
   image?: string;
+  // intrinsic size, so the card reserves the image's box before it loads (CLS)
+  imageSize?: { width: number; height: number };
   techStack?: string[];
   features?: string[];
   responsibilities?: string[];

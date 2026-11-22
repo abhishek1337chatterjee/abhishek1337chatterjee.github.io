@@ -439,8 +439,8 @@ export default function Journey() {
             );
           })}
 
-          {/* playhead: one amber line over every bar track, sweeping first year → now;
-              the line and its date pill can be dragged to scrub the trace */}
+          {/* playhead: one draggable amber line over every bar track, first year → now;
+              it starts under the year axis so it never runs through the "now" label */}
           <div className="pointer-events-none absolute inset-0 grid gap-3.5" style={COLS}>
             <div />
             <div ref={trackRef} className="relative">
@@ -454,13 +454,13 @@ export default function Journey() {
               >
                 <div
                   aria-hidden
-                  className="absolute top-0 bottom-8 left-0 w-0.5 -translate-x-1/2 bg-[color:var(--secondary)]"
+                  className="absolute top-6 bottom-8 left-0 w-0.5 -translate-x-1/2 bg-[color:var(--secondary)]"
                 />
                 {playing && (
                   <div
                     aria-hidden
                     {...grab}
-                    className="pointer-events-auto absolute top-0 bottom-8 left-0 w-5 -translate-x-1/2 cursor-ew-resize touch-none"
+                    className="pointer-events-auto absolute top-6 bottom-8 left-0 w-5 -translate-x-1/2 cursor-ew-resize touch-none"
                   />
                 )}
                 {playing ? (

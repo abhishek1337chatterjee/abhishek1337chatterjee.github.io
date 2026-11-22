@@ -162,21 +162,24 @@ export default function FeedCachePanel({
             <span className="text-ink">{fresh}</span>
             <span className="text-muted"> / {FEEDS} feeds fresh</span>
           </p>
-          <button
-            type="button"
-            onClick={control}
-            className={`relative inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-[#34e5ff] ${TAP_44}`}
-          >
-            {status === 'playing' ? (
-              <Pause aria-hidden className="size-3.5" />
-            ) : status === 'done' ? (
-              <RotateCcw aria-hidden className="size-3.5" />
-            ) : (
-              <Play aria-hidden className="size-3.5" />
-            )}
-            {status === 'done' ? 'replay' : status === 'playing' ? 'pause' : 'play'}
-            <span className="sr-only">the cold-start replay ({statusText})</span>
-          </button>
+          {/* reduced motion shows the finished pass, like the Journey trace: no replay */}
+          {!reduce && (
+            <button
+              type="button"
+              onClick={control}
+              className={`relative inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:text-[#34e5ff] ${TAP_44}`}
+            >
+              {status === 'playing' ? (
+                <Pause aria-hidden className="size-3.5" />
+              ) : status === 'done' ? (
+                <RotateCcw aria-hidden className="size-3.5" />
+              ) : (
+                <Play aria-hidden className="size-3.5" />
+              )}
+              {status === 'done' ? 'replay' : status === 'playing' ? 'pause' : 'play'}
+              <span className="sr-only">the cold-start replay ({statusText})</span>
+            </button>
+          )}
         </div>
       </div>
 
