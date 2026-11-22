@@ -150,7 +150,7 @@ export default function Route({ send, ready, now, zone }: RouteProps) {
           </span>
         )}
         <span
-          className="absolute top-0 hidden -translate-x-1/2 whitespace-nowrap lg:block"
+          className="absolute top-[34px] -translate-x-1/2 whitespace-nowrap lg:top-0"
           style={{ left: HOP_AT }}
         >
           getform.io
