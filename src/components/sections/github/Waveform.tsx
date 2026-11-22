@@ -110,7 +110,8 @@ export default function Waveform({ buckets, mode, unit, phase }: Props) {
         aria-valuetext={`${buckets[shown].tip}: ${values[shown]} contributions`}
         onPointerMove={scrub}
         onPointerDown={scrub}
-        onPointerLeave={() => setAt(null)}
+        // a lifted finger also fires pointerleave; keep its reading until focus moves away
+        onPointerLeave={(e) => e.pointerType === 'mouse' && setAt(null)}
         onKeyDown={keys}
         onBlur={() => setAt(null)}
         className="relative min-h-0 flex-1 cursor-crosshair touch-pan-y rounded-lg outline-offset-4"

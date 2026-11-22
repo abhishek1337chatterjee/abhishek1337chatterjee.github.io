@@ -143,12 +143,12 @@ export default function About() {
                     const open = active === c.n;
                     const tone = sel ? 'text-[color:var(--secondary)]' : 'text-muted';
                     return (
-                      <li key={c.n}>
+                      // hover spans the row and its card: leaving the row for the card must not
+                      // close it, or the rows below jump back up under the pointer
+                      <li key={c.n} onMouseEnter={hover(c.n)} onMouseLeave={hover(null)}>
                         <a
                           href={`#${c.target}`}
                           data-rail={c.n}
-                          onMouseEnter={hover(c.n)}
-                          onMouseLeave={hover(null)}
                           onFocus={hover(c.n)}
                           onBlur={hover(null)}
                           onClick={(e) => jump(e, c)}
@@ -194,7 +194,13 @@ export default function About() {
                     className="flex items-center font-mono text-xs text-muted"
                     style={{ height: PEEK_H }}
                   >
-                    hover a claim to peek at its proof
+                    <span className="pointer-coarse:hidden">
+                      hover a claim to peek at its proof
+                    </span>
+                    {/* a tap is a click here, so touch jumps straight to the proof */}
+                    <span className="hidden pointer-coarse:inline">
+                      tap a claim to jump to its proof
+                    </span>
                   </p>
                 )}
               </div>

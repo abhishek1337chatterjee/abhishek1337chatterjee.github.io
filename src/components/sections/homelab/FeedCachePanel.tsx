@@ -139,7 +139,7 @@ export default function FeedCachePanel({
         ? describe(asked, t)
         : status === 'done'
           ? `cold start done · ${fresh} fresh${failed ? ` · ${failed} slow, retried` : ''} · next pass in ${REFRESH_MIN} min`
-          : 'hover a cell to read it';
+          : null;
   const statusText =
     status === 'done'
       ? 'cold start · done'
@@ -210,7 +210,12 @@ export default function FeedCachePanel({
             aria-live="off"
             className="mt-3 line-clamp-3 h-12 font-mono text-xs text-ink/80 sm:line-clamp-1 sm:h-5"
           >
-            {readout}
+            {readout ?? (
+              <>
+                <span className="pointer-coarse:hidden">hover a cell to read it</span>
+                <span className="hidden pointer-coarse:inline">tap a cell to read it</span>
+              </>
+            )}
           </p>
           <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-muted">
             <li className="flex items-center gap-1.5">
